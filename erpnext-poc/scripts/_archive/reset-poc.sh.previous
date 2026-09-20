@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# WARNING: destroys the POC database and rebuilds it from the seed scripts (~8 min).
+set -euo pipefail
+cd "$HOME/mscast-poc"
+read -r -p "Wipe the MSCAST POC and rebuild? [y/N] " a
+[ "$a" = "y" ] || exit 1
+docker compose -p mscast-poc -f compose.yaml down -v --remove-orphans
+docker compose -p mscast-poc -f compose.yaml up -d
+echo "waiting for site creation (this takes several minutes)..."
+for i in $(seq 1 60); do
+  s=$(docker inspect -f '{{.State.Status}}:{{.State.ExitCode}}' mscast-poc-create-site-1 2>/dev/null || echo none)
+  case "$s" in exited:0) break;; exited:*) echo "site creation failed: $s"; exit 1;; esac
+  sleep 20
+done
+bash /mnt/d/MSCAST/erpnext-poc/scripts/run-seed.sh 00_setup_wizard 01_company_masters 02_custom_doctypes 03b_transactions 04b_reports_workspace 10_test_reports

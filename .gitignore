@@ -1,0 +1,18 @@
+# database dumps and site backups - these carry client data
+erpnext-poc/backups/
+*.sql
+*.sql.gz
+*.tar
+*.tar.gz
+
+# transient exports
+erpnext-poc/*.json
+erpnext-poc/seed/_archive/
+
+# local noise
+__pycache__/
+*.py[cod]
+.DS_Store
+Thumbs.db
+~$*
+*.tmp

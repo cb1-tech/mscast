@@ -1,0 +1,1710 @@
+[
+ {
+  "add_total_row": 1,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "MSCAST",
+  "module": "Custom",
+  "name": "MSCAST Balance Sheet (Schedule III grouping)",
+  "prepared_report": 0,
+  "query": "\nselect\n  case\n    when a.root_type = 'Equity' then '1. EQUITY AND LIABILITIES - Shareholders funds'\n    when a.root_type = 'Liability' and (a.account_name like '%%Term Loan%%' or a.account_name like '%%Borrowing%%'\n         or a.account_name like '%%Lease Liabilit%%') then '2. Non-current liabilities'\n    when a.root_type = 'Liability' then '3. Current liabilities'\n    when a.root_type = 'Asset' and (a.account_type in ('Fixed Asset','Capital Work in Progress','Accumulated Depreciation')\n         or a.account_name like '%%Fixed Asset%%' or a.account_name like '%%CWIP%%'\n         or a.account_name like '%%Software%%') then '4. ASSETS - Non-current assets'\n    else '5. Current assets'\n  end                                                       as \"Schedule III Head::330\",\n  case\n    when a.account_name like '%%Share Capital%%' or a.account_name like '%%Capital Stock%%' then 'Share capital'\n    when a.root_type = 'Equity' then 'Reserves and surplus'\n    when a.account_name like '%%Term Loan%%' or a.account_name like '%%Borrowing%%' then 'Long-term borrowings'\n    when a.account_name like '%%Lease Liabilit%%' then 'Lease liabilities'\n    when a.account_type = 'Payable' then 'Trade payables'\n    when a.account_name like '%%GST%%' or a.account_name like '%%TDS%%' or a.account_name like '%%Duties and Taxes%%'\n         or a.account_name like '%%Professional Tax%%' or a.account_name like '%%PF%%' or a.account_name like '%%ESIC%%'\n      then 'Other current liabilities - statutory dues'\n    when a.account_name like '%%Provision%%' then 'Provisions'\n    when a.account_type = 'Capital Work in Progress' or a.account_name like '%%CWIP%%'\n      then 'Capital work-in-progress'\n    when a.account_name like '%%Software%%' then 'Intangible assets'\n    when a.account_type in ('Fixed Asset','Accumulated Depreciation') or a.account_name like '%%Fixed Asset%%'\n      then 'Property, plant and equipment'\n    when a.account_type = 'Stock' or a.account_name like '%%Stock%%' or a.account_name like '%%Inventor%%'\n      then 'Inventories'\n    when a.account_type = 'Receivable' then 'Trade receivables'\n    when a.account_name like '%%Retention%%' then 'Other current assets - retention receivable'\n    when a.account_type in ('Bank','Cash') then 'Cash and cash equivalents'\n    else 'Other current assets'\n  end                                                       as \"Line Item::300\",\n  a.name                                                    as \"Account:Link/Account:260\",\n  round(sum(case when a.root_type = 'Asset' then gl.debit - gl.credit\n                 else gl.credit - gl.debit end), 2)         as \"Amount (Rs):Currency:150\"\nfrom `tabGL Entry` gl\ninner join `tabAccount` a on a.name = gl.account\nwhere gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd'\n  and a.root_type in ('Asset', 'Liability', 'Equity')\ngroup by a.name\nhaving abs(round(sum(case when a.root_type = 'Asset' then gl.debit - gl.credit\n                          else gl.credit - gl.debit end), 2)) > 0.5\norder by 1, 2, 3\n",
+  "ref_doctype": "GL Entry",
+  "reference_report": null,
+  "report_name": "MSCAST Balance Sheet (Schedule III grouping)",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "122egkdnp9",
+    "parent": "MSCAST Balance Sheet (Schedule III grouping)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "122ap2oa4v",
+    "parent": "MSCAST Balance Sheet (Schedule III grouping)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "122gt50kb3",
+    "parent": "MSCAST Balance Sheet (Schedule III grouping)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Statutory Auditor"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "122k8kgs5c",
+    "parent": "MSCAST Balance Sheet (Schedule III grouping)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Director"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "MSCAST",
+  "module": "Custom",
+  "name": "MSCAST Balance Sheet (Schedule III)",
+  "prepared_report": 0,
+  "query": "select\n  d.note as \"Note::55\",\n  d.particulars as \"Particulars::450\",\n  d.amt as \"As at 19 Sep 2026:Currency:175\",\n  null as \"Previous year:Currency:150\"\nfrom (\n  select 10 as seq, '' as note, 'I. EQUITY AND LIABILITIES' as particulars, null as amt\n  union all select 20 as seq, '' as note, '1. Shareholders'' funds' as particulars, null as amt\n  union all select 30 as seq, '1' as note, '        (a) Share capital' as particulars, ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Equity' and (a.account_name like '%%Share Capital%%' or a.account_name like '%%Capital Stock%%'))), 0) as amt\n  union all select 40 as seq, '2' as note, '        (b) Reserves and surplus' as particulars, (ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Equity' and a.account_name not like '%%Share Capital%%' and a.account_name not like '%%Capital Stock%%')), 0) + (ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income')), 0) - ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense')), 0))) as amt\n  union all select 50 as seq, '' as note, '2. Non-current liabilities' as particulars, null as amt\n  union all select 60 as seq, '3' as note, '        (a) Long-term borrowings' as particulars, ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Liability' and (a.account_name like '%%Term Loan%%' or a.account_name like '%%Borrowing%%'))), 0) as amt\n  union all select 70 as seq, '4' as note, '        (b) Deferred tax liabilities (net)' as particulars, ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Liability' and (a.account_name like '%%Deferred Tax Liability%%'))), 0) as amt\n  union all select 80 as seq, '5' as note, '        (c) Long-term provisions - gratuity' as particulars, ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Liability' and (a.account_name like '%%Provision for Gratuity%%'))), 0) as amt\n  union all select 90 as seq, '' as note, '3. Current liabilities' as particulars, null as amt\n  union all select 100 as seq, '6' as note, '        (a) Trade payables - micro and small enterprises' as particulars, ifnull((select round(sum(pi.outstanding_amount),0) from `tabPurchase Invoice` pi inner join `tabSupplier` s on s.name = pi.supplier where pi.docstatus = 1 and ifnull(s.msme_type,'') != ''), 0) as amt\n  union all select 110 as seq, '6' as note, '        (b) Trade payables - other than micro and small' as particulars, (ifnull((select round(sum(greatest(0, -1 * x.net)), 0) from (select gl.party, sum(gl.debit - gl.credit) net from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and a.account_type = 'Payable' and ifnull(gl.party,'') != '' and a.account_name not like '%%Retention%%' group by gl.party) x), 0) - ifnull((select round(sum(pi.outstanding_amount),0) from `tabPurchase Invoice` pi inner join `tabSupplier` s on s.name = pi.supplier where pi.docstatus = 1 and ifnull(s.msme_type,'') != ''), 0)) as amt\n  union all select 120 as seq, '7' as note, '        (c) Advances from customers' as particulars, ifnull((select round(sum(greatest(0, -1 * x.net)), 0) from (select gl.party, sum(gl.debit - gl.credit) net from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and a.account_type = 'Receivable' and ifnull(gl.party,'') != '' and a.account_name not like '%%Retention%%' group by gl.party) x), 0) as amt\n  union all select 130 as seq, '7' as note, '        (d) Statutory dues - GST, TDS, PT, payroll' as particulars, ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Liability' and (a.account_type != 'Payable' and (a.account_name like '%%Duties and Taxes%%' or a.account_name like '%%GST%%' or a.account_name like '%%TDS%%' or a.account_name like '%%Output Tax%%' or a.account_name like '%%Professional Tax%%' or a.account_name like '%%Payroll Payable%%' or a.account_name like '%%Lease Liabilit%%')))), 0) as amt\n  union all select 140 as seq, '7' as note, '        (e) Goods received but not billed' as particulars, ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Liability' and (a.account_type = 'Stock Received But Not Billed' or a.account_name like '%%Received But Not Billed%%'))), 0) as amt\n  union all select 150 as seq, '8' as note, '        (f) Short-term provisions - income tax' as particulars, ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Liability' and (a.account_name like '%%Provision for Income Tax%%'))), 0) as amt\n  union all select 160 as seq, '' as note, '        (g) Unclassified - to map into Schedule III' as particulars, ((ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type in ('Liability','Equity'))), 0) + (ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income')), 0) - ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense')), 0)) + ifnull((select round(sum(greatest(0, -1 * x.net)), 0) from (select gl.party, sum(gl.debit - gl.credit) net from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and a.account_type = 'Receivable' and ifnull(gl.party,'') != '' and a.account_name not like '%%Retention%%' group by gl.party) x), 0) + ifnull((select round(sum(greatest(0, x.net)), 0) from (select gl.party, sum(gl.debit - gl.credit) net from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and a.account_type = 'Payable' and ifnull(gl.party,'') != '' and a.account_name not like '%%Retention%%' group by gl.party) x), 0)) - (ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Equity' and (a.account_name like '%%Share Capital%%' or a.account_name like '%%Capital Stock%%'))), 0) + (ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Equity' and a.account_name not like '%%Share Capital%%' and a.account_name not like '%%Capital Stock%%')), 0) + (ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income')), 0) - ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense')), 0))) + ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Liability' and (a.account_name like '%%Term Loan%%' or a.account_name like '%%Borrowing%%'))), 0) + ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Liability' and (a.account_name like '%%Deferred Tax Liability%%'))), 0) + ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Liability' and (a.account_name like '%%Provision for Gratuity%%'))), 0) + ifnull((select round(sum(pi.outstanding_amount),0) from `tabPurchase Invoice` pi inner join `tabSupplier` s on s.name = pi.supplier where pi.docstatus = 1 and ifnull(s.msme_type,'') != ''), 0) + (ifnull((select round(sum(greatest(0, -1 * x.net)), 0) from (select gl.party, sum(gl.debit - gl.credit) net from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and a.account_type = 'Payable' and ifnull(gl.party,'') != '' and a.account_name not like '%%Retention%%' group by gl.party) x), 0) - ifnull((select round(sum(pi.outstanding_amount),0) from `tabPurchase Invoice` pi inner join `tabSupplier` s on s.name = pi.supplier where pi.docstatus = 1 and ifnull(s.msme_type,'') != ''), 0)) + ifnull((select round(sum(greatest(0, -1 * x.net)), 0) from (select gl.party, sum(gl.debit - gl.credit) net from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and a.account_type = 'Receivable' and ifnull(gl.party,'') != '' and a.account_name not like '%%Retention%%' group by gl.party) x), 0) + ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Liability' and (a.account_type != 'Payable' and (a.account_name like '%%Duties and Taxes%%' or a.account_name like '%%GST%%' or a.account_name like '%%TDS%%' or a.account_name like '%%Output Tax%%' or a.account_name like '%%Professional Tax%%' or a.account_name like '%%Payroll Payable%%' or a.account_name like '%%Lease Liabilit%%')))), 0) + ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Liability' and (a.account_type = 'Stock Received But Not Billed' or a.account_name like '%%Received But Not Billed%%'))), 0) + ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Liability' and (a.account_name like '%%Provision for Income Tax%%'))), 0))) as amt\n  union all select 170 as seq, '' as note, 'TOTAL' as particulars, (ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type in ('Liability','Equity'))), 0) + (ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income')), 0) - ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense')), 0)) + ifnull((select round(sum(greatest(0, -1 * x.net)), 0) from (select gl.party, sum(gl.debit - gl.credit) net from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and a.account_type = 'Receivable' and ifnull(gl.party,'') != '' and a.account_name not like '%%Retention%%' group by gl.party) x), 0) + ifnull((select round(sum(greatest(0, x.net)), 0) from (select gl.party, sum(gl.debit - gl.credit) net from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and a.account_type = 'Payable' and ifnull(gl.party,'') != '' and a.account_name not like '%%Retention%%' group by gl.party) x), 0)) as amt\n  union all select 180 as seq, '' as note, ' ' as particulars, null as amt\n  union all select 190 as seq, '' as note, 'II. ASSETS' as particulars, null as amt\n  union all select 200 as seq, '' as note, '1. Non-current assets' as particulars, null as amt\n  union all select 210 as seq, '9' as note, '        (a) Property, plant and equipment' as particulars, ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Asset' and ((a.account_type in ('Fixed Asset','Accumulated Depreciation') or a.account_name like '%%Plant and Machinery%%' or a.account_name like '%%Furniture%%' or a.account_name like '%%Office Equipment%%' or a.account_name like '%%Computer%%') and a.account_name not like '%%Software%%'))), 0) as amt\n  union all select 220 as seq, '9' as note, '        (b) Intangible assets - software' as particulars, ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Asset' and (a.account_name like '%%Software%%'))), 0) as amt\n  union all select 230 as seq, '10' as note, '        (c) Capital work-in-progress' as particulars, ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Asset' and (a.account_type = 'Capital Work in Progress' or a.account_name like '%%CWIP%%'))), 0) as amt\n  union all select 240 as seq, '4' as note, '        (d) Deferred tax assets (net)' as particulars, ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Asset' and (a.account_name like '%%Deferred Tax Asset%%'))), 0) as amt\n  union all select 250 as seq, '' as note, '2. Current assets' as particulars, null as amt\n  union all select 260 as seq, '11' as note, '        (a) Inventories including project work-in-progress' as particulars, ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Asset' and (a.account_type = 'Stock' or a.account_name like '%%Stock In Hand%%' or a.account_name like '%%Work in Progress - Projects%%'))), 0) as amt\n  union all select 270 as seq, '12' as note, '        (b) Trade receivables - gross' as particulars, ifnull((select round(sum(greatest(0, x.net)), 0) from (select gl.party, sum(gl.debit - gl.credit) net from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and a.account_type = 'Receivable' and ifnull(gl.party,'') != '' and a.account_name not like '%%Retention%%' group by gl.party) x), 0) as amt\n  union all select 280 as seq, '13' as note, '        (c) Cash and cash equivalents' as particulars, ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Asset' and (a.account_type in ('Bank','Cash')))), 0) as amt\n  union all select 290 as seq, '14' as note, '        (d) Input GST credit (ITC)' as particulars, ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Asset' and (a.account_type = 'Tax' or a.account_name like '%%Input Tax%%'))), 0) as amt\n  union all select 300 as seq, '14' as note, '        (e) Advances to suppliers' as particulars, ifnull((select round(sum(greatest(0, x.net)), 0) from (select gl.party, sum(gl.debit - gl.credit) net from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and a.account_type = 'Payable' and ifnull(gl.party,'') != '' and a.account_name not like '%%Retention%%' group by gl.party) x), 0) as amt\n  union all select 310 as seq, '14' as note, '        (f) Retention receivable' as particulars, ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Asset' and (a.account_name like '%%Retention%%'))), 0) as amt\n  union all select 320 as seq, '' as note, '        (g) Unclassified - to map into Schedule III' as particulars, ((ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Asset')), 0) + ifnull((select round(sum(greatest(0, -1 * x.net)), 0) from (select gl.party, sum(gl.debit - gl.credit) net from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and a.account_type = 'Receivable' and ifnull(gl.party,'') != '' and a.account_name not like '%%Retention%%' group by gl.party) x), 0) + ifnull((select round(sum(greatest(0, x.net)), 0) from (select gl.party, sum(gl.debit - gl.credit) net from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and a.account_type = 'Payable' and ifnull(gl.party,'') != '' and a.account_name not like '%%Retention%%' group by gl.party) x), 0)) - (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Asset' and ((a.account_type in ('Fixed Asset','Accumulated Depreciation') or a.account_name like '%%Plant and Machinery%%' or a.account_name like '%%Furniture%%' or a.account_name like '%%Office Equipment%%' or a.account_name like '%%Computer%%') and a.account_name not like '%%Software%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Asset' and (a.account_name like '%%Software%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Asset' and (a.account_type = 'Capital Work in Progress' or a.account_name like '%%CWIP%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Asset' and (a.account_name like '%%Deferred Tax Asset%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Asset' and (a.account_type = 'Stock' or a.account_name like '%%Stock In Hand%%' or a.account_name like '%%Work in Progress - Projects%%'))), 0) + ifnull((select round(sum(greatest(0, x.net)), 0) from (select gl.party, sum(gl.debit - gl.credit) net from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and a.account_type = 'Receivable' and ifnull(gl.party,'') != '' and a.account_name not like '%%Retention%%' group by gl.party) x), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Asset' and (a.account_type in ('Bank','Cash')))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Asset' and (a.account_type = 'Tax' or a.account_name like '%%Input Tax%%'))), 0) + ifnull((select round(sum(greatest(0, x.net)), 0) from (select gl.party, sum(gl.debit - gl.credit) net from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and a.account_type = 'Payable' and ifnull(gl.party,'') != '' and a.account_name not like '%%Retention%%' group by gl.party) x), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Asset' and (a.account_name like '%%Retention%%'))), 0))) as amt\n  union all select 330 as seq, '' as note, 'TOTAL' as particulars, (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Asset')), 0) + ifnull((select round(sum(greatest(0, -1 * x.net)), 0) from (select gl.party, sum(gl.debit - gl.credit) net from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and a.account_type = 'Receivable' and ifnull(gl.party,'') != '' and a.account_name not like '%%Retention%%' group by gl.party) x), 0) + ifnull((select round(sum(greatest(0, x.net)), 0) from (select gl.party, sum(gl.debit - gl.credit) net from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and a.account_type = 'Payable' and ifnull(gl.party,'') != '' and a.account_name not like '%%Retention%%' group by gl.party) x), 0)) as amt\n  union all select 340 as seq, '' as note, ' ' as particulars, null as amt\n  union all select 350 as seq, '' as note, 'Comparatives: first year on ERPNext - the previous-year column fills once the Tally opening balances are migrated.' as particulars, null as amt\n) d order by d.seq",
+  "ref_doctype": "GL Entry",
+  "reference_report": null,
+  "report_name": "MSCAST Balance Sheet (Schedule III)",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "uj0e1drseo",
+    "parent": "MSCAST Balance Sheet (Schedule III)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "uj0bistou0",
+    "parent": "MSCAST Balance Sheet (Schedule III)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "uj0rutsc3a",
+    "parent": "MSCAST Balance Sheet (Schedule III)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Statutory Auditor"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "uj0tlv06b2",
+    "parent": "MSCAST Balance Sheet (Schedule III)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Director"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "MSCAST",
+  "module": "Custom",
+  "name": "MSCAST Bid Win-Loss Analysis",
+  "prepared_report": 0,
+  "query": "\nselect\n    b.outcome                            as \"Outcome:Data:90\",\n    b.customer_name                      as \"Prospect:Data:190\",\n    b.machine_type                       as \"Machine:Data:130\",\n    b.bid_date                           as \"Quoted:Date:90\",\n    b.our_price                          as \"Our price:Currency:120\",\n    ifnull(b.winner, '')                 as \"Won by:Data:170\",\n    b.winner_price                       as \"Their price:Currency:120\",\n    case when b.our_price > 0 and b.winner_price > 0\n         then round((b.our_price - b.winner_price) * 100 / b.winner_price, 1) else null end\n                                         as \"Gap %:Float:70\",\n    ifnull(b.reason_lost, '')            as \"Reason:Data:150\",\n    ifnull(b.customer_feedback, '')      as \"What the customer said:Data:320\"\nfrom `tabMSCAST Bid Outcome` b\norder by b.bid_date desc\n",
+  "ref_doctype": "MSCAST Bid Outcome",
+  "reference_report": null,
+  "report_name": "MSCAST Bid Win-Loss Analysis",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "psv10mjuch",
+    "parent": "MSCAST Bid Win-Loss Analysis",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "psvqp59oe4",
+    "parent": "MSCAST Bid Win-Loss Analysis",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Director"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "psvm53fdct",
+    "parent": "MSCAST Bid Win-Loss Analysis",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales User"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "psvi6rgunv",
+    "parent": "MSCAST Bid Win-Loss Analysis",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "psv3dqu8kb",
+    "parent": "MSCAST Bid Win-Loss Analysis",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Projects User"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 1,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "MSCAST",
+  "module": "Custom",
+  "name": "MSCAST Billing and Dispatch Schedule",
+  "prepared_report": 0,
+  "query": "\nselect\n  s.parent                                        as \"Project:Link/Project:110\",\n  p.project_name                                  as \"Description::230\",\n  s.milestone                                     as \"Milestone::260\",\n  s.scope                                         as \"Scope::200\",\n  s.planned_dispatch_date                         as \"Planned Dispatch:Date:110\",\n  s.billing_percent                               as \"Bill %:Percent:70\",\n  s.billing_amount                                as \"Billing Value:Currency:130\",\n  s.status                                        as \"Status::130\",\n  datediff(s.planned_dispatch_date,\n           date(convert_tz(utc_timestamp(),'+00:00','+05:30')))\n                                                  as \"Days to go:Int:90\",\n  s.procurement_note                              as \"Action for procurement::340\"\nfrom `tabMSCAST Project Schedule Line` s\ninner join `tabProject` p on p.name = s.parent\norder by s.planned_dispatch_date\n",
+  "ref_doctype": "Project",
+  "reference_report": null,
+  "report_name": "MSCAST Billing and Dispatch Schedule",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "ojbnup61t6",
+    "parent": "MSCAST Billing and Dispatch Schedule",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "ojb519nc38",
+    "parent": "MSCAST Billing and Dispatch Schedule",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "ojb3huqsmt",
+    "parent": "MSCAST Billing and Dispatch Schedule",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Projects Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "ojbs34ve5v",
+    "parent": "MSCAST Billing and Dispatch Schedule",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Purchase Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "ojbt1jv4to",
+    "parent": "MSCAST Billing and Dispatch Schedule",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Purchase User"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "ojbcikvl6u",
+    "parent": "MSCAST Billing and Dispatch Schedule",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Director"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "MSCAST",
+  "module": "Custom",
+  "name": "MSCAST Biometric Attendance Audit",
+  "prepared_report": 0,
+  "query": "\nselect\n  c.employee                                      as \"Employee:Link/Employee:130\",\n  c.employee_name                                 as \"Name::200\",\n  date(c.time)                                    as \"Date:Date:95\",\n  c.device_id                                     as \"Device::150\",\n  min(case when c.log_type = 'IN' then time(c.time) end)   as \"First IN::100\",\n  max(case when c.log_type = 'OUT' then time(c.time) end)  as \"Last OUT::100\",\n  count(*)                                        as \"Punches:Int:80\",\n  ifnull((select a.status from `tabAttendance` a where a.employee = c.employee\n          and a.attendance_date = date(c.time) and a.docstatus = 1 limit 1), 'not marked')\n                                                  as \"Attendance::130\",\n  ifnull((select round(a.working_hours,2) from `tabAttendance` a where a.employee = c.employee\n          and a.attendance_date = date(c.time) and a.docstatus = 1 limit 1), 0)\n                                                  as \"Hours:Float:90\"\nfrom `tabEmployee Checkin` c\ngroup by c.employee, date(c.time), c.device_id\norder by date(c.time) desc, c.employee\n",
+  "ref_doctype": "Employee Checkin",
+  "reference_report": null,
+  "report_name": "MSCAST Biometric Attendance Audit",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "05rl5t4fu9",
+    "parent": "MSCAST Biometric Attendance Audit",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "05ror6k955",
+    "parent": "MSCAST Biometric Attendance Audit",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "HR Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "05r2brga4s",
+    "parent": "MSCAST Biometric Attendance Audit",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "HR User"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "05r290100l",
+    "parent": "MSCAST Biometric Attendance Audit",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Director"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "Company Letterhead - Grey",
+  "module": "Custom",
+  "name": "MSCAST BRM Register",
+  "prepared_report": 0,
+  "query": "\nselect\n    b.name as \"BRM:Link/MSCAST BRM:110\",\n    b.supplier as \"Supplier:Link/Supplier:220\",\n    b.project as \"Project:Link/Project:200\",\n    b.purchase_order as \"PO:Link/Purchase Order:140\",\n    b.invoice_type as \"Invoice Type::130\",\n    b.supplier_invoice_no as \"Supplier Inv::130\",\n    b.supplier_invoice_date as \"Inv Date:Date:100\",\n    b.amount as \"Amount:Currency:120\",\n    b.status as \"Status::90\",\n    b.certification_date as \"Certified On:Date:110\"\nfrom `tabMSCAST BRM` b order by b.supplier_invoice_date desc\n",
+  "ref_doctype": "MSCAST BRM",
+  "reference_report": null,
+  "report_name": "MSCAST BRM Register",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "cfldakhbcc",
+    "parent": "MSCAST BRM Register",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cflr9lmi3b",
+    "parent": "MSCAST BRM Register",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Projects Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cflfs5nmci",
+    "parent": "MSCAST BRM Register",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Purchase Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cflsecu2lh",
+    "parent": "MSCAST BRM Register",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "MSCAST",
+  "module": "Custom",
+  "name": "MSCAST Daily Management Summary",
+  "prepared_report": 0,
+  "query": "\nselect\n  d.area                                                    as \"Area::120\",\n  d.indicator                                               as \"Indicator::340\",\n  case\n    when d.kind = 'text'  then d.txt\n    when d.kind = 'count' then format(d.val, 0)\n    when d.val = 0        then 'Rs 0'\n    when abs(d.val) >= 10000000 then concat('Rs ', format(d.val / 10000000, 2), ' Cr')\n    when abs(d.val) >= 100000   then concat('Rs ', format(d.val / 100000, 2), ' L')\n    else concat('Rs ', format(d.val, 0))\n  end                                                       as \"Value::150\",\n  d.attn                                                    as \"Attention::120\"\nfrom (\n  select 1 as seq, 'Report' as area, 'Position as at' as indicator, 0 as val, 'text' as kind,\n         concat(lpad(day(date(convert_tz(utc_timestamp(),'+00:00','+05:30'))),2,'0'), ' ', left(monthname(date(convert_tz(utc_timestamp(),'+00:00','+05:30'))),3), ' ', year(date(convert_tz(utc_timestamp(),'+00:00','+05:30')))) as txt, '' as attn\n\n  union all select 2, 'Cash', 'Cash and bank balance',\n    ifnull((select sum(gl.debit - gl.credit) from `tabGL Entry` gl\n       inner join `tabAccount` a on a.name = gl.account\n       where gl.is_cancelled = 0 and a.account_type in ('Bank','Cash')), 0),\n    'money', '',\n    case when ifnull((select sum(gl.debit - gl.credit) from `tabGL Entry` gl\n       inner join `tabAccount` a on a.name = gl.account\n       where gl.is_cancelled = 0 and a.account_type in ('Bank','Cash')), 0) < 500000\n         then 'ACT - low' else 'OK' end\n\n  union all select 3, 'Receivables', 'Outstanding from customers',\n    ifnull((select sum(outstanding_amount) from `tabSales Invoice`\n       where docstatus = 1 and is_return = 0), 0), 'money', '', 'OK'\n\n  union all select 4, 'Receivables', 'Overdue beyond due date',\n    ifnull((select sum(outstanding_amount) from `tabSales Invoice`\n       where docstatus = 1 and is_return = 0 and due_date < date(convert_tz(utc_timestamp(),'+00:00','+05:30'))), 0), 'money', '',\n    case when ifnull((select sum(outstanding_amount) from `tabSales Invoice`\n       where docstatus = 1 and is_return = 0 and due_date < date(convert_tz(utc_timestamp(),'+00:00','+05:30'))), 0) > 0\n         then 'ACT - chase' else 'OK' end\n\n  union all select 5, 'Receivables', 'Falling due in the next 7 days',\n    ifnull((select sum(outstanding_amount) from `tabSales Invoice`\n       where docstatus = 1 and is_return = 0\n         and due_date between date(convert_tz(utc_timestamp(),'+00:00','+05:30')) and date_add(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), interval 7 day)), 0), 'money', '',\n    case when ifnull((select sum(outstanding_amount) from `tabSales Invoice`\n       where docstatus = 1 and is_return = 0\n         and due_date between date(convert_tz(utc_timestamp(),'+00:00','+05:30')) and date_add(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), interval 7 day)), 0) > 0\n         then 'WATCH' else 'OK' end\n\n  union all select 6, 'Receivables', 'Retention held by customers',\n    ifnull((select sum(gl.debit - gl.credit) from `tabGL Entry` gl\n       where gl.is_cancelled = 0 and gl.account like '%%Retention%%'), 0), 'money', '',\n    case when ifnull((select sum(gl.debit - gl.credit) from `tabGL Entry` gl\n       where gl.is_cancelled = 0 and gl.account like '%%Retention%%'), 0) > 0\n         then 'WATCH - release on certificate' else 'OK' end\n\n  union all select 7, 'Payables', 'Outstanding to suppliers',\n    ifnull((select sum(outstanding_amount) from `tabPurchase Invoice` where docstatus = 1), 0),\n    'money', '', 'OK'\n\n  union all select 8, 'Payables', 'MSME dues beyond 45 days (s.43B(h) risk)',\n    ifnull((select sum(pi.outstanding_amount) from `tabPurchase Invoice` pi\n       inner join `tabSupplier` s on s.name = pi.supplier\n       where pi.docstatus = 1 and ifnull(s.msme_type,'') != '' and pi.outstanding_amount > 0\n         and datediff(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), ifnull(pi.bill_date, pi.posting_date)) > 45), 0), 'money', '',\n    case when ifnull((select sum(pi.outstanding_amount) from `tabPurchase Invoice` pi\n       inner join `tabSupplier` s on s.name = pi.supplier\n       where pi.docstatus = 1 and ifnull(s.msme_type,'') != '' and pi.outstanding_amount > 0\n         and datediff(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), ifnull(pi.bill_date, pi.posting_date)) > 45), 0) > 0\n         then 'ACT - pay or lose the deduction' else 'OK' end\n\n  union all select 9, 'Payables', 'MSME dues due within the next 15 days',\n    ifnull((select sum(pi.outstanding_amount) from `tabPurchase Invoice` pi\n       inner join `tabSupplier` s on s.name = pi.supplier\n       where pi.docstatus = 1 and ifnull(s.msme_type,'') != '' and pi.outstanding_amount > 0\n         and datediff(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), ifnull(pi.bill_date, pi.posting_date)) between 30 and 45), 0),\n    'money', '',\n    case when ifnull((select sum(pi.outstanding_amount) from `tabPurchase Invoice` pi\n       inner join `tabSupplier` s on s.name = pi.supplier\n       where pi.docstatus = 1 and ifnull(s.msme_type,'') != '' and pi.outstanding_amount > 0\n         and datediff(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), ifnull(pi.bill_date, pi.posting_date)) between 30 and 45), 0) > 0\n         then 'WATCH' else 'OK' end\n\n  union all select 10, 'Order book', 'Orders in hand (booked less billed)',\n    ifnull((select sum(so.grand_total * (100 - ifnull(so.per_billed,0)) / 100)\n       from `tabSales Order` so where so.docstatus = 1 and so.status != 'Closed'), 0), 'money', '', 'OK'\n\n  union all select 11, 'Order book', 'Billed this month',\n    ifnull((select sum(grand_total) from `tabSales Invoice`\n       where docstatus = 1 and is_return = 0 and month(posting_date) = month(date(convert_tz(utc_timestamp(),'+00:00','+05:30')))\n         and year(posting_date) = year(date(convert_tz(utc_timestamp(),'+00:00','+05:30')))), 0), 'money', '', 'OK'\n\n  union all select 12, 'Projects', 'Open projects',\n    (select count(*) from `tabProject` where status = 'Open'), 'count', '', 'OK'\n\n  union all select 13, 'Engineering', 'Drawings sitting with the customer for approval',\n    (select count(*) from `tabMSCAST Drawing` where status = 'For Customer Approval'),\n    'count', '',\n    case when (select count(*) from `tabMSCAST Drawing`\n                 where status = 'For Customer Approval') > 0\n         then 'WATCH - schedule risk' else 'OK' end\n\n  union all select 14, 'Engineering', 'Drawings still in draft with us',\n    (select count(*) from `tabMSCAST Drawing` where status = 'Draft'), 'count', '',\n    case when (select count(*) from `tabMSCAST Drawing` where status = 'Draft') > 0\n         then 'WATCH' else 'OK' end\n\n  union all select 15, 'Quality', 'Inspection stages pending',\n    (select count(*) from `tabMSCAST Inspection Plan` where ifnull(result,'Pending') = 'Pending'),\n    'count', '',\n    case when (select count(*) from `tabMSCAST Inspection Plan`\n                 where ifnull(result,'Pending') = 'Pending'\n                   and ifnull(planned_date, date(convert_tz(utc_timestamp(),'+00:00','+05:30'))) < date(convert_tz(utc_timestamp(),'+00:00','+05:30'))) > 0\n         then 'ACT - stage overdue'\n         when (select count(*) from `tabMSCAST Inspection Plan`\n                 where ifnull(result,'Pending') = 'Pending') > 0 then 'WATCH' else 'OK' end\n\n  union all select 16, 'Quality', 'Inspections rejected or accepted with deviation',\n    (select count(*) from `tabMSCAST Inspection Plan`\n       where result in ('Rejected','Accepted with deviation')), 'count', '',\n    case when (select count(*) from `tabMSCAST Inspection Plan`\n                 where result = 'Rejected') > 0 then 'ACT' else 'OK' end\n\n  union all select 17, 'Purchase', 'Purchase orders not fully received',\n    (select count(*) from `tabPurchase Order`\n       where docstatus = 1 and ifnull(per_received,0) < 100), 'count', '', 'OK'\n\n  union all select 18, 'Billing control', 'BRMs pending certification (payment blocked)',\n    (select count(*) from `tabMSCAST BRM` where status = 'Pending'), 'count', '',\n    case when (select count(*) from `tabMSCAST BRM` where status = 'Pending') > 0\n         then 'ACT - supplier cannot be paid' else 'OK' end\n\n  union all select 19, 'Claims', 'Client claims open',\n    (select count(*) from `tabMSCAST Client Claim`\n       where status in ('Open','Under discussion','Agreed')), 'count', '',\n    case when (select count(*) from `tabMSCAST Client Claim`\n                 where status in ('Open','Under discussion','Agreed')) > 0\n         then 'WATCH - money on the table' else 'OK' end\n\n  union all select 20, 'Contracts', 'Acceptance certificates awaited from customers',\n    (select count(*) from `tabMSCAST Project Certificate` where status = 'Awaited'), 'count', '',\n    case when (select count(*) from `tabMSCAST Project Certificate` where status = 'Awaited') > 0\n         then 'WATCH - retention locked' else 'OK' end\n) d\norder by d.seq\n",
+  "ref_doctype": "Project",
+  "reference_report": null,
+  "report_name": "MSCAST Daily Management Summary",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "3ctrjjm79a",
+    "parent": "MSCAST Daily Management Summary",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "3ct7ne624u",
+    "parent": "MSCAST Daily Management Summary",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "3ctpe4er2m",
+    "parent": "MSCAST Daily Management Summary",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Projects Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "3ctjheiao0",
+    "parent": "MSCAST Daily Management Summary",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Director"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "Company Letterhead - Grey",
+  "module": "Custom",
+  "name": "MSCAST Dispatch Schedule",
+  "prepared_report": 0,
+  "query": "\nselect\n    soi.parent        as \"Sales Order:Link/Sales Order:140\",\n    so.customer       as \"Customer:Link/Customer:200\",\n    soi.item_code     as \"Item:Link/Item:150\",\n    soi.delivery_date as \"Scheduled:Date:100\",\n    soi.qty           as \"Qty:Float:80\",\n    soi.delivered_qty as \"Delivered:Float:90\",\n    (soi.qty - soi.delivered_qty) as \"Pending:Float:80\",\n    case when soi.delivered_qty >= soi.qty then 'Delivered'\n         when soi.delivery_date < date(convert_tz(utc_timestamp(),'+00:00','+05:30')) then 'OVERDUE'\n         else 'On schedule' end as \"Status::110\",\n    so.contract_delivery_date as \"Contract Date:Date:110\",\n    so.ld_percent     as \"LD %%/week:Float:90\"\nfrom `tabSales Order Item` soi\ninner join `tabSales Order` so on so.name = soi.parent and so.docstatus = 1\norder by soi.delivery_date\n",
+  "ref_doctype": "Sales Order",
+  "reference_report": null,
+  "report_name": "MSCAST Dispatch Schedule",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "cfkppk9c5l",
+    "parent": "MSCAST Dispatch Schedule",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cfkf3f8qfj",
+    "parent": "MSCAST Dispatch Schedule",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Projects Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cfkqjcgv9d",
+    "parent": "MSCAST Dispatch Schedule",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Purchase Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cfk0cqdfd3",
+    "parent": "MSCAST Dispatch Schedule",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "Company Letterhead - Grey",
+  "module": "Custom",
+  "name": "MSCAST Drawing Register",
+  "prepared_report": 0,
+  "query": "\nselect\n    d.drawing_no        as \"Drawing No:Link/MSCAST Drawing:150\",\n    d.title             as \"Title::280\",\n    d.project           as \"Project:Link/Project:200\",\n    d.assembly          as \"Assembly::120\",\n    d.drawing_type      as \"Type::120\",\n    d.current_revision  as \"Rev::60\",\n    d.status            as \"Status::170\",\n    (select max(revision_date) from `tabMSCAST Drawing Revision` r where r.parent = d.name)\n                        as \"Last Revised:Date:110\"\nfrom `tabMSCAST Drawing` d\norder by d.project, d.drawing_no\n",
+  "ref_doctype": "MSCAST Drawing",
+  "reference_report": null,
+  "report_name": "MSCAST Drawing Register",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "cfk7rnnjbb",
+    "parent": "MSCAST Drawing Register",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cfku8e4mv8",
+    "parent": "MSCAST Drawing Register",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Projects Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cfkr69n16g",
+    "parent": "MSCAST Drawing Register",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Purchase Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cfkpct00sr",
+    "parent": "MSCAST Drawing Register",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "MSCAST",
+  "module": "Custom",
+  "name": "MSCAST Expense Analysis (vs last year, % of sales)",
+  "prepared_report": 0,
+  "query": "\nselect\n    a.name                          as \"Account:Link/Account:260\",\n    a.account_number                as \"Code::70\",\n    ifnull(cur.amt, 0)              as \"This year (FY 26-27):Currency:150\",\n    ifnull(prev.amt, 0)             as \"Last year:Currency:130\",\n    (ifnull(cur.amt,0) - ifnull(prev.amt,0)) as \"Change:Currency:120\",\n    round(case when ifnull(prev.amt,0) = 0 then 0\n          else (ifnull(cur.amt,0) - ifnull(prev.amt,0)) / prev.amt * 100 end, 1)\n                                    as \"Change %%:Float:90\",\n    round(case when (select sum(credit - debit) from `tabGL Entry` g2\n                     inner join `tabAccount` a2 on a2.name = g2.account\n                     where a2.root_type = 'Income' and g2.is_cancelled = 0\n                       and g2.posting_date between '2026-04-01' and '2027-03-31') = 0 then 0\n          else ifnull(cur.amt,0) /\n               (select sum(credit - debit) from `tabGL Entry` g2\n                inner join `tabAccount` a2 on a2.name = g2.account\n                where a2.root_type = 'Income' and g2.is_cancelled = 0\n                  and g2.posting_date between '2026-04-01' and '2027-03-31') * 100 end, 1)\n                                    as \"%% of sales:Float:100\"\nfrom `tabAccount` a\nleft join (select account, sum(debit - credit) amt from `tabGL Entry`\n           where is_cancelled = 0 and posting_date between '2026-04-01' and '2027-03-31'\n           group by account) cur on cur.account = a.name\nleft join (select account, sum(debit - credit) amt from `tabGL Entry`\n           where is_cancelled = 0 and posting_date between '2025-04-01' and '2026-03-31'\n           group by account) prev on prev.account = a.name\nwhere a.root_type = 'Expense' and a.is_group = 0 and a.company = 'MSCAST Engineering Pvt Ltd'\n  and (ifnull(cur.amt,0) <> 0 or ifnull(prev.amt,0) <> 0)\norder by ifnull(cur.amt,0) desc\n",
+  "ref_doctype": "GL Entry",
+  "reference_report": null,
+  "report_name": "MSCAST Expense Analysis (vs last year, % of sales)",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "lojd3pkjpd",
+    "parent": "MSCAST Expense Analysis (vs last year, % of sales)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "loj1t6b4va",
+    "parent": "MSCAST Expense Analysis (vs last year, % of sales)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "loj1jtrfuv",
+    "parent": "MSCAST Expense Analysis (vs last year, % of sales)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "MSCAST",
+  "module": "Custom",
+  "name": "MSCAST Finance Scaling - Funding and Capacity",
+  "prepared_report": 0,
+  "query": "\nselect\n  d.seq_label                                     as \"Horizon::150\",\n  d.particulars                                   as \"Particulars::420\",\n  d.amt                                           as \"Amount:Currency:170\",\n  d.note                                          as \"Basis::400\"\nfrom (\n  select 1 as seq, 'Order book' as seq_label, 'Confirmed orders in hand (booked less billed)' as particulars,\n    ifnull((select round(sum(so.grand_total * (100 - ifnull(so.per_billed,0)) / 100), 0)\n       from `tabSales Order` so where so.docstatus = 1 and so.status != 'Closed'), 0) as amt,\n    'Sales orders, unbilled portion' as note\n  union all select 2, 'Order book', 'Open enquiries and quotations not yet won',\n    ifnull((select round(sum(grand_total), 0) from `tabQuotation` where docstatus = 1\n            and status not in ('Lost','Ordered')), 0),\n    'Quotation pipeline - not committed'\n  union all select 3, 'Next 90 days', 'Collections scheduled from milestones',\n    ifnull((select round(sum(s.billing_amount), 0) from `tabMSCAST Project Schedule Line` s\n       where s.status not in ('Collected')\n         and s.planned_dispatch_date between date(convert_tz(utc_timestamp(),'+00:00','+05:30'))\n             and date_add(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), interval 90 day)), 0),\n    'Billing and dispatch schedule on the projects'\n  union all select 4, 'Next 90 days', 'Receivables already due or falling due',\n    ifnull((select round(sum(outstanding_amount), 0) from `tabSales Invoice`\n       where docstatus = 1 and is_return = 0\n         and due_date <= date_add(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), interval 90 day)), 0),\n    'Open sales invoices by due date'\n  union all select 5, 'Next 90 days', 'Committed outflow - open purchase orders not received',\n    ifnull((select round(sum(po.grand_total * (100 - ifnull(po.per_received,0)) / 100), 0)\n       from `tabPurchase Order` po where po.docstatus = 1 and ifnull(po.per_received,0) < 100), 0),\n    'Purchase orders, undelivered portion'\n  union all select 6, 'Next 90 days', 'Committed outflow - supplier bills payable',\n    ifnull((select round(sum(outstanding_amount), 0) from `tabPurchase Invoice` where docstatus = 1), 0),\n    'Open purchase invoices, MSME first'\n  union all select 7, 'Next 90 days', 'Committed outflow - payroll and statutory (3 months)',\n    ifnull((select round(sum(ss.gross_pay), 0) * 3 from `tabSalary Slip` ss\n       where ss.docstatus = 1 and ss.start_date = (select max(start_date) from `tabSalary Slip`\n                                                   where docstatus = 1)), 0),\n    'Last payroll run extrapolated for a quarter'\n  union all select 8, 'Position', 'Cash and bank today',\n    ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl\n       inner join `tabAccount` a on a.name = gl.account\n       where gl.is_cancelled = 0 and a.account_type in ('Bank','Cash')), 0),\n    'General ledger'\n  union all select 9, 'Position', 'Sanctioned bank limit (HDFC charge)',\n    25000000.0, 'MCA charge register - Rs 2.5 Cr, per the knowledge base'\n  union all select 10, 'Headroom', 'Projected net cash over 90 days',\n    (\n      ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl\n         inner join `tabAccount` a on a.name = gl.account\n         where gl.is_cancelled = 0 and a.account_type in ('Bank','Cash')), 0)\n    + ifnull((select round(sum(s.billing_amount), 0) from `tabMSCAST Project Schedule Line` s\n         where s.status not in ('Collected')\n           and s.planned_dispatch_date between date(convert_tz(utc_timestamp(),'+00:00','+05:30'))\n               and date_add(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), interval 90 day)), 0)\n    - ifnull((select round(sum(po.grand_total * (100 - ifnull(po.per_received,0)) / 100), 0)\n         from `tabPurchase Order` po where po.docstatus = 1 and ifnull(po.per_received,0) < 100), 0)\n    - ifnull((select round(sum(outstanding_amount), 0) from `tabPurchase Invoice` where docstatus = 1), 0)\n    - ifnull((select round(sum(ss.gross_pay), 0) * 3 from `tabSalary Slip` ss\n         where ss.docstatus = 1 and ss.start_date = (select max(start_date) from `tabSalary Slip`\n                                                     where docstatus = 1)), 0)\n    ),\n    'Cash + scheduled collections - committed outflows. Negative means the bank limit has to carry it.'\n  union all select 11, 'Capacity', 'Order book covered by one years revenue run rate',\n    ifnull((select round(sum(grand_total), 0) from `tabSales Invoice`\n       where docstatus = 1 and is_return = 0), 0) * 12,\n    'Billed to date annualised - how much of the order book the current run rate can absorb'\n) d order by d.seq\n",
+  "ref_doctype": "Sales Order",
+  "reference_report": null,
+  "report_name": "MSCAST Finance Scaling - Funding and Capacity",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "05r8bovlnt",
+    "parent": "MSCAST Finance Scaling - Funding and Capacity",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "05r7sgc3im",
+    "parent": "MSCAST Finance Scaling - Funding and Capacity",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "05r9440fv7",
+    "parent": "MSCAST Finance Scaling - Funding and Capacity",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Director"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "05rlpokina",
+    "parent": "MSCAST Finance Scaling - Funding and Capacity",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Statutory Auditor"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "Company Letterhead - Grey",
+  "module": "Custom",
+  "name": "MSCAST Free Issue at Vendor",
+  "prepared_report": 0,
+  "query": "\nselect\n    b.item_code   as \"Item:Link/Item:160\",\n    i.item_name   as \"Description::260\",\n    b.warehouse   as \"Warehouse:Link/Warehouse:180\",\n    b.actual_qty  as \"Qty at Vendor:Float:110\",\n    b.stock_uom   as \"UOM::70\",\n    b.stock_value as \"Value:Currency:120\"\nfrom `tabBin` b inner join `tabItem` i on i.name = b.item_code\nwhere b.warehouse like 'Free Issue%%' and b.actual_qty != 0\norder by b.stock_value desc\n",
+  "ref_doctype": "Bin",
+  "reference_report": null,
+  "report_name": "MSCAST Free Issue at Vendor",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "cfkgam0lif",
+    "parent": "MSCAST Free Issue at Vendor",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cfkc6u31io",
+    "parent": "MSCAST Free Issue at Vendor",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Projects Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cfksll6n1c",
+    "parent": "MSCAST Free Issue at Vendor",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Purchase Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cfkmiphavc",
+    "parent": "MSCAST Free Issue at Vendor",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 1,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "MSCAST",
+  "module": "Custom",
+  "name": "MSCAST GST on Closing Inventory (ITC and ITC-04)",
+  "prepared_report": 0,
+  "query": "\nselect\n  b.warehouse                                             as \"Warehouse:Link/Warehouse:200\",\n  b.item_code                                             as \"Item:Link/Item:180\",\n  i.item_name                                             as \"Description::240\",\n  i.gst_hsn_code                                          as \"HSN::100\",\n  b.actual_qty                                            as \"Qty:Float:90\",\n  i.stock_uom                                             as \"UOM::70\",\n  round(b.stock_value, 0)                                 as \"Stock Value (ex-GST):Currency:150\",\n  18                                                      as \"GST Rate %:Int:90\",\n  round(b.stock_value * 0.18, 0)                          as \"ITC embedded in the stock:Currency:180\",\n  case when b.warehouse like '%%Vendor%%' or b.warehouse like '%%Free Issue%%'\n       then 'At job worker - ITC-04 return, return within 1 year (3 years for capital goods)'\n       else 'Own premises - ITC already availed, no reversal while it stays taxable output' end\n                                                          as \"GST treatment::420\"\nfrom `tabBin` b\ninner join `tabItem` i on i.name = b.item_code\nwhere b.actual_qty != 0\norder by b.warehouse, b.item_code\n",
+  "ref_doctype": "Bin",
+  "reference_report": null,
+  "report_name": "MSCAST GST on Closing Inventory (ITC and ITC-04)",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "ph740vmr63",
+    "parent": "MSCAST GST on Closing Inventory (ITC and ITC-04)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "ph7vn4np94",
+    "parent": "MSCAST GST on Closing Inventory (ITC and ITC-04)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "ph73gkgl23",
+    "parent": "MSCAST GST on Closing Inventory (ITC and ITC-04)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Stock Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "ph727pu708",
+    "parent": "MSCAST GST on Closing Inventory (ITC and ITC-04)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Statutory Auditor"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "Company Letterhead - Grey",
+  "module": "Custom",
+  "name": "MSCAST Inspection Status",
+  "prepared_report": 0,
+  "query": "\nselect\n    p.name as \"Plan:Link/MSCAST Inspection Plan:110\",\n    p.project as \"Project:Link/Project:200\",\n    p.supplier as \"Supplier:Link/Supplier:220\",\n    p.item_or_assembly as \"Item / Assembly::220\",\n    p.stage as \"Stage::110\",\n    p.planned_date as \"Planned:Date:100\",\n    p.actual_date as \"Actual:Date:100\",\n    p.result as \"Result::150\"\nfrom `tabMSCAST Inspection Plan` p order by p.planned_date\n",
+  "ref_doctype": "MSCAST Inspection Plan",
+  "reference_report": null,
+  "report_name": "MSCAST Inspection Status",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "cfl5uekq7m",
+    "parent": "MSCAST Inspection Status",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cfl5mk1qho",
+    "parent": "MSCAST Inspection Status",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Projects Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cflsk9qo9v",
+    "parent": "MSCAST Inspection Status",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Purchase Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cflail41c8",
+    "parent": "MSCAST Inspection Status",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "MSCAST",
+  "module": "Custom",
+  "name": "MSCAST Installed Base and Revamp Radar",
+  "prepared_report": 0,
+  "query": "\nselect\n    m.machine_sn                         as \"Machine:Link/MSCAST Installed Machine:130\",\n    ifnull(m.customer, m.customer_name_text) as \"Customer:Data:190\",\n    m.site_location                      as \"Site:Data:160\",\n    m.machine_type                       as \"Type:Data:120\",\n    m.strands                            as \"Strands:Int:70\",\n    m.commissioned_on                    as \"Commissioned:Date:110\",\n    case when m.commissioned_on is null then null\n         else round(datediff(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), m.commissioned_on) / 365.25, 1)\n    end                                  as \"Age (yrs):Float:80\",\n    m.status                             as \"Status:Data:110\",\n    m.spares_since                       as \"Spares billed:Currency:120\",\n    m.last_contact                       as \"Last spoken:Date:100\",\n    case\n      when m.status in ('Decommissioned', 'Revamped by others') then 'Closed'\n      when m.commissioned_on is not null\n           and datediff(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), m.commissioned_on) > 3650\n        then 'REVAMP LEAD - past 10 years'\n      when m.last_contact is null then 'Never followed up'\n      when datediff(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), m.last_contact) > 365\n        then 'No contact for over a year'\n      else 'OK'\n    end                                  as \"Opportunity:Data:210\"\nfrom `tabMSCAST Installed Machine` m\norder by m.commissioned_on asc\n",
+  "ref_doctype": "MSCAST Installed Machine",
+  "reference_report": null,
+  "report_name": "MSCAST Installed Base and Revamp Radar",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "psvhd2q2ms",
+    "parent": "MSCAST Installed Base and Revamp Radar",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "psv9pm0m3d",
+    "parent": "MSCAST Installed Base and Revamp Radar",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Director"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "psvoqko3rk",
+    "parent": "MSCAST Installed Base and Revamp Radar",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales User"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "psv4gat8oc",
+    "parent": "MSCAST Installed Base and Revamp Radar",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "psvqprinbh",
+    "parent": "MSCAST Installed Base and Revamp Radar",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Projects User"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 1,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "MSCAST",
+  "module": "Custom",
+  "name": "MSCAST MSME 45-Day Dues (s.15 MSMED / s.43B(h))",
+  "prepared_report": 0,
+  "query": "\nselect\n  pi.supplier                                             as \"Supplier:Link/Supplier:200\",\n  s.msme_type                                             as \"MSME Class::90\",\n  s.msme_udyam_no                                         as \"Udyam Registration::170\",\n  pi.name                                                 as \"Purchase Invoice:Link/Purchase Invoice:150\",\n  pi.bill_no                                              as \"Supplier Bill No::130\",\n  ifnull(pi.bill_date, pi.posting_date)                   as \"Bill Date:Date:90\",\n  date_add(ifnull(pi.bill_date, pi.posting_date), interval 45 day)\n                                                          as \"Sec 15 Due (45 d):Date:110\",\n  pi.grand_total                                          as \"Invoice Amount:Currency:130\",\n  pi.outstanding_amount                                   as \"Outstanding:Currency:130\",\n  datediff(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), ifnull(pi.bill_date, pi.posting_date))\n                                                          as \"Age (days):Int:90\",\n  greatest(0, datediff(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), date_add(ifnull(pi.bill_date, pi.posting_date), interval 45 day)))\n                                                          as \"Days Beyond 45:Int:110\",\n  case\n    when pi.outstanding_amount <= 0 then 'Paid'\n    when datediff(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), ifnull(pi.bill_date, pi.posting_date)) > 45\n      then 'BEYOND 45 DAYS - s.43B(h) disallowance + MSME Form I'\n    when datediff(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), ifnull(pi.bill_date, pi.posting_date)) > 30\n      then 'Due within 15 days'\n    else 'Within 45 days'\n  end                                                     as \"MSMED Status::300\"\nfrom `tabPurchase Invoice` pi\ninner join `tabSupplier` s on s.name = pi.supplier\nwhere pi.docstatus = 1 and ifnull(s.msme_type, '') != ''\norder by pi.outstanding_amount desc, pi.bill_date\n",
+  "ref_doctype": "Purchase Invoice",
+  "reference_report": null,
+  "report_name": "MSCAST MSME 45-Day Dues (s.15 MSMED / s.43B(h))",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "u5jbhbdfhj",
+    "parent": "MSCAST MSME 45-Day Dues (s.15 MSMED / s.43B(h))",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "u5jp8ngb5j",
+    "parent": "MSCAST MSME 45-Day Dues (s.15 MSMED / s.43B(h))",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "u5j1td4uf6",
+    "parent": "MSCAST MSME 45-Day Dues (s.15 MSMED / s.43B(h))",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "u5jvdgij1i",
+    "parent": "MSCAST MSME 45-Day Dues (s.15 MSMED / s.43B(h))",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Statutory Auditor"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "u5jdfn02o9",
+    "parent": "MSCAST MSME 45-Day Dues (s.15 MSMED / s.43B(h))",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Director"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "MSCAST",
+  "module": "Custom",
+  "name": "MSCAST Notes to Accounts",
+  "prepared_report": 0,
+  "query": "select d.note_no as \"Note::60\", d.heading as \"Heading::260\", d.particulars as \"Particulars::760\", d.amt as \"Amount:Currency:150\" from (\n  select 1 as seq, '1' as note_no, 'Share capital' as heading, 'Authorised, issued, subscribed and fully paid: 10000 equity shares of Rs 10 each' as particulars, 100000.00 as amt\n  union all select 2 as seq, '1' as note_no, 'Share capital' as heading, 'Shares outstanding at the beginning and end of the period - no movement' as particulars, 10000.00 as amt\n  union all select 3 as seq, '1' as note_no, 'Share capital' as heading, 'Shareholder holding more than 5 percent: Zameer Alam Chandankeri - 7000 shares (70.0 percent)' as particulars, 7000.00 as amt\n  union all select 4 as seq, '1' as note_no, 'Share capital' as heading, 'Shareholder holding more than 5 percent: Aiqaz M. Chandankeri - 2000 shares (20.0 percent)' as particulars, 2000.00 as amt\n  union all select 5 as seq, '1' as note_no, 'Share capital' as heading, 'Shareholder holding more than 5 percent: Mustaque Ahmed N. Chandankeri - 1000 shares (10.0 percent)' as particulars, 1000.00 as amt\n  union all select 6 as seq, '2' as note_no, 'Reserves and surplus' as heading, 'Surplus in the statement of profit and loss - profit for the period' as particulars, null as amt\n  union all select 7 as seq, '3' as note_no, 'Long-term borrowings' as heading, 'Facility from HDFC Bank secured by a charge of Rs 2,50,00,000 registered with the MCA (charge created 25-01-2016, last modified 19-03-2022). Drawn balance per the ledger.' as particulars, null as amt\n  union all select 8 as seq, '4' as note_no, 'Deferred tax' as heading, 'Deferred tax asset on the gratuity provision (allowed under s.43B on payment) net of the deferred tax liability on the depreciation timing difference, at 25.168 percent' as particulars, null as amt\n  union all select 9 as seq, '5' as note_no, 'Long-term provisions' as heading, 'Gratuity provided at 15/26 days of last drawn basic per completed year of service under the Payment of Gratuity Act 1972. SMC exemption from actuarial valuation under AS 15 is claimed.' as particulars, null as amt\n  union all select 10 as seq, '6' as note_no, 'Trade payables - MSMED disclosure' as heading, 'Principal amount remaining unpaid to micro and small enterprises at the period end' as particulars, 2766240.00 as amt\n  union all select 11 as seq, '6' as note_no, 'Trade payables - MSMED disclosure' as heading, 'Of which outstanding beyond the 45-day appointed date under s.15 of the MSMED Act' as particulars, 0.00 as amt\n  union all select 12 as seq, '6' as note_no, 'Trade payables - MSMED disclosure' as heading, 'Interest due and payable under s.16 MSMED - to be computed by the auditor on the overdue principal above; no interest has been accrued in these accounts' as particulars, null as amt\n  union all select 13 as seq, '6' as note_no, 'Trade payables - MSMED disclosure' as heading, 'Identification of micro and small enterprises is based on the Udyam registration numbers recorded against each supplier in the system' as particulars, null as amt\n  union all select 14 as seq, '8' as note_no, 'Provisions' as heading, 'Provision for income tax at 25.168 percent under s.115BAA' as particulars, null as amt\n  union all select 15 as seq, '9' as note_no, 'Property, plant and equipment' as heading, 'Gross block brought on to the books at the ERP cut-over; depreciation on the straight-line method over the useful lives in Schedule II of the Companies Act 2013' as particulars, null as amt\n  union all select 16 as seq, '10' as note_no, 'Capital work-in-progress' as heading, 'Hydraulic test bench under construction - ageing less than 1 year, completion expected within 3 months; no project is overdue or suspended (Schedule III 2021 amendment)' as particulars, null as amt\n  union all select 17 as seq, '11' as note_no, 'Inventories' as heading, 'Raw material and bought-out components at weighted average cost; project work-in-progress at cost incurred on unbilled scope including works overhead at 12 percent' as particulars, null as amt\n  union all select 18 as seq, '12' as note_no, 'Trade receivables' as heading, 'Ageing in the prescribed buckets is given in the report ''MSCAST Schedule III - Trade Receivable Ageing''. All balances are undisputed and considered good; no allowance for expected credit loss has been recognised.' as particulars, null as amt\n  union all select 19 as seq, '21' as note_no, 'Earnings per share' as heading, 'Basic and diluted earnings per share are the same - the company has no potential dilutive equity shares. SMC exemption under AS 20 for diluted EPS is available but not needed.' as particulars, null as amt\n  union all select 20 as seq, '22' as note_no, 'Related party disclosures (AS 18)' as heading, 'Key management personnel: Mustaque Ahmed N. Chandankeri, Aiqaz M. Chandankeri, Zameer Alam Chandankeri. Transactions during the period: directors'' remuneration included in employee benefits expense. No loans to or from directors.' as particulars, null as amt\n  union all select 21 as seq, '23' as note_no, 'Contingent liabilities and commitments' as heading, 'Bank guarantee HDFC/ABG/2026/0841 (Providing) valid to - - counter-guaranteed by the company' as particulars, 2026500.00 as amt\n  union all select 22 as seq, '23' as note_no, 'Contingent liabilities and commitments' as heading, 'Bank guarantee HDFC/PBG/2026/0992 (Providing) valid to - - counter-guaranteed by the company' as particulars, 2026500.00 as amt\n  union all select 23 as seq, '24' as note_no, 'Basis of preparation' as heading, 'The financial statements are prepared under the historical cost convention on the accrual basis, in accordance with the Accounting Standards notified under the Companies (Accounting Standards) Rules. ASSUMPTION: the company is a Small and Medium Sized Company (SMC) and claims the SMC exemptions - AS 3 cash flow statement, AS 17 segment reporting and the actuarial requirements of AS 15 are not applied. Ind AS is not applicable at this size.' as particulars, null as amt\n  union all select 24 as seq, '25' as note_no, 'Other Schedule III disclosures' as heading, 'No transactions with companies struck off under s.248; no benami property held; no charges pending satisfaction beyond those registered; not declared a wilful defaulter; no crypto or virtual currency transactions; CSR under s.135 is not applicable at this size; no scheme of arrangement; no undisclosed income surrendered in tax assessments.' as particulars, null as amt\n  union all select 25 as seq, '26' as note_no, 'Audit trail (Companies (Accounts) Rules, r.3)' as heading, 'The books are maintained in ERPNext with the audit trail feature enabled and not capable of being disabled; every create, change and cancel is versioned and retained for eight years. Daily backups are retained on a server located in India.' as particulars, null as amt\n) d order by d.seq",
+  "ref_doctype": "GL Entry",
+  "reference_report": null,
+  "report_name": "MSCAST Notes to Accounts",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "2q7e9q5nfl",
+    "parent": "MSCAST Notes to Accounts",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "2q7f9oc7sh",
+    "parent": "MSCAST Notes to Accounts",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "2q7g32f2as",
+    "parent": "MSCAST Notes to Accounts",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Statutory Auditor"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "2q7hr49evv",
+    "parent": "MSCAST Notes to Accounts",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Director"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "Company Letterhead - Grey",
+  "module": "Custom",
+  "name": "MSCAST PO vs PCC Variance",
+  "prepared_report": 0,
+  "query": "\nselect\n    p.project        as \"Project:Link/Project:220\",\n    p.name           as \"PCC:Link/MSCAST PCC:110\",\n    p.revision       as \"Rev::50\",\n    p.total_estimated_cost as \"PCC Estimate:Currency:130\",\n    ifnull(po.committed, 0) as \"PO Committed:Currency:130\",\n    (ifnull(po.committed,0) - p.total_estimated_cost) as \"Variance:Currency:120\",\n    round(ifnull(po.committed,0) / nullif(p.total_estimated_cost,0) * 100, 1) as \"Committed %%:Float:100\",\n    ifnull(gl.actual, 0) as \"Actual Cost (GL):Currency:140\"\nfrom `tabMSCAST PCC` p\nleft join (\n    select poi.project, sum(poi.base_amount) as committed\n    from `tabPurchase Order Item` poi\n    inner join `tabPurchase Order` po on po.name = poi.parent and po.docstatus = 1\n    group by poi.project\n) po on po.project = p.project\nleft join (\n    select project, sum(debit - credit) as actual\n    from `tabGL Entry` where docstatus = 1 and ifnull(project,'') != '' and is_cancelled = 0\n    group by project\n) gl on gl.project = p.project\nwhere p.status != 'Superseded'\norder by p.project\n",
+  "ref_doctype": "MSCAST PCC",
+  "reference_report": null,
+  "report_name": "MSCAST PO vs PCC Variance",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "cfj4lrbkis",
+    "parent": "MSCAST PO vs PCC Variance",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cfjialoq78",
+    "parent": "MSCAST PO vs PCC Variance",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Projects Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cfji1te5r7",
+    "parent": "MSCAST PO vs PCC Variance",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Purchase Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cfjvkickb8",
+    "parent": "MSCAST PO vs PCC Variance",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "MSCAST",
+  "module": "Custom",
+  "name": "MSCAST Project Closure Report",
+  "prepared_report": 0,
+  "query": "\nselect\n  p.name                                                  as \"Project:Link/Project:110\",\n  p.project_name                                          as \"Description::260\",\n  p.status                                                as \"Status::90\",\n  p.expected_start_date                                   as \"Start:Date:90\",\n  p.expected_end_date                                     as \"Contract End:Date:100\",\n  (select ifnull(sum(so.grand_total), 0) from `tabSales Order` so\n     where so.docstatus = 1 and so.project = p.name)      as \"Contract Value:Currency:140\",\n  (select ifnull(max(pcc.total_estimated_cost), 0) from `tabMSCAST PCC` pcc\n     where pcc.project = p.name)                          as \"PCC Est. Cost:Currency:140\",\n  (select ifnull(sum(pii.amount), 0) from `tabPurchase Invoice Item` pii\n     inner join `tabPurchase Invoice` pi on pi.name = pii.parent\n     where pi.docstatus = 1 and pii.project = p.name)     as \"Actual Bought-out:Currency:150\",\n  (select ifnull(sum(sii.amount), 0) from `tabSales Invoice Item` sii\n     inner join `tabSales Invoice` si on si.name = sii.parent\n     where si.docstatus = 1 and si.is_return = 0 and sii.project = p.name)\n                                                          as \"Billed:Currency:130\",\n  (select ifnull(sum(si.outstanding_amount), 0) from `tabSales Invoice` si\n     where si.docstatus = 1 and si.is_return = 0 and si.project = p.name)\n                                                          as \"Receivable:Currency:130\",\n  (select count(*) from `tabMSCAST Project Certificate` c\n     where c.project = p.name)                            as \"Certificates:Int:100\",\n  (select count(*) from `tabMSCAST Client Claim` cl\n     where cl.project = p.name and cl.status not in ('Settled', 'Rejected'))\n                                                          as \"Open Claims:Int:95\",\n  (select count(*) from `tabMSCAST Drawing` d\n     where d.project = p.name and d.status != 'Approved')  as \"Drawings not approved:Int:150\",\n  (select count(*) from `tabMSCAST Inspection Plan` ip\n     where ip.project = p.name and ifnull(ip.result, '') != 'Accepted')\n                                                          as \"Inspections open:Int:130\",\n  case\n    when p.status = 'Completed' then 'Closed'\n    when (select count(*) from `tabMSCAST Client Claim` cl2\n            where cl2.project = p.name and cl2.status not in ('Settled', 'Rejected')) > 0\n      then 'Cannot close - claims open'\n    when (select ifnull(sum(si2.outstanding_amount), 0) from `tabSales Invoice` si2\n            where si2.docstatus = 1 and si2.is_return = 0 and si2.project = p.name) > 0\n      then 'Cannot close - money outstanding'\n    else 'Ready for closure'\n  end                                                     as \"Closure Verdict::220\"\nfrom `tabProject` p\nwhere p.company = 'MSCAST Engineering Pvt Ltd'\norder by p.name\n",
+  "ref_doctype": "Project",
+  "reference_report": null,
+  "report_name": "MSCAST Project Closure Report",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "u5lih3aonp",
+    "parent": "MSCAST Project Closure Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "u5liq6hce6",
+    "parent": "MSCAST Project Closure Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "u5lgsdhbl3",
+    "parent": "MSCAST Project Closure Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Projects Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "u5lqvc1uel",
+    "parent": "MSCAST Project Closure Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Director"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "u5l33d5smn",
+    "parent": "MSCAST Project Closure Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Statutory Auditor"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "Company Letterhead - Grey",
+  "module": "Custom",
+  "name": "MSCAST Project MIS",
+  "prepared_report": 0,
+  "query": "\nselect\n    pr.name                as \"Project:Link/Project:230\",\n    pr.customer            as \"Customer:Link/Customer:200\",\n    pr.status              as \"Status::80\",\n    pr.contract_delivery_date as \"Contract Delivery:Date:120\",\n    ifnull(so.contract_value,0)  as \"Contract Value:Currency:130\",\n    ifnull(pcc.est,0)            as \"PCC Estimate:Currency:130\",\n    ifnull(po.committed,0)       as \"PO Committed:Currency:130\",\n    ifnull(si.billed,0)          as \"Billed:Currency:120\",\n    ifnull(ts.hours,0)           as \"Engg Hours:Float:100\",\n    round((ifnull(so.contract_value,0) - ifnull(pcc.est,0)) / nullif(so.contract_value,0) * 100, 1)\n                                 as \"Est. Margin %%:Float:110\"\nfrom `tabProject` pr\nleft join (select name, project, grand_total as contract_value from `tabSales Order` where docstatus=1) so\n       on so.project = pr.name or so.name = pr.sales_order\nleft join (select project, sum(total_estimated_cost) est from `tabMSCAST PCC` where status='Approved' group by project) pcc\n       on pcc.project = pr.name\nleft join (select poi.project, sum(poi.base_amount) committed from `tabPurchase Order Item` poi\n           inner join `tabPurchase Order` po on po.name=poi.parent and po.docstatus=1 group by poi.project) po\n       on po.project = pr.name\nleft join (select sii.project, sum(sii.base_amount) billed from `tabSales Invoice Item` sii\n           inner join `tabSales Invoice` si on si.name=sii.parent and si.docstatus=1 group by sii.project) si\n       on si.project = pr.name\nleft join (select project, sum(hours) hours from `tabTimesheet Detail` group by project) ts\n       on ts.project = pr.name\norder by pr.creation desc\n",
+  "ref_doctype": "Project",
+  "reference_report": null,
+  "report_name": "MSCAST Project MIS",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "cfkbv99u4l",
+    "parent": "MSCAST Project MIS",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cfkeii1ilo",
+    "parent": "MSCAST Project MIS",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Projects Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cfkfro3p9e",
+    "parent": "MSCAST Project MIS",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Purchase Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cfk3qkcvo4",
+    "parent": "MSCAST Project MIS",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 1,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "MSCAST",
+  "module": "Custom",
+  "name": "MSCAST Project WIP Valuation",
+  "prepared_report": 0,
+  "query": "\nselect\n  p.name                                                  as \"Project:Link/Project:110\",\n  p.project_name                                          as \"Description::240\",\n  round(ifnull((select sum(pii.amount) from `tabPurchase Invoice Item` pii\n     inner join `tabPurchase Invoice` pi on pi.name = pii.parent\n     where pi.docstatus = 1 and pii.project = p.name), 0), 0)\n                                                          as \"Bought-out billed:Currency:140\",\n  round(ifnull((select sum(sle.actual_qty * sle.valuation_rate) * -1 from `tabStock Ledger Entry` sle\n     where sle.is_cancelled = 0 and sle.project = p.name and sle.actual_qty < 0), 0), 0)\n                                                          as \"Material issued:Currency:130\",\n  round(ifnull((select sum(td.hours) from `tabTimesheet Detail` td\n     inner join `tabTimesheet` t on t.name = td.parent\n     where t.docstatus = 1 and td.project = p.name), 0) * 450.0, 0)\n                                                          as \"Engineering cost:Currency:140\",\n  round((\n    ifnull((select sum(pii.amount) from `tabPurchase Invoice Item` pii\n       inner join `tabPurchase Invoice` pi on pi.name = pii.parent\n       where pi.docstatus = 1 and pii.project = p.name), 0)\n  + ifnull((select sum(sle.actual_qty * sle.valuation_rate) * -1 from `tabStock Ledger Entry` sle\n       where sle.is_cancelled = 0 and sle.project = p.name and sle.actual_qty < 0), 0)\n  + ifnull((select sum(td.hours) from `tabTimesheet Detail` td\n       inner join `tabTimesheet` t on t.name = td.parent\n       where t.docstatus = 1 and td.project = p.name), 0) * 450.0\n  ) * 1.12, 0)                                           as \"Cost incurred incl. 12% overhead:Currency:190\",\n  round(ifnull((select sum(sii.amount) from `tabSales Invoice Item` sii\n     inner join `tabSales Invoice` si on si.name = sii.parent\n     where si.docstatus = 1 and si.is_return = 0 and sii.project = p.name), 0), 0)\n                                                          as \"Billed to customer:Currency:140\",\n  round(ifnull((select sum(so.grand_total) from `tabSales Order` so\n     where so.docstatus = 1 and so.project = p.name), 0), 0)\n                                                          as \"Contract value:Currency:140\",\n  round(greatest(0, (\n    ifnull((select sum(pii.amount) from `tabPurchase Invoice Item` pii\n       inner join `tabPurchase Invoice` pi on pi.name = pii.parent\n       where pi.docstatus = 1 and pii.project = p.name), 0)\n  + ifnull((select sum(sle.actual_qty * sle.valuation_rate) * -1 from `tabStock Ledger Entry` sle\n       where sle.is_cancelled = 0 and sle.project = p.name and sle.actual_qty < 0), 0)\n  + ifnull((select sum(td.hours) from `tabTimesheet Detail` td\n       inner join `tabTimesheet` t on t.name = td.parent\n       where t.docstatus = 1 and td.project = p.name), 0) * 450.0\n  ) * 1.12 * (1 - least(1, ifnull((select sum(sii2.amount) from `tabSales Invoice Item` sii2\n       inner join `tabSales Invoice` si2 on si2.name = sii2.parent\n       where si2.docstatus = 1 and si2.is_return = 0 and sii2.project = p.name), 0)\n     / nullif((select sum(so3.grand_total) from `tabSales Order` so3\n       where so3.docstatus = 1 and so3.project = p.name), 0)))), 0)\n                                                          as \"WIP to carry:Currency:150\"\nfrom `tabProject` p\nwhere p.company = 'MSCAST Engineering Pvt Ltd'\norder by p.name\n",
+  "ref_doctype": "Project",
+  "reference_report": null,
+  "report_name": "MSCAST Project WIP Valuation",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "ph6bsrtfn6",
+    "parent": "MSCAST Project WIP Valuation",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "ph6dk63h2t",
+    "parent": "MSCAST Project WIP Valuation",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "ph68djmnvs",
+    "parent": "MSCAST Project WIP Valuation",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Projects Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "ph60tr974c",
+    "parent": "MSCAST Project WIP Valuation",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Statutory Auditor"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "ph693tgia1",
+    "parent": "MSCAST Project WIP Valuation",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Director"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "Company Letterhead - Grey",
+  "module": "Custom",
+  "name": "MSCAST Retention and Certificates",
+  "prepared_report": 0,
+  "query": "\nselect\n    so.name        as \"Sales Order:Link/Sales Order:140\",\n    so.customer    as \"Customer:Link/Customer:200\",\n    so.grand_total as \"Order Value:Currency:130\",\n    so.retention_percent as \"Retention %%:Float:90\",\n    so.grand_total * ifnull(so.retention_percent,0) / 100 as \"Retention Amount:Currency:140\",\n    so.pbg_percent as \"PBG %%:Float:80\",\n    c.certificate_type as \"Certificate::150\",\n    c.status       as \"Cert Status::100\",\n    c.retention_release_due as \"Retention Due:Date:120\"\nfrom `tabSales Order` so\nleft join `tabMSCAST Project Certificate` c on c.customer = so.customer\nwhere so.docstatus = 1 and ifnull(so.retention_percent,0) > 0\norder by so.transaction_date desc\n",
+  "ref_doctype": "Sales Order",
+  "reference_report": null,
+  "report_name": "MSCAST Retention and Certificates",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "cfkfrl83jt",
+    "parent": "MSCAST Retention and Certificates",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cfko727e5v",
+    "parent": "MSCAST Retention and Certificates",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Projects Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cfkjkmq8de",
+    "parent": "MSCAST Retention and Certificates",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Purchase Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "cfktjqhm7i",
+    "parent": "MSCAST Retention and Certificates",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "MSCAST",
+  "module": "Custom",
+  "name": "MSCAST Schedule III - Ratios",
+  "prepared_report": 0,
+  "query": "select d.cl as \"Ref::50\",\n       d.particulars as \"Ratio (Schedule III, 2021 amendment)::400\",\n       d.val as \"Current period:Float:130\",\n       null as \"Previous period:Float:130\",\n       case when d.val is null then 'Denominator immaterial in the demo ledger - not meaningful' else 'Explain a variance above 25 percent in the notes' end as \"Remark::400\"\nfrom (\n  select 10 as seq, 'a' as cl, 'Current ratio (times)' as particulars, case when abs((ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Liability' and a.account_name not like '%%Term Loan%%' and a.account_name not like '%%Borrowing%%' and a.account_type != 'Payable')), 0) + ifnull((select round(sum(pi.outstanding_amount), 0) from `tabPurchase Invoice` pi inner join `tabSupplier` s on s.name = pi.supplier where pi.docstatus = 1 and ifnull(s.msme_type,'') != '' ), 0) + ifnull((select round(sum(pi.outstanding_amount), 0) from `tabPurchase Invoice` pi inner join `tabSupplier` s on s.name = pi.supplier where pi.docstatus = 1 and ifnull(s.msme_type,'') = '' ), 0))) < 10000 then null else round(ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Asset' and (a.account_type in ('Bank','Cash','Receivable','Stock') or a.account_name like '%%Stock%%' or a.account_name like '%%Retention%%' or a.account_name like '%%Work in Progress%%' or a.account_name like '%%Deferred Tax Asset%%'))), 0)  / (ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Liability' and a.account_name not like '%%Term Loan%%' and a.account_name not like '%%Borrowing%%' and a.account_type != 'Payable')), 0) + ifnull((select round(sum(pi.outstanding_amount), 0) from `tabPurchase Invoice` pi inner join `tabSupplier` s on s.name = pi.supplier where pi.docstatus = 1 and ifnull(s.msme_type,'') != '' ), 0) + ifnull((select round(sum(pi.outstanding_amount), 0) from `tabPurchase Invoice` pi inner join `tabSupplier` s on s.name = pi.supplier where pi.docstatus = 1 and ifnull(s.msme_type,'') = '' ), 0)), 2) end as val\n  union all select 20 as seq, 'b' as cl, 'Debt-equity ratio (times)' as particulars, case when abs((ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Equity')), 0) + (ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income')), 0) - ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense')), 0)))) < 10000 then null else round(ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.account_name like '%%Term Loan%%' or a.account_name like '%%Borrowing%%')), 0)  / (ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Equity')), 0) + (ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income')), 0) - ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense')), 0))), 2) end as val\n  union all select 30 as seq, 'c' as cl, 'Debt service coverage ratio (times)' as particulars, case when abs(ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.account_name like '%%Interest%%')), 0)) < 10000 then null else round(((ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income')), 0) - ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense')), 0)) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.account_name like '%%Interest%%')), 0))  / ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.account_name like '%%Interest%%')), 0), 2) end as val\n  union all select 40 as seq, 'd' as cl, 'Return on equity (%)' as particulars, case when abs((ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Equity')), 0) + (ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income')), 0) - ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense')), 0)))) < 10000 then null else round((ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income')), 0) - ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense')), 0)) * 100 / (ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Equity')), 0) + (ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income')), 0) - ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense')), 0))), 2) end as val\n  union all select 50 as seq, 'e' as cl, 'Inventory turnover (times)' as particulars, case when abs(ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.account_type = 'Stock' or a.account_name like '%%Stock%%')), 0)) < 10000 then null else round(ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.account_name like '%%Cost of Goods%%' or a.account_name like '%%Material%%' or a.account_name like '%%Purchase%%')), 0)  / ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.account_type = 'Stock' or a.account_name like '%%Stock%%')), 0), 2) end as val\n  union all select 60 as seq, 'f' as cl, 'Trade receivables turnover (times)' as particulars, case when abs(ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.account_type = 'Receivable')), 0)) < 10000 then null else round(ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income')), 0)  / ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.account_type = 'Receivable')), 0), 2) end as val\n  union all select 70 as seq, 'g' as cl, 'Trade payables turnover (times)' as particulars, case when abs((ifnull((select round(sum(pi.outstanding_amount), 0) from `tabPurchase Invoice` pi inner join `tabSupplier` s on s.name = pi.supplier where pi.docstatus = 1 and ifnull(s.msme_type,'') != '' ), 0) + ifnull((select round(sum(pi.outstanding_amount), 0) from `tabPurchase Invoice` pi inner join `tabSupplier` s on s.name = pi.supplier where pi.docstatus = 1 and ifnull(s.msme_type,'') = '' ), 0))) < 10000 then null else round(ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.account_name like '%%Cost of Goods%%' or a.account_name like '%%Material%%' or a.account_name like '%%Purchase%%')), 0)  / (ifnull((select round(sum(pi.outstanding_amount), 0) from `tabPurchase Invoice` pi inner join `tabSupplier` s on s.name = pi.supplier where pi.docstatus = 1 and ifnull(s.msme_type,'') != '' ), 0) + ifnull((select round(sum(pi.outstanding_amount), 0) from `tabPurchase Invoice` pi inner join `tabSupplier` s on s.name = pi.supplier where pi.docstatus = 1 and ifnull(s.msme_type,'') = '' ), 0)), 2) end as val\n  union all select 80 as seq, 'h' as cl, 'Net capital turnover (times)' as particulars, case when abs((ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Asset' and (a.account_type in ('Bank','Cash','Receivable','Stock') or a.account_name like '%%Stock%%' or a.account_name like '%%Retention%%' or a.account_name like '%%Work in Progress%%' or a.account_name like '%%Deferred Tax Asset%%'))), 0) - (ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Liability' and a.account_name not like '%%Term Loan%%' and a.account_name not like '%%Borrowing%%' and a.account_type != 'Payable')), 0) + ifnull((select round(sum(pi.outstanding_amount), 0) from `tabPurchase Invoice` pi inner join `tabSupplier` s on s.name = pi.supplier where pi.docstatus = 1 and ifnull(s.msme_type,'') != '' ), 0) + ifnull((select round(sum(pi.outstanding_amount), 0) from `tabPurchase Invoice` pi inner join `tabSupplier` s on s.name = pi.supplier where pi.docstatus = 1 and ifnull(s.msme_type,'') = '' ), 0)))) < 10000 then null else round(ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income')), 0)  / (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Asset' and (a.account_type in ('Bank','Cash','Receivable','Stock') or a.account_name like '%%Stock%%' or a.account_name like '%%Retention%%' or a.account_name like '%%Work in Progress%%' or a.account_name like '%%Deferred Tax Asset%%'))), 0) - (ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Liability' and a.account_name not like '%%Term Loan%%' and a.account_name not like '%%Borrowing%%' and a.account_type != 'Payable')), 0) + ifnull((select round(sum(pi.outstanding_amount), 0) from `tabPurchase Invoice` pi inner join `tabSupplier` s on s.name = pi.supplier where pi.docstatus = 1 and ifnull(s.msme_type,'') != '' ), 0) + ifnull((select round(sum(pi.outstanding_amount), 0) from `tabPurchase Invoice` pi inner join `tabSupplier` s on s.name = pi.supplier where pi.docstatus = 1 and ifnull(s.msme_type,'') = '' ), 0))), 2) end as val\n  union all select 90 as seq, 'i' as cl, 'Net profit ratio (%)' as particulars, case when abs(ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income')), 0)) < 10000 then null else round((ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income')), 0) - ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense')), 0)) * 100 / ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income')), 0), 2) end as val\n  union all select 100 as seq, 'j' as cl, 'Return on capital employed (%)' as particulars, case when abs(((ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Equity')), 0) + (ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income')), 0) - ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense')), 0))) + ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.account_name like '%%Term Loan%%' or a.account_name like '%%Borrowing%%')), 0))) < 10000 then null else round(((ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income')), 0) - ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense')), 0)) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.account_name like '%%Interest%%')), 0)) * 100 / ((ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Equity')), 0) + (ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income')), 0) - ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense')), 0))) + ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.account_name like '%%Term Loan%%' or a.account_name like '%%Borrowing%%')), 0)), 2) end as val\n  union all select 110 as seq, 'k' as cl, 'Return on investment (%)' as particulars, case when abs(((ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Equity')), 0) + (ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income')), 0) - ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense')), 0))) + ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.account_name like '%%Term Loan%%' or a.account_name like '%%Borrowing%%')), 0))) < 10000 then null else round(((ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income')), 0) - ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense')), 0)) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.account_name like '%%Interest%%')), 0)) * 100 / ((ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Equity')), 0) + (ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income')), 0) - ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense')), 0))) + ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.account_name like '%%Term Loan%%' or a.account_name like '%%Borrowing%%')), 0)), 2) end as val\n) d order by d.seq",
+  "ref_doctype": "GL Entry",
+  "reference_report": null,
+  "report_name": "MSCAST Schedule III - Ratios",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "rj3m5m0k07",
+    "parent": "MSCAST Schedule III - Ratios",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "rj3j5efg25",
+    "parent": "MSCAST Schedule III - Ratios",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "rj3ih8ljrt",
+    "parent": "MSCAST Schedule III - Ratios",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Statutory Auditor"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "rj3jir86cs",
+    "parent": "MSCAST Schedule III - Ratios",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Director"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 1,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "MSCAST",
+  "module": "Custom",
+  "name": "MSCAST Schedule III - Trade Payable Ageing (MSME / others)",
+  "prepared_report": 0,
+  "query": "\nselect\n  pi.supplier                                     as \"Supplier:Link/Supplier:220\",\n  case when ifnull(s.msme_type,'') != '' then concat('MSME - ', s.msme_type) else 'Others' end\n                                                  as \"Schedule III class::140\",\n  pi.name                                         as \"Invoice:Link/Purchase Invoice:150\",\n  ifnull(pi.bill_date, pi.posting_date)           as \"Bill Date:Date:95\",\n  pi.outstanding_amount                           as \"Outstanding:Currency:130\",\n  case when datediff(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), ifnull(pi.bill_date, pi.posting_date)) <= 365 then pi.outstanding_amount else 0 end\n                                                  as \"< 1 yr:Currency:120\",\n  case when datediff(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), ifnull(pi.bill_date, pi.posting_date)) between 366 and 730 then pi.outstanding_amount else 0 end\n                                                  as \"1 - 2 yrs:Currency:110\",\n  case when datediff(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), ifnull(pi.bill_date, pi.posting_date)) between 731 and 1095 then pi.outstanding_amount else 0 end\n                                                  as \"2 - 3 yrs:Currency:110\",\n  case when datediff(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), ifnull(pi.bill_date, pi.posting_date)) > 1095 then pi.outstanding_amount else 0 end\n                                                  as \"> 3 yrs:Currency:110\",\n  datediff(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), ifnull(pi.bill_date, pi.posting_date))\n                                                  as \"Age (days):Int:95\"\nfrom `tabPurchase Invoice` pi\nleft join `tabSupplier` s on s.name = pi.supplier\nwhere pi.docstatus = 1 and pi.outstanding_amount > 0\norder by 2, 4\n",
+  "ref_doctype": "Purchase Invoice",
+  "reference_report": null,
+  "report_name": "MSCAST Schedule III - Trade Payable Ageing (MSME / others)",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "qp8t6gk89o",
+    "parent": "MSCAST Schedule III - Trade Payable Ageing (MSME / others)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "qp84qqs3ij",
+    "parent": "MSCAST Schedule III - Trade Payable Ageing (MSME / others)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "qp87tm4iof",
+    "parent": "MSCAST Schedule III - Trade Payable Ageing (MSME / others)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Statutory Auditor"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "qp8adl9815",
+    "parent": "MSCAST Schedule III - Trade Payable Ageing (MSME / others)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Director"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 1,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "MSCAST",
+  "module": "Custom",
+  "name": "MSCAST Schedule III - Trade Receivable Ageing",
+  "prepared_report": 0,
+  "query": "\nselect\n  si.customer                                     as \"Customer:Link/Customer:220\",\n  si.name                                         as \"Invoice:Link/Sales Invoice:150\",\n  si.due_date                                     as \"Due Date:Date:95\",\n  si.outstanding_amount                           as \"Outstanding:Currency:130\",\n  case when datediff(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), si.due_date) <= 0 then si.outstanding_amount else 0 end\n                                                  as \"Not due:Currency:120\",\n  case when datediff(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), si.due_date) between 1 and 180 then si.outstanding_amount else 0 end\n                                                  as \"< 6 months:Currency:120\",\n  case when datediff(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), si.due_date) between 181 and 365 then si.outstanding_amount else 0 end\n                                                  as \"6 mo - 1 yr:Currency:120\",\n  case when datediff(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), si.due_date) between 366 and 730 then si.outstanding_amount else 0 end\n                                                  as \"1 - 2 yrs:Currency:110\",\n  case when datediff(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), si.due_date) between 731 and 1095 then si.outstanding_amount else 0 end\n                                                  as \"2 - 3 yrs:Currency:110\",\n  case when datediff(date(convert_tz(utc_timestamp(),'+00:00','+05:30')), si.due_date) > 1095 then si.outstanding_amount else 0 end\n                                                  as \"> 3 yrs:Currency:110\",\n  'Undisputed - considered good'                  as \"Classification::220\"\nfrom `tabSales Invoice` si\nwhere si.docstatus = 1 and si.is_return = 0 and si.outstanding_amount > 0\norder by si.due_date\n",
+  "ref_doctype": "Sales Invoice",
+  "reference_report": null,
+  "report_name": "MSCAST Schedule III - Trade Receivable Ageing",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "qp6loj73qh",
+    "parent": "MSCAST Schedule III - Trade Receivable Ageing",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "qp6ponptpf",
+    "parent": "MSCAST Schedule III - Trade Receivable Ageing",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "qp6m51pb1v",
+    "parent": "MSCAST Schedule III - Trade Receivable Ageing",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Statutory Auditor"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "qp6mho4jfc",
+    "parent": "MSCAST Schedule III - Trade Receivable Ageing",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Director"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 1,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "MSCAST",
+  "module": "Custom",
+  "name": "MSCAST SO - PO - Invoice Tracker",
+  "prepared_report": 0,
+  "query": "\nselect\n  so.project                                              as \"Project:Link/Project:110\",\n  so.name                                                 as \"Sales Order:Link/Sales Order:150\",\n  so.customer                                             as \"Customer:Link/Customer:210\",\n  so.transaction_date                                     as \"SO Date:Date:90\",\n  so.grand_total                                          as \"SO Value:Currency:130\",\n  (select ifnull(sum(sii.amount), 0) from `tabSales Invoice Item` sii\n     inner join `tabSales Invoice` si on si.name = sii.parent\n     where si.docstatus = 1 and si.is_return = 0 and sii.sales_order = so.name)\n                                                          as \"Billed to Client:Currency:140\",\n  (select ifnull(sum(si.grand_total - si.outstanding_amount), 0) from `tabSales Invoice` si\n     inner join `tabSales Invoice Item` sii on sii.parent = si.name\n     where si.docstatus = 1 and si.is_return = 0 and sii.sales_order = so.name)\n                                                          as \"Collected:Currency:130\",\n  (select ifnull(sum(poi.amount), 0) from `tabPurchase Order Item` poi\n     inner join `tabPurchase Order` po on po.name = poi.parent\n     where po.docstatus = 1 and poi.project = so.project)\n                                                          as \"PO Committed:Currency:140\",\n  (select ifnull(sum(pii.amount), 0) from `tabPurchase Invoice Item` pii\n     inner join `tabPurchase Invoice` pi on pi.name = pii.parent\n     where pi.docstatus = 1 and pii.project = so.project)\n                                                          as \"Supplier Billed:Currency:140\",\n  (select count(*) from `tabPurchase Order` po2\n     inner join `tabPurchase Order Item` poi2 on poi2.parent = po2.name\n     where po2.docstatus = 1 and poi2.project = so.project)\n                                                          as \"PO Lines:Int:80\",\n  so.per_delivered                                        as \"% Delivered:Percent:100\",\n  so.per_billed                                           as \"% Billed:Percent:95\",\n  so.status                                               as \"SO Status::110\"\nfrom `tabSales Order` so\nwhere so.docstatus = 1 and so.company = 'MSCAST Engineering Pvt Ltd'\norder by so.transaction_date desc\n",
+  "ref_doctype": "Sales Order",
+  "reference_report": null,
+  "report_name": "MSCAST SO - PO - Invoice Tracker",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "u5ks203taf",
+    "parent": "MSCAST SO - PO - Invoice Tracker",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "u5k3s4mct7",
+    "parent": "MSCAST SO - PO - Invoice Tracker",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "u5k1ss93g6",
+    "parent": "MSCAST SO - PO - Invoice Tracker",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Projects Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "u5krc3cdsg",
+    "parent": "MSCAST SO - PO - Invoice Tracker",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales User"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "u5ku2aqku8",
+    "parent": "MSCAST SO - PO - Invoice Tracker",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Director"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 1,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "MSCAST",
+  "module": "Custom",
+  "name": "MSCAST Statement of Profit and Loss (Schedule III grouping)",
+  "prepared_report": 0,
+  "query": "\nselect\n  case\n    when a.root_type = 'Income' and a.account_name not like '%%Other Income%%' then 'I. Revenue from operations'\n    when a.root_type = 'Income' then 'II. Other income'\n    when a.account_name like '%%Cost of Goods%%' or a.account_name like '%%Material%%'\n         or a.account_name like '%%Purchase%%' or a.account_name like '%%Stock Expenses%%'\n      then 'IV. (a) Cost of materials consumed'\n    when a.account_name like '%%Salar%%' or a.account_name like '%%Wage%%' or a.account_name like '%%Gratuity%%'\n         or a.account_name like '%%Staff%%' or a.account_name like '%%PF%%' or a.account_name like '%%Bonus%%'\n      then 'IV. (c) Employee benefits expense'\n    when a.account_name like '%%Interest%%' or a.account_name like '%%Bank Charge%%'\n         or a.account_name like '%%Finance%%' then 'IV. (d) Finance costs'\n    when a.account_name like '%%Depreciat%%' or a.account_name like '%%Amortis%%'\n      then 'IV. (e) Depreciation and amortisation expense'\n    when a.account_name like '%%Tax%%' and a.root_type = 'Expense' then 'VII. Tax expense'\n    else 'IV. (f) Other expenses'\n  end                                                       as \"Schedule III Head::330\",\n  a.name                                                    as \"Account:Link/Account:280\",\n  round(sum(case when a.root_type = 'Income' then gl.credit - gl.debit\n                 else gl.debit - gl.credit end), 2)         as \"Amount (Rs):Currency:160\"\nfrom `tabGL Entry` gl\ninner join `tabAccount` a on a.name = gl.account\ninner join `tabFiscal Year` fy on gl.fiscal_year = fy.name\nwhere gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd'\n  and a.root_type in ('Income', 'Expense')\ngroup by a.name\nhaving abs(round(sum(case when a.root_type = 'Income' then gl.credit - gl.debit\n                          else gl.debit - gl.credit end), 2)) > 0.5\norder by 1, 2\n",
+  "ref_doctype": "GL Entry",
+  "reference_report": null,
+  "report_name": "MSCAST Statement of Profit and Loss (Schedule III grouping)",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "1224l34ant",
+    "parent": "MSCAST Statement of Profit and Loss (Schedule III grouping)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "122hcj45tb",
+    "parent": "MSCAST Statement of Profit and Loss (Schedule III grouping)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "1229iemohp",
+    "parent": "MSCAST Statement of Profit and Loss (Schedule III grouping)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Statutory Auditor"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "1227ophtjv",
+    "parent": "MSCAST Statement of Profit and Loss (Schedule III grouping)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Director"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "MSCAST",
+  "module": "Custom",
+  "name": "MSCAST Statement of Profit and Loss (Schedule III)",
+  "prepared_report": 0,
+  "query": "select\n  d.note as \"Note::55\",\n  d.particulars as \"Particulars::450\",\n  d.amt as \"Period to 19 Sep 2026:Currency:175\",\n  null as \"Previous year:Currency:150\"\nfrom (\n  select 10 as seq, '15' as note, 'I.    Revenue from operations' as particulars, ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income' and a.account_name not like '%%Other Income%%' and a.account_name not like '%%Change in Work in Progress%%')), 0) as amt\n  union all select 20 as seq, '16' as note, 'II.   Other income' as particulars, ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income' and a.account_name like '%%Other Income%%')), 0) as amt\n  union all select 30 as seq, '' as note, 'III.  Total income' as particulars, (ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income' and a.account_name not like '%%Other Income%%' and a.account_name not like '%%Change in Work in Progress%%')), 0) + ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income' and a.account_name like '%%Other Income%%')), 0)) as amt\n  union all select 40 as seq, '' as note, 'IV.   Expenses' as particulars, null as amt\n  union all select 50 as seq, '17' as note, '           Cost of materials consumed and bought-out' as particulars, ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_type = 'Cost of Goods Sold' or a.account_name like '%%Cost of Goods%%' or a.account_name like '%%Freight%%'))), 0) as amt\n  union all select 60 as seq, '11' as note, '           Changes in inventories and work-in-progress' as particulars, (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_type = 'Stock Adjustment' or a.account_name like '%%Stock Adjustment%%'))), 0) - ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income' and a.account_name like '%%Change in Work in Progress%%')), 0)) as amt\n  union all select 70 as seq, '18' as note, '           Employee benefits expense' as particulars, ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Salar%%' or a.account_name like '%%Wage%%' or a.account_name like '%%Gratuity Expense%%' or a.account_name like '%%Staff%%' or a.account_name like '%%Bonus%%'))), 0) as amt\n  union all select 80 as seq, '19' as note, '           Finance costs' as particulars, ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Interest%%' or a.account_name like '%%Bank Charge%%'))), 0) as amt\n  union all select 90 as seq, '9' as note, '           Depreciation and amortisation expense' as particulars, ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Depreciat%%' or a.account_name like '%%Amortis%%'))), 0) as amt\n  union all select 100 as seq, '20' as note, '           Other expenses' as particulars, (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense')), 0) - (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_type = 'Cost of Goods Sold' or a.account_name like '%%Cost of Goods%%' or a.account_name like '%%Freight%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Salar%%' or a.account_name like '%%Wage%%' or a.account_name like '%%Gratuity Expense%%' or a.account_name like '%%Staff%%' or a.account_name like '%%Bonus%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Interest%%' or a.account_name like '%%Bank Charge%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Depreciat%%' or a.account_name like '%%Amortis%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Income Tax Expense%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Deferred Tax Expense%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_type = 'Stock Adjustment' or a.account_name like '%%Stock Adjustment%%'))), 0))) as amt\n  union all select 110 as seq, '' as note, '           Total expenses' as particulars, (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_type = 'Cost of Goods Sold' or a.account_name like '%%Cost of Goods%%' or a.account_name like '%%Freight%%'))), 0) + (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_type = 'Stock Adjustment' or a.account_name like '%%Stock Adjustment%%'))), 0) - ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income' and a.account_name like '%%Change in Work in Progress%%')), 0)) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Salar%%' or a.account_name like '%%Wage%%' or a.account_name like '%%Gratuity Expense%%' or a.account_name like '%%Staff%%' or a.account_name like '%%Bonus%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Interest%%' or a.account_name like '%%Bank Charge%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Depreciat%%' or a.account_name like '%%Amortis%%'))), 0) + (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense')), 0) - (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_type = 'Cost of Goods Sold' or a.account_name like '%%Cost of Goods%%' or a.account_name like '%%Freight%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Salar%%' or a.account_name like '%%Wage%%' or a.account_name like '%%Gratuity Expense%%' or a.account_name like '%%Staff%%' or a.account_name like '%%Bonus%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Interest%%' or a.account_name like '%%Bank Charge%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Depreciat%%' or a.account_name like '%%Amortis%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Income Tax Expense%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Deferred Tax Expense%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_type = 'Stock Adjustment' or a.account_name like '%%Stock Adjustment%%'))), 0)))) as amt\n  union all select 120 as seq, '' as note, 'V.    Profit before tax' as particulars, ((ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income' and a.account_name not like '%%Other Income%%' and a.account_name not like '%%Change in Work in Progress%%')), 0) + ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income' and a.account_name like '%%Other Income%%')), 0)) - (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_type = 'Cost of Goods Sold' or a.account_name like '%%Cost of Goods%%' or a.account_name like '%%Freight%%'))), 0) + (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_type = 'Stock Adjustment' or a.account_name like '%%Stock Adjustment%%'))), 0) - ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income' and a.account_name like '%%Change in Work in Progress%%')), 0)) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Salar%%' or a.account_name like '%%Wage%%' or a.account_name like '%%Gratuity Expense%%' or a.account_name like '%%Staff%%' or a.account_name like '%%Bonus%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Interest%%' or a.account_name like '%%Bank Charge%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Depreciat%%' or a.account_name like '%%Amortis%%'))), 0) + (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense')), 0) - (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_type = 'Cost of Goods Sold' or a.account_name like '%%Cost of Goods%%' or a.account_name like '%%Freight%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Salar%%' or a.account_name like '%%Wage%%' or a.account_name like '%%Gratuity Expense%%' or a.account_name like '%%Staff%%' or a.account_name like '%%Bonus%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Interest%%' or a.account_name like '%%Bank Charge%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Depreciat%%' or a.account_name like '%%Amortis%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Income Tax Expense%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Deferred Tax Expense%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_type = 'Stock Adjustment' or a.account_name like '%%Stock Adjustment%%'))), 0))))) as amt\n  union all select 130 as seq, '' as note, 'VI.   Tax expense' as particulars, null as amt\n  union all select 140 as seq, '8' as note, '           (a) Current tax' as particulars, ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Income Tax Expense%%'))), 0) as amt\n  union all select 150 as seq, '4' as note, '           (b) Deferred tax' as particulars, ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Deferred Tax Expense%%'))), 0) as amt\n  union all select 160 as seq, '' as note, 'VII.  Profit for the period' as particulars, (((ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income' and a.account_name not like '%%Other Income%%' and a.account_name not like '%%Change in Work in Progress%%')), 0) + ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income' and a.account_name like '%%Other Income%%')), 0)) - (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_type = 'Cost of Goods Sold' or a.account_name like '%%Cost of Goods%%' or a.account_name like '%%Freight%%'))), 0) + (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_type = 'Stock Adjustment' or a.account_name like '%%Stock Adjustment%%'))), 0) - ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income' and a.account_name like '%%Change in Work in Progress%%')), 0)) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Salar%%' or a.account_name like '%%Wage%%' or a.account_name like '%%Gratuity Expense%%' or a.account_name like '%%Staff%%' or a.account_name like '%%Bonus%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Interest%%' or a.account_name like '%%Bank Charge%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Depreciat%%' or a.account_name like '%%Amortis%%'))), 0) + (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense')), 0) - (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_type = 'Cost of Goods Sold' or a.account_name like '%%Cost of Goods%%' or a.account_name like '%%Freight%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Salar%%' or a.account_name like '%%Wage%%' or a.account_name like '%%Gratuity Expense%%' or a.account_name like '%%Staff%%' or a.account_name like '%%Bonus%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Interest%%' or a.account_name like '%%Bank Charge%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Depreciat%%' or a.account_name like '%%Amortis%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Income Tax Expense%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Deferred Tax Expense%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_type = 'Stock Adjustment' or a.account_name like '%%Stock Adjustment%%'))), 0))))) - (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Income Tax Expense%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Deferred Tax Expense%%'))), 0))) as amt\n  union all select 170 as seq, '21' as note, 'VIII. Earnings per equity share - basic and diluted (Rs)' as particulars, round((((ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income' and a.account_name not like '%%Other Income%%' and a.account_name not like '%%Change in Work in Progress%%')), 0) + ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income' and a.account_name like '%%Other Income%%')), 0)) - (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_type = 'Cost of Goods Sold' or a.account_name like '%%Cost of Goods%%' or a.account_name like '%%Freight%%'))), 0) + (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_type = 'Stock Adjustment' or a.account_name like '%%Stock Adjustment%%'))), 0) - ifnull((select round(sum(gl.credit - gl.debit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Income' and a.account_name like '%%Change in Work in Progress%%')), 0)) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Salar%%' or a.account_name like '%%Wage%%' or a.account_name like '%%Gratuity Expense%%' or a.account_name like '%%Staff%%' or a.account_name like '%%Bonus%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Interest%%' or a.account_name like '%%Bank Charge%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Depreciat%%' or a.account_name like '%%Amortis%%'))), 0) + (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense')), 0) - (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_type = 'Cost of Goods Sold' or a.account_name like '%%Cost of Goods%%' or a.account_name like '%%Freight%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Salar%%' or a.account_name like '%%Wage%%' or a.account_name like '%%Gratuity Expense%%' or a.account_name like '%%Staff%%' or a.account_name like '%%Bonus%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Interest%%' or a.account_name like '%%Bank Charge%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Depreciat%%' or a.account_name like '%%Amortis%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Income Tax Expense%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Deferred Tax Expense%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_type = 'Stock Adjustment' or a.account_name like '%%Stock Adjustment%%'))), 0))))) - (ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Income Tax Expense%%'))), 0) + ifnull((select round(sum(gl.debit - gl.credit), 0) from `tabGL Entry` gl inner join `tabAccount` a on a.name = gl.account where gl.is_cancelled = 0 and gl.company = 'MSCAST Engineering Pvt Ltd' and (a.root_type = 'Expense' and (a.account_name like '%%Deferred Tax Expense%%'))), 0))) / nullif((select ifnull(sum(no_of_shares),0) from `tabShare Transfer` where docstatus = 1), 0), 2) as amt\n) d order by d.seq",
+  "ref_doctype": "GL Entry",
+  "reference_report": null,
+  "report_name": "MSCAST Statement of Profit and Loss (Schedule III)",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "doctype": "Has Role",
+    "name": "uj03vqjp4p",
+    "parent": "MSCAST Statement of Profit and Loss (Schedule III)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "uj0421pdfc",
+    "parent": "MSCAST Statement of Profit and Loss (Schedule III)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "uj0knn8gd5",
+    "parent": "MSCAST Statement of Profit and Loss (Schedule III)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Statutory Auditor"
+   },
+   {
+    "doctype": "Has Role",
+    "name": "uj0se4ha19",
+    "parent": "MSCAST Statement of Profit and Loss (Schedule III)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "MSCAST Director"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ }
+]

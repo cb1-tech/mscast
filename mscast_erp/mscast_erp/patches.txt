@@ -1,0 +1,2 @@
+# Patches for mscast_erp.
+# Each line is a module path executed once, in order, on bench migrate.

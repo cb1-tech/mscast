@@ -1,0 +1,69 @@
+/* MSCAST desk theme.
+   Loaded through app_include_css, so it applies on every page including a
+   cold deep link - not only after the home page has run. */
+
+:root {
+  --primary: #1f3864;
+  --primary-color: #1f3864;
+  --blue-500: #1f3864;
+  --blue-600: #17294a;
+  --blue-700: #17294a;
+  --text-color: #1b1d21;
+  --heading-color: #17294a;
+  --bg-blue: #eef1f7;
+}
+
+body {
+  background: #f6f5f2;
+  font-family: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+}
+
+h1, h2, h3, h4, h5,
+.page-title, .title-text, .widget-title, .ellipsis.title-text {
+  font-family: 'Archivo', system-ui, sans-serif;
+  letter-spacing: -0.005em;
+}
+
+/* navbar */
+.navbar { background: #1f3864 !important; border-bottom: 1px solid #17294a !important; }
+.navbar .navbar-brand,
+.navbar .nav-link,
+.navbar a,
+.navbar .dropdown-toggle,
+.navbar .navbar-home,
+.navbar span { color: #ffffff !important; }
+.navbar .navbar-icon, .navbar svg.icon { filter: brightness(0) invert(1); }
+#navbar-search,
+.navbar .search-bar input,
+.navbar .awesomplete input {
+  background: #2c4877 !important;
+  border: 1px solid #7e94bd !important;
+  color: #ffffff !important;
+}
+#navbar-search::placeholder,
+.navbar input::placeholder { color: #c3cee2 !important; opacity: 1; }
+
+/* buttons */
+.btn-primary, .btn-primary:focus {
+  background-color: #1f3864 !important;
+  border-color: #1f3864 !important;
+  color: #ffffff !important;
+}
+.btn-primary:hover { background-color: #17294a !important; border-color: #17294a !important; }
+.btn-secondary, .btn-default { border: 1px solid #cfccc3 !important; }
+
+/* surfaces */
+.page-head { background: #f6f5f2 !important; }
+.layout-main-section, .widget, .form-section, .list-row-container, .frappe-card { border-radius: 12px; }
+.sidebar-item-container .desk-sidebar-item.selected,
+.standard-sidebar-item.selected { background: #eef1f7 !important; }
+.workspace-sidebar .standard-sidebar-label {
+  letter-spacing: 0.08em; text-transform: uppercase; font-size: 10.5px; color: #5b606b;
+}
+
+/* the home page block carries its own styling inside a shadow root */
+.custom-block-widget-box > .widget-head { display: none !important; }
+.custom-block-widget-box {
+  border: none !important; background: transparent !important;
+  padding: 0 !important; box-shadow: none !important;
+}
