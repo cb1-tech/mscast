@@ -18,16 +18,20 @@ import requests
 base = (frappe.conf.get("omniroute_base_url") or briefing.DEFAULT_BASE_URL).rstrip("/")
 
 CANDIDATES = [
-    ("hermes-antigravity", "current setting - a combo, picks for us"),
-    ("antigravity/gemini-3.1-flash-lite", "cheapest named Gemini"),
-    ("antigravity/gemini-3.7-flash-medium", "newer Flash, more thinking"),
+    ("antigravity/gemini-pro-agent", "chosen - reads times_seen and names the pattern"),
+    ("antigravity/gemini-3.7-flash-medium", "runner-up - same ranking, a third the wait"),
+    ("hermes-antigravity", "the combo, for reference - resolves to gemini-2.5-flash"),
 ]
-# dropped after the first run, with reasons, so they are not tried again by habit:
-#   antigravity/gemini-3.7-flash-low  - returned 39 tokens and stopped mid-sentence
-#   antigravity/gemini-3.1-pro-low    - 26s
-#   antigravity/gemini-pro-agent      - 42s
-# Both Pro tiers wrote well but a briefing does not need a minute of thinking,
-# and the scheduler holds a worker for the duration.
+# Tried and dropped, with reasons, so they are not tried again out of habit:
+#   antigravity/gemini-3.7-flash-low  - 39 tokens, stopped mid-sentence
+#   antigravity/gemini-3.1-pro-low    - 26s, and no better than 3.7-flash-medium
+#   antigravity/gemini-3.1-flash-lite - led with the guarantee 39 days out rather
+#                                       than the payment blocked today
+#
+# On latency: gemini-pro-agent was measured over eight runs at 36.6, 47.7, 55.2,
+# 51.4, 37.4, 36.3, 38.6 and 50.7 seconds. That is a 36-55s band with no trend -
+# an early reading of three runs looked like a climb and was not. TIMEOUT in
+# briefing.py is set from the top of that band, not the average.
 
 data = briefing.collect()
 material = json.dumps(

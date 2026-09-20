@@ -34,8 +34,13 @@ import frappe
 from frappe.utils import get_url
 
 DEFAULT_BASE_URL = "http://host.docker.internal:20128/v1"
-DEFAULT_MODEL = "hermes-antigravity"
-TIMEOUT = 90
+DEFAULT_MODEL = "antigravity/gemini-pro-agent"
+
+# Eight measured runs of the chosen model spanned 36-55s, so 90 left only about
+# 1.6x headroom over the observed tail - and a breach is not loud, it silently
+# downgrades the director's note to the plain list. Nothing waits on this job:
+# it runs at 08:35 on a scheduler worker, and the email is sent when it is done.
+TIMEOUT = 180
 
 SYSTEM = """You are writing the morning note for the director of MSCAST Engineering,
 a Pune company of under ten people that builds continuous casting machines to order.
