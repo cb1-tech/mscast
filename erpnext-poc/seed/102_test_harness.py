@@ -228,6 +228,73 @@ def t6_controls():
     rec("T6c", "controls", "server scripts present and enabled where intended", len(live) >= 2,
         "; ".join("%s (%s, disabled=%s)" % (s.name, s.script_type, s.disabled) for s in ss))
 
+    # T6d - the approval authority, asserted.
+    #
+    # Installing the app silently rewrote these back to an older definition and
+    # nothing noticed: a decision the business had made was undone by a routine
+    # operation. Business rules need a test like any other code, so the intended
+    # matrix is written down here and checked on every run.
+    #
+    # The rule behind it: a decision that commits MSCAST to an outside party -
+    # money to a supplier, a cost sheet going back, a bill certified for payment
+    # - belongs to the directors.
+    INTENDED = {
+        ("MSCAST Purchase Order Approval", "Approve"): "MSCAST Director",
+        ("MSCAST PCC Approval", "Approve"): "MSCAST Director",
+        ("MSCAST PCC Approval", "Send Back"): "MSCAST Director",
+        ("MSCAST BRM Certification", "Certify"): "MSCAST Director",
+        ("MSCAST Project Kick-off", "Approve Kick-off"): "MSCAST Director",
+    }
+    drift = []
+    for (wf_name, action), want in sorted(INTENDED.items()):
+        if not frappe.db.exists("Workflow", wf_name):
+            drift.append("%s missing" % wf_name)
+            continue
+        got = [t.allowed for t in frappe.get_doc("Workflow", wf_name).transitions
+               if t.action == action]
+        if not got:
+            drift.append("%s/%s missing" % (wf_name, action))
+        elif any(g != want for g in got):
+            drift.append("%s/%s is %s, should be %s"
+                         % (wf_name, action, "/".join(sorted(set(got))), want))
+    rec("T6d", "controls", "approval authority is where the business put it", not drift,
+        "%d transitions checked" % len(INTENDED) if not drift
+        else " :: ".join(drift))
+
+    # T6e - nobody may both raise and approve the same document.
+    def role_holders(role):
+        return {u[0] for u in frappe.db.sql(
+            """select distinct h.parent from `tabHas Role` h join `tabUser` u
+               on u.name = h.parent where h.role = %s and u.enabled = 1
+               and u.user_type = 'System User'
+               and u.name not in (
+                   select parent from `tabHas Role` where role = 'System Manager'
+               )""", (role,))}
+    # Administrators are excluded above: someone with System Manager can already
+    # do anything, so counting them as a segregation breach says nothing useful.
+    # The question this asks is whether an ORDINARY user can raise and approve
+    # the same document.
+
+    PAIRS = [("MSCAST Purchase Order Approval", "Send for Approval", "Approve"),
+             ("MSCAST PCC Approval", "Send for Approval", "Approve"),
+             ("MSCAST Project Kick-off", "Verify Customer PO", "Approve Kick-off")]
+    clashes = []
+    for wf_name, prep, appr in PAIRS:
+        if not frappe.db.exists("Workflow", wf_name):
+            continue
+        doc = frappe.get_doc("Workflow", wf_name)
+        p = set().union(*[role_holders(t.allowed) for t in doc.transitions
+                          if t.action == prep] or [set()])
+        a = set().union(*[role_holders(t.allowed) for t in doc.transitions
+                          if t.action == appr] or [set()])
+        both = p & a
+        if both:
+            clashes.append("%s: %s" % (wf_name.replace("MSCAST ", ""),
+                                       ", ".join(sorted(both))))
+    rec("T6e", "controls", "nobody can both raise and approve the same document",
+        "warn" if clashes else True,
+        " :: ".join(clashes) if clashes else "no overlap on %d workflows" % len(PAIRS))
+
 
 # ---------------------------------------------------------------- T7 data
 def t7_data():

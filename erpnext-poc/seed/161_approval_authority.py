@@ -70,7 +70,14 @@ for email in DIRECTORS:
     print("   %-24s %s" % (u.full_name, ", ".join(sorted({r.role for r in u.get("roles")}))))
 
 # ------------------------------------- an external decision needs a director
+# The whole matrix lives here, not spread across 154 and 161, because relying on
+# two scripts running in the right order is how it came back as System Manager
+# after an app install. Re-running this alone restores the intended state.
 MOVE = [
+    ("MSCAST PCC Approval", "Approve", "MSCAST Director",
+     "a cost sheet is what the price is built on"),
+    ("MSCAST Project Kick-off", "Approve Kick-off", "MSCAST Director",
+     "accepting a customer order is the director's commitment"),
     ("MSCAST Purchase Order Approval", "Approve", "MSCAST Director",
      "a purchase order commits money to an outside supplier"),
     ("MSCAST PCC Approval", "Send Back", "MSCAST Director",
