@@ -4,7 +4,7 @@ title: "MSCAST ERP — Standard Operating Procedures and Use Cases"
 
 # MSCAST ERP — Standard Operating Procedures and Use Cases
 
-**For:** MSCAST Engineering Pvt Ltd · **Version:** 2.1 · **Date:** 20 September 2026
+**For:** MSCAST Engineering Pvt Ltd · **Version:** 2.2 · **Date:** 21 September 2026
 
 > **What changed in version 2.0.** Version 1.0 was written before the roles were rebuilt around real people and before the approval authority was settled. It described some controls that the software did not actually enforce. Every claim in this version has been checked against the running system, and the ones that were not true have been either corrected or made true. The differences are listed in *Appendix — what changed and why*, at the end.
 
@@ -380,7 +380,7 @@ The principle is that **the person who prepares a document should not be the per
 Where this is fully true today:
 
 - **Purchase Orders.** Sending a purchase order for approval requires `Purchase User`; approving it requires `MSCAST Director`. Nobody holds both, so a purchase order cannot reach approval without a second person. (One director does hold `Purchase Manager`, which can *create* a purchase order — but not move it forward, which is what matters here.)
-- **The payment block itself.** No supplier bill can be paid without a certified BRM. That is refused in software, for everyone, and it is the control that actually protects the money.
+- **The payment block itself.** No supplier bill can be paid without a certified BRM — not by a payment entry, not by a journal entry, and not as an advance with no invoice behind it. Paying more than the certificate covers is refused too. That is enforced in software, for everyone including a director, and it is the control that actually protects the money. The one exception is deliberate: a supplier ticked *Exempt from BRM certification*, for bills that cannot be certified against a purchase order — electricity, water, rent, telephone, statutory. Ticking a trade supplier defeats the control; see *Operating Recommendations* A8.
 - **Drawing release.** The drawing office issues for approval; only a Projects Manager releases for manufacture.
 
 Where it is **not** true, deliberately:
@@ -447,7 +447,7 @@ Four of these are now checked automatically on every build, so they cannot drift
 
 ## A closing note on discipline
 
-Most of what is described here can be bypassed by someone determined enough. Four things cannot, because the software enforces them: the BRM payment block, the purchase order approval, the drawing release sequence, and the kick-off checklist.
+Most of what is described here can be bypassed by someone determined enough. Four things cannot, because the software enforces them: the BRM payment block, the purchase order approval, the drawing release sequence, and the kick-off checklist. The payment block was narrowed to one route until 21 September, when it was tested at the others and found open at three of them; it now holds on every route a supplier can be paid by.
 
 *(The kick-off checklist earned its place on that list only on 20 September. Until then the condition sat on one route into* PO Verified *and not the other, so raising a query first went round it — and a record in the demonstration data had already done exactly that. Both routes now carry it, and* `T6j` *checks that every guarded state in every workflow is guarded on every route in.)* Everything else depends on people entering documents when things happen rather than reconstructing them later.
 

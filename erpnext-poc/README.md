@@ -139,7 +139,7 @@ It starts the stack, pins the WSL VM up, rewrites the tunnel config with the cur
 
 ### Other controls
 
-- **BRM payment block** — a server script on Payment Entry refuses a supplier payment unless a certified BRM exists for that bill. Verified live in the harness on every run. This one is absolute and applies to everyone.
+- **BRM payment block** — application code (`mscast_erp.controls.brm_payment`, wired on `before_submit`) refuses a supplier payment unless a certified BRM exists for that bill and covers the amount. It guards **Payment Entry and Journal Entry**, and refuses an advance with no invoice reference. Verified live in the harness on every run, on six routes (`T6a`). Absolute, and applies to everyone. The only exception is a supplier ticked *Exempt from BRM certification* — for electricity, water, rent, telephone and statutory bills, which cannot be certified against a purchase order.
 - **Overnight exception sweep** — 16 rules at 06:00 comparing documents against each other and the calendar. Writes to MSCAST Exception. No model, no network.
 - **AI morning briefing** — 08:35, turns the findings plus the management summary into a few sentences naming what matters most today, emailed to the directors with every item linked. Falls back to a plain list if the model is unreachable, so a missing model never means a missing email.
 - **Post-deploy verification** — after every install and upgrade, six control transitions are checked and repaired, loudly. Section 9.
@@ -213,7 +213,7 @@ Two consequences:
 - **`T6f` — does anyone outside the administrators hold `System Manager`?** Currently no. It warns if that changes.
 - **`T6g` — can one person *create* a document and then approve it?** Yes, and this is the one worth understanding. `T6e` compares workflow *transition* roles, but creating a document is a permission, not a transition. Both directors hold `Projects Manager`, which can create a BRM; `MSCAST Director`, which certifies one; and `Accounts Manager`, which marks it paid. **A director can therefore take a supplier bill from creation to paid alone.** `T6e` never saw it, because "prepare a BRM" is not a workflow transition at all.
 
-`T6g` was added on 20 September after three delivered documents were found claiming a separation that does not exist. The documents have been corrected. **The payment block itself is unaffected** — no certified BRM, no payment, for anyone, including a director.
+`T6g` was added on 20 September after three delivered documents were found claiming a separation that does not exist. The documents have been corrected. **The payment block itself is unaffected** — no certified BRM, no payment, for anyone, including a director. It was moved out of a Server Script and into the app on 21 September, after a probe found three routes round it; see `T6a`.
 
 ## 10. What is not production yet
 

@@ -68,7 +68,7 @@ whoever reviews the books sees the assumption at the point it matters rather tha
 
 ### Controls
 
-- **Four active workflows**: PCC approval, purchase order approval, BRM certification, project kick-off. The BRM workflow drives the same `status` field the payment block reads, so certifying through the workflow is what unlocks payment — no parallel truth
+- **Four active workflows**: PCC approval, purchase order approval, BRM certification, project kick-off. The BRM workflow drives the same `status` field the payment block reads, so certifying through the workflow is what unlocks payment — no parallel truth. The block sits in application code (`mscast_erp.controls.brm_payment`) on both Payment Entry and Journal Entry, not in a screen-edited script
 
   *(Since superseded: five workflows. Drawing release was added, and the approving roles moved to the directors.)*
 - **Five department users** (accounts, purchase, design, stores, HR) on matching roles, so the demo never runs as Administrator
@@ -96,12 +96,12 @@ field's actual option is `'Approved by Customer'`, so it matched all nine drawin
 
 The rest: every report executes; no report uses the container's UTC date; every print format
 renders; the trial balance nets to zero; the balance sheet balances; the P&L ties to the ledger;
-no ledger entry without a cost centre; the BRM payment block actually refuses an uncertified bill
+no ledger entry without a cost centre; the BRM payment block actually refuses an uncertified bill on all six routes tested
 (tested live and rolled back); workflows are complete; every stored Select value is a valid option;
 every invoiced item has an HSN; GST head matches place of supply on every invoice; mail works and
 no notification has a dead recipient; payroll and attendance are consistent.
 
-> *(Since extended to **27 checks**, in three steps, and the sequence is worth reading because each
+> *(Since extended to **31 checks**, in four steps, and the sequence is worth reading because each
 > step exists only because the one before it missed something.*
 >
 > *First, **T6d**. An app install silently moved cost-sheet approval and bill certification to the
@@ -215,4 +215,4 @@ Added since, and not on the original list:
 4. Open a **Purchase Order** and watch the approval workflow bar appear.
 5. Try to pay an uncertified supplier bill and watch the BRM block refuse it.
 6. Open a **Drawing** in *Draft* and try to release it for manufacture — the system will not offer it.
-7. Run the test harness and watch 27 checks report **25 pass, 2 expected warnings, 0 failures** — then read what the two warnings say, because they are the honest part.
+7. Run the test harness and watch 31 checks report **29 pass, 2 expected warnings, 0 failures** — then read what the two warnings say, because they are the honest part.

@@ -31,7 +31,7 @@ are not part of the rebuild.
 1. **The mail password.** `61_email_account` recreates the Purelymail account but deliberately
    leaves the password blank - open `/app/email-account/mscast-test`, enter it, save. Until then
    the steps that send mail log an error and carry on.
-2. **`server_script_enabled`.** The BRM payment block and the scheduled jobs are Server Scripts,
+2. **`server_script_enabled`.** The scheduled jobs are Server Scripts (the BRM payment block is no longer one - it moved into the app on 21 September),
    which Frappe refuses to create unless the flag is set:
    ```
    docker exec mscast-poc-backend-1 bash -c 'cd /home/frappe/frappe-bench && bench set-config -g server_script_enabled true'

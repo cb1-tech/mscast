@@ -65,7 +65,7 @@ It is also `docstatus = 0` (never submitted), so it is a draft dunning being cou
 
 Listed in the reviewers' order of severity. Each needs a test against the live system.
 
-1. **The BRM payment block is narrower than the SOPs claim.** It is a Server Script on Payment Entry *before submit*. Untested: a Journal Entry paying the supplier; an advance Payment Entry with no invoice reference (MSCAST's own requirement routes 30% PO advances through BRM against a proforma); non-project suppliers such as electricity; partial certification where the bill is for 10 and 9 arrived. SOP-04 states "the system will not let one person do both" for PO approval — the owner ≠ approver condition has never been tested.
+1. **The BRM payment block is narrower than the SOPs claim.** ~~It is a Server Script on Payment Entry *before submit*.~~ **Tested on 21 September and the reviewer was right on every count — see Section G. Now closed.** Untested: a Journal Entry paying the supplier; an advance Payment Entry with no invoice reference (MSCAST's own requirement routes 30% PO advances through BRM against a proforma); non-project suppliers such as electricity; partial certification where the bill is for 10 and 9 arrived. SOP-04 states "the system will not let one person do both" for PO approval — the owner ≠ approver condition has never been tested.
 2. **The MSCAST Director role is read-only on ~30 doctypes but is named as the approver** on PCC, quotation, kick-off, claims, closure, payroll and payments. A read-only role cannot execute a workflow transition. If true, every approval path is broken.
 3. **The MSME 45-day clock probably starts from the wrong date.** MSMED s.15 runs from acceptance or deemed acceptance (15 days from delivery), not the invoice date; 45 days applies only with a written agreement, otherwise 15; s.43B(h) covers micro and small only, not medium; s.16 interest must be accrued and disclosed under s.22.
 4. **Free issue to fabricators is a plain stock transfer**, not a Subcontracting Order with the India Compliance job-work challan. If so, ITC-04 data is not generated and the one-year return rule is untracked — a GST exposure, not a reporting nicety.
@@ -178,7 +178,7 @@ The reviewer flagged that the SOPs claimed a separation the system had never bee
 
 The first segregation check, `T6e`, did not catch it because it compares *workflow transition* roles, and creating a document is a permission rather than a transition. `T6g` was written to ask the question the way an auditor would and now reports it on every build. The three documents have been corrected, and the decision is put to MSCAST as **Q21** in the traceability matrix.
 
-The payment block itself — the thing that actually protects the money — was tested and holds: no certified BRM, no payment, for anyone, including a director. The reviewer's other B1 sub-cases (journal-entry payments, advance payments with no invoice reference, partial certification) **remain untested** and are still worth doing.
+The payment block itself — the thing that actually protects the money — was tested and holds: no certified BRM, no payment, for anyone, including a director. The reviewer's other B1 sub-cases (journal-entry payments, advance payments with no invoice reference, partial certification) **remain untested** and are still worth doing. *(They were tested the following day. Three of the four were open. See Section G.)*
 
 ## Closed later the same day, after a second audit
 
@@ -192,11 +192,29 @@ A second, adversarial audit was run against the live system on the evening of 20
 
 This is the second time in a day that a control was described as enforced and was not. The pattern is worth naming: **every one of them was found by asking the system rather than reading the configuration.** T6d through T6j all exist because something passed a check that was asking an easier question.
 
+## Tested on 21 September — and three of them were not defects
+
+Each item below was re-checked against the running system rather than re-read. Three turned out to be correct as built, which matters as much as the fixes: acting on them would have broken working things.
+
+| Finding | Verdict |
+|---|---|
+| **A3** — "a machine was commissioned that was never dispatched" | **Not a defect.** `DN-26-00002` ships `CCM-2S-130 x1` — the caster itself — plus 30 erection units against PROJ-0001, before `COMM-2026-00001`. The `per_delivered = 7.19%` that prompted the finding is low because the order also carries spares and services still to come, not because the machine is still in the works. The review was written against data that predated that delivery note. |
+| **A3** — "`DN-26-00001`, the only delivery note, `project = NULL`" | **Not a defect.** It is 8 × `SPR-MOULD-TUBE` to Konark Alloys, who has no project and no sales order. A spares sale legitimately has no project. It is also no longer the only delivery note. |
+| **A4** — draft dunning contradicting the receivables position | **Already closed.** No Dunning records exist, and no invoice is past its due date. |
+| **B10** — "TDS on PINV-26-00003 does not reconcile" | **Not a defect, and the reviewer's arithmetic was wrong.** The bill is ₹5,16,000 net + 9% CGST + 9% SGST = ₹6,08,880 gross, less ₹10,320 TDS = ₹5,98,560 payable. TDS is **exactly 2.0000% of the net**, which is the s.194C rate, and CBDT Circular 23/2017 requires TDS to be computed on the amount *excluding* GST. The reviewer divided TDS by the total *after* TDS had been deducted. |
+| **B9** — two sales invoice series in one company | **Fixed.** `ACC-SINV-2026-00001` renamed to `SINV-26-00006`; GL entries followed the rename. Trial balance still nets to zero. |
+
+**The lesson is the same one as the controls.** These were read from a document rather than asked of the system, and three of five were wrong in the safe direction — reporting defects that were not there. A review is a set of hypotheses, not a defect list, and the difference only shows when each one is tested.
+
 ## Still open, unchanged
 
 - **A1** — the Administrator password has not been rotated again. A deliberate decision: this is a POC on a laptop. It becomes mandatory the moment the system moves to a server or carries real data.
 - **A3, A4, A5** — the demo story contradictions, the draft dunning, and the retention posted against the wrong party. All still present. **A3 is the one most likely to be noticed in the room**, and it is a seeding fix, not a code fix.
-- **B3 to B10** — none has been tested. They need the CA session and a day of ledger work. B1's remaining sub-cases — journal-entry payments, advance payments with no invoice reference, partial certification — are still untested and are the most likely place for the next finding.
+- **B1's remaining sub-cases** — journal-entry payments, advance payments with no invoice reference, partial certification. *(Tested on 21 September. Three of the four were open, and the fourth was the opposite problem. **Closed — see Section G.**)*
+- **B3, B4, B5, B7** — untested, and each needs a fact only MSCAST has or a position only the CA can take: when the MSME clock starts, whether free issue goes out on a job-work challan, how WIP should be valued, whether customers deduct TDS under 194C.
+- **B6 — answered in part.** MSCAST confirms **PF, ESI and gratuity all apply**, so the payroll and the provision are built correctly. One line remains for the CA: EPF is mandatory only at 20+ employees, so at MSCAST's headcount it applies either by voluntary registration under s.1(4) or by continuing coverage from a period above the threshold. Which one should be recorded. The s.115BAA election and the Ind AS 116 "Lease Liabilities" head are separate and still open.
+- **B8** — real, and larger than it looks. Two opening-stock Stock Entries credit ₹24,74,400 to `5119 Stock Adjustment`, an **expense** account, so the figure inflates reported profit. The correct treatment posts it against `1910 Temporary Opening` instead. Doing so reduces profit by ₹24.74 lakh and invalidates the current tax provision of ₹5,23,156, so it is a decision about the demonstration's headline numbers rather than a tidy-up.
+- **A5** — real, and it is a question about the contract rather than the ledger. The journal entry itself is internally correct: it reclassifies ₹1,81,248, exactly 10% of `SINV-26-00002`, from Debtors to Retention Receivable against that invoice, same party throughout. The problem is *which* invoice — Konark Alloys is a spares customer with no project and no retention clause, while the *Retention and Certificates* report computes entitlement from `Sales Order.retention_percent` and so lists Sahyadri and Deccan. The ledger records retention nobody contracted for, and the report never shows what was actually reclassified, so the two can never be reconciled.
 - **C1, C2, C3, C5, C6** — every structural finding stands untouched. The four real formats and the CA answers are exactly what the Data Request Covering Note asks MSCAST for; **C2, the absence of a signed scope, remains the largest commercial exposure and is still fixable with one page.**
 
 ## What this review got right
@@ -204,3 +222,46 @@ This is the second time in a day that a control was described as enforced and wa
 Worth saying, because it is the argument for running one again. Of the findings that could be tested, the reviewer was right about the demo-story contradictions, the retention posting, the report counts, the GSTIN exposure and — most usefully — about a control being claimed and never tested. The one significant miss, **B2**, was caused by the documentation being wrong rather than by careless review.
 
 Three of the fixes prompted by this review are now permanent automated checks rather than one-off corrections: `T6d` asserts the approval matrix, `T6f` reports who holds `System Manager`, and `T6g` reports who can create and then approve the same document. Findings that become tests do not come back.
+
+---
+
+# G. Status as at 21 September 2026 — B1 closed
+
+## B1. The payment block was narrower than the SOPs claim — FIXED
+
+The reviewer's suspicion was tested rather than argued. Each route was attempted against the live system with a real transaction; what follows is what the system did, not what the configuration said it would do.
+
+| Route | Before | Now |
+|---|---|---|
+| Payment Entry against a bill with no certified BRM | blocked | blocked |
+| **Journal Entry debiting Creditors against the supplier** | **paid straight through** — `ACC-JV-2026-00023` submitted with no BRM anywhere | blocked |
+| **Advance Payment Entry with no invoice reference** | **₹50,000 paid** with no BRM — the script looped over the invoice references, and an empty list means the loop body never runs | blocked |
+| **Paying more than the certificate covers** | **never checked** — a BRM certified for 9 units paid for 10 | blocked, quoting the certified amount against the amount being paid |
+| A BRM already marked *Paid* | treated as merely "not certified" | blocked, naming it as paying the same bill twice |
+| Electricity, rent, telephone, statutory | **blocked, with no way out** — the control was too wide in the other direction | payable, via a per-supplier exemption |
+
+Three of the reviewer's four sub-cases were open. The fourth — non-project suppliers — was the opposite problem, and would have surfaced the first time MSCAST tried to pay an electricity bill.
+
+## What changed, and why it is not another script
+
+The control no longer lives in a Server Script typed into the desk. It is **`mscast_erp/controls/brm_payment.py`**, wired on `before_submit` for **both** Payment Entry and Journal Entry, and it ships inside the application image. That matters for three reasons the reviewer's Section C1 already raised: it is in version control, it is diffable at review, and it can be tested. A Server Script is none of those. The old script has been deleted — from the site and from the fixture — so there is exactly one implementation of the rule and no second copy to drift.
+
+**A new field on Supplier, *Exempt from BRM certification*.** Tick it only for bills that cannot be certified against a purchase order: electricity, water, rent, telephone, statutory payments. Every trade supplier stays unticked, and an unticked supplier cannot be paid without a certified BRM. At the time of writing, **0 of 15 suppliers are ticked.** The operating rule is written up in the *Operating Recommendations*.
+
+## Why this one will not quietly come back
+
+The build check `T6a` used to test one route. It now attempts **six**, each as a real document that is submitted and then rolled back:
+
+- a properly certified bill **pays** — the control must not be a blanket refusal;
+- a bill with no BRM is refused at Payment Entry, **and** at Journal Entry;
+- an advance with no invoice reference is refused;
+- a payment above the certified amount is refused;
+- a BRM-exempt supplier **pays**.
+
+Each blocked case also asserts *which* rule blocked it, so a payment refused by ERPNext's own validation can no longer be mistaken for the control working — which is exactly how the first probe of this fix produced a false negative.
+
+`T6c` changed too. It used to count how many Server Scripts were enabled, which would have been satisfied by almost anything. It now fails if the retired script reappears, or if either hook comes unwired.
+
+## The pattern, for the third time
+
+Every route above was found by attempting a payment and watching what happened. Reading the script would have shown a control that looked correct; it sat on the right doctype, at the right event, and refused the case anyone would think to try. The gap was in the cases nobody tried. **Findings that become tests do not come back** — that is now true of six more of them.

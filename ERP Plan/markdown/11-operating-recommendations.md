@@ -4,7 +4,7 @@ title: "MSCAST ERP — Operating Recommendations"
 
 # MSCAST ERP — Operating Recommendations
 
-**For:** MSCAST Engineering Pvt Ltd · **Version:** 1.0 · **Date:** 20 September 2026
+**For:** MSCAST Engineering Pvt Ltd · **Version:** 1.1 · **Date:** 21 September 2026
 
 ## Why this document exists
 
@@ -88,6 +88,23 @@ One sales invoice was created on ERPNext's default series (`ACC-SINV-2026-`) whi
 The habit that makes the difference, and the one that slips first. A system updated daily tells you the truth about the business. A system updated at month end tells you what somebody remembered.
 
 Every control in this system compares documents against each other. A bill entered three weeks late was not covered by any of them for three weeks.
+
+## A8. The BRM exemption is for bills that cannot be certified — nothing else
+
+No supplier can be paid without a **certified Billing Routing Memo**. That is refused in software, on every route: a Payment Entry, a Journal Entry, and an advance with no invoice behind it. It applies to everyone, directors included.
+
+Some bills cannot have a BRM, because there is no purchase order, no inspection and no delivery to certify against — **electricity, water, rent, telephone, statutory payments**. For those, and only those, tick **Exempt from BRM certification** on the supplier record.
+
+**How to use it:**
+
+- Tick it when the supplier is created, not when a payment is stuck. A tick applied under time pressure is how a trade supplier becomes exempt.
+- **It is a property of the supplier, not of the bill.** Once ticked, *every* bill from that supplier is payable without a certificate. Never tick a supplier who also sells goods or services against a purchase order.
+- A supplier who starts as a utility and later supplies materials must be **untick**ed, or split into two records.
+- The count of exempt suppliers belongs in the monthly review (B2). It should be small, and it should change rarely. At handover it was **0 of 15**.
+
+**If a payment is refused, the refusal is the control working.** The answer is to raise and certify the BRM, not to exempt the supplier. Certifying is what releases the money; that is the whole point of the memo.
+
+---
 
 ---
 
@@ -188,11 +205,12 @@ Pin this up.
 5. **TDS is 2% of the net, excluding GST** — not the gross, not the amount payable.
 6. **One naming series** per document type. Never accept the default.
 7. **Udyam number at supplier creation. HSN at item creation.** Neither can be added usefully later.
-8. **Enter it the day it happens.**
-9. **Correct first, then provide for tax, then produce the statements.**
-10. **Never change an approval rule through the screens** — it is reverted at the next upgrade.
-11. **Nobody operational holds `System Manager`.**
-12. **Read the morning note.** An item appearing six mornings running is a procedure not being followed, not a document needing fixing.
+8. **No certified BRM, no payment.** The *BRM-exempt* tick is for electricity, rent and statutory bills only — never to clear a stuck payment.
+9. **Enter it the day it happens.**
+10. **Correct first, then provide for tax, then produce the statements.**
+11. **Never change an approval rule through the screens** — it is reverted at the next upgrade.
+12. **Nobody operational holds `System Manager`.**
+13. **Read the morning note.** An item appearing six mornings running is a procedure not being followed, not a document needing fixing.
 
 ---
 
@@ -203,7 +221,8 @@ These no longer depend on anyone remembering. The build checks assert them on ev
 | Check | Asserts |
 |---|---|
 | `T5a`–`T5d` | Trial balance nets to zero; the balance sheet balances; profit ties to the ledger; no entry without a cost centre |
-| `T6a` | A supplier bill with no certified BRM cannot be paid — by anyone |
+| `T6a` | A supplier bill with no certified BRM cannot be paid — by anyone, on **any** of six routes: payment entry, journal entry, advance without a reference, and an amount above the certificate. A properly certified bill, and a BRM-exempt supplier, must still pay |
+| `T6c` | The payment control is in the application package, not in a screen-edited script |
 | `T6d` | The approval authority sits where MSCAST put it |
 | `T6e`, `T6g` | Whether one person can raise and approve, or create and approve, the same document |
 | `T6f` | Only administrators hold `System Manager` |

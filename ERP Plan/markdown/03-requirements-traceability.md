@@ -1,9 +1,11 @@
-# MSCAST ERP - Requirements Traceability (v1.7)
+# MSCAST ERP - Requirements Traceability (v1.8)
 
 **Version 1.7 · 20 Sep 2026** · every requirement implemented; verified by a 27-check automated harness.
 
 Source of requirements: MSCAST `ERP_Requirement_Final.pdf`. Solution: ERPNext v16.35 + India Compliance 16.9.1 + Frappe HR 16.19 + India Payroll 16.0.4 + `mscast_erp` 0.1.0 (release **`v0.9.0`**).
 
+> **What changed in v1.8.** No requirement changed status. **A-05 changed its evidence, and its mechanism.** The BRM payment block was a Server Script on Payment Entry, and on 21 September it was tested at every other door rather than only the one it guarded. Three ways round it were open: a Journal Entry debiting Creditors paid an uncertified bill straight through; an advance Payment Entry with no invoice reference passed silently; and the certified *amount* was never read, so a memo certified for nine units paid for ten. It was also too wide in the other direction — an electricity bill, which can have no BRM at all, was refused with no way out. The control now lives in the application package (`mscast_erp.controls.brm_payment`) on both Payment Entry and Journal Entry, the Server Script is deleted, and a per-supplier *Exempt from BRM certification* flag covers utilities, rent and statutory bills. `T6a` went from one route to six; `T6c` now fails if the retired script reappears. The harness stands at 31 checks.
+>
 > **What changed in v1.7.** No requirement changed status. One piece of **evidence was found to be wrong**, and it is the kind worth naming rather than quietly fixing. P-08 and PC-06 said a supplier bill passes through three separate hands — Purchase prepares, a director certifies, Accounts pays. It does not have to. Both directors hold a role that can *create* a BRM, the role that certifies one and the role that marks it paid, so a director can carry a supplier bill from creation to payment alone. The harness had not caught it because the segregation check compared workflow *transition* roles, and creating a document is a permission rather than a transition. A new check, **T6g**, asks the question the way an auditor would and now reports it. The payment block itself is unaffected: no certified BRM, no payment, for anyone. The administrator-account item under *What still stands* is closed, and the harness is now 27 checks.
 
 > **What changed in v1.6.** No requirement changed status. What changed is the evidence behind several of them, after the users were rebuilt as named people and the approval authority was settled. Corrected: the harness went from 23 checks to 25; `MSCAST Director` is the **approving** role, not a read-only one; BRM certification and purchase-order approval sit with a director, not the Purchase Manager; the drawing register is driven by a workflow rather than a status field; and the counts in the "built beyond" table were all understated. The Gemini automation listed as outstanding has been built.
@@ -44,9 +46,9 @@ Source of requirements: MSCAST `ERP_Requirement_Final.pdf`. Solution: ERPNext v1
 | T5b | ledger | Schedule III balance sheet balances to the rupee |
 | T5c | ledger | P&L profit ties to the ledger surplus |
 | T5d | ledger | no ledger entry without a cost centre |
-| T6a | controls | BRM payment block refuses an uncertified supplier bill |
+| T6a | controls | BRM payment block guards every payment route — six routes attempted live on each build |
 | T6b | controls | **5 workflows** active and complete |
-| T6c | controls | server scripts present and enabled where intended |
+| T6c | controls | controls live in the application package, scripts only where intended |
 | **T6d** | controls | **approval authority is where the business put it** - 5 transitions asserted |
 | **T6e** | controls | **nobody can both raise and approve the same document** - *warns*, see below |
 | **T6f** | controls | **only administrators hold System Manager** - 2 holders, both expected |
@@ -131,7 +133,7 @@ Both are positions somebody has taken, not defects to chase. Both are stated in 
 | A-02 | Accounts | Purchase voucher entries for bought-outs and equipment with taxes, duties, freight | Purchase Invoice with tax templates; Landed Cost Voucher | Standard | P4 | S | Landed cost voucher MAT-LCV-2026-00001 (Rs 45,000 freight) apportioned onto the mould-tube receipt |
 | A-03 | Accounts | Check purchase invoices against PO qty, rates, terms | PO–PR–PI matching; over-billing allowance = 0 | Standard | P4 | S | Purchase invoice matched to the purchase receipt and PO |
 | A-04 | Accounts | Sales entry from sales invoice raised by project coordinator | Sales Invoice (e-invoice if applicable) | Standard | P4 | S | Intra-state CGST+SGST, inter-state IGST and services invoices |
-| A-05 | Accounts | Project payments only after BRM from Procurement | Payment Entry validation against certified BRM | Custom (server script) | P4 | S | Server script 'MSCAST BRM payment block' on Payment Entry (Before Submit) - **verified live on every harness run**: payment against a bill with no certified BRM is refused, for every user including a director |
+| A-05 | Accounts | Project payments only after BRM from Procurement | Payment Entry **and Journal Entry** validation against a certified BRM | Custom (**application code**, `mscast_erp.controls.brm_payment`) | P4 | S | **Verified live on every build, on six routes** (T6a): a bill with no certified BRM cannot be paid by payment entry, by journal entry, or as an advance with no reference; a payment above the certified amount is refused; an already-paid BRM cannot fund a second payment. Holds for every user including a director. Bills that cannot be certified against a PO — electricity, rent, statutory — are released by ticking *Exempt from BRM certification* on the supplier (0 of 15 ticked at handover). Moved out of a Server Script into the app on 21 Sep so it is version-controlled, shipped in the image and testable |
 | A-06 | Accounts | Non-project payments: admin, utilities, credit cards, government, salary | Payment Entry / Journal Entry | Standard | P4 | S | 6 journal vouchers: electricity, petty cash imprest and spend, foreign travel, insurance, cargo agency |
 | A-07 | Accounts | Petty cash payments | Petty cash account + Mode of Payment; Employee Advance for imprest | Config | P4 | S | Petty Cash account + 'Cash' mode of payment |
 | A-08 | Accounts | Customer receipts and receipt to customer | Payment Entry (Receive) + receipt print format | Standard | P4 | S | Advance receipts against ABG across projects |
