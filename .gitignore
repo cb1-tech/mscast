@@ -23,3 +23,4 @@ staging-build.log
 erpnext-poc/backups/
 __pycache__/
 *.pyc
+erpnext-poc/scripts/.*.sh
