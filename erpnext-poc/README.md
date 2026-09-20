@@ -67,7 +67,14 @@ wsl -d Ubuntu -e bash /mnt/d/MSCAST/erpnext-poc/scripts/run-seed.sh 102_test_har
 | `doc-facts.sh` | print what the documents assert — roles, workflows, schedules — straight from the running system |
 | `audit-sod.sh` | the segregation-of-duties audit in full, including create-permission overlaps |
 | `snapshot.sh <label>` | database + files backup, copied out to `backups\` |
-| `reset-poc.sh` | wipe and rebuild from every seed script (~25 min) |
+| `reset-poc.sh` | wipe and rebuild from every seed script (~30 min). **Reproduces the system, not the demo data — see below** |
+| `reset-poc-run.sh` | run the above unattended, from a snapshot, logging to `reset-run.log` |
+| `deploy-app.sh` | build the image and redeploy after an app code change, then prove `/login` answers |
+| `backup-out.sh` | copy a backup set out of the Docker volume onto `D:` |
+| `restore-test.sh` | restore a backup into a **separate** site and count what came back |
+| `restore-live.sh` | restore a backup **over** the live site |
+| `verify-site.sh` | count what is in a site |
+| `status.sh` | sites, bench processes, HTTP status, containers |
 | `build-mscast-image.sh` | rebuild `mscast/erpnext:v16-app` with the current app baked in — **the real way to ship a code change** |
 | `push-app.sh` | copy the app into the running containers and restart them, for fast iteration only. The image is the source of truth; a container recreation discards anything pushed this way |
 | `pull-fixtures.sh` | copy exported fixtures out of the container into the app |
@@ -223,7 +230,16 @@ Two consequences:
 - Biometric attendance pull switched off
 - Hosting: VPS in India, HTTPS, daily India-resident backups (Companies (Accounts) Rules r.3(5))
 - The AI briefing points at a model router on this laptop; a server needs a hosted endpoint — three config lines, no code change
-- **`reset-poc.sh` has not been run end to end** since the most recent scripts were added to it. Each was verified against the live site individually, but the claim "this rebuilds from nothing" is still untested. It now builds the image first if it is missing, so the rebuild should produce the same stack — that too is untested until someone runs it
+- **`reset-poc.sh` was run end to end on 21 September, and it does not reproduce the demo data.** The result was 23 PASS, 3 WARN, 5 FAIL of 31, against 29/2/0 on the live site. Two causes:
+
+  - *Fixed.* The compose `create-site` step installs **only** `erpnext`. The other four apps had been installed by hand and never written down, so 83 seed steps failed on tables that did not exist. `reset-poc.sh` now installs all four in dependency order and aborts if any is missing.
+  - *Not fixed, and a known limitation.* With all six apps present, 76 seed steps still failed in a cascade — masters created by scripts numbered 150+ are referenced by scripts numbered 25. The seed scripts are a record of how this POC was explored, not a designed build order, which is also why a dozen of them are named `*_fix`, `*_fix2`, `*_fix3`.
+
+  **What reproduces and what does not.** Every *configuration* check passed on the rebuilt site — 28 reports, 5 workflows, print formats, roles and permissions, the BRM payment control, the approval matrix (T2, T6b, T6c, T6d, T6h, T6i, T6j, T7b). Every failure was *data*. So the app and its fixtures do reproduce the system; the demonstration dataset does not replay. A production install wants the former and not the latter.
+
+  **Use the right mechanism for each.** A fresh MSCAST system: create the site, install the six apps, let the fixtures configure it. *This* system with its data: restore a backup — tested the same day, restored into a separate site and passed all 31 checks identically, and put the live demo back in under three minutes when the rebuild broke it.
+
+- **Backups are now tested, not asserted.** `backup-out.sh` copies a set out of the Docker volume onto `D:` — which matters, because `reset-poc.sh` runs `docker compose down -v` and the backups live *in* that volume. `restore-test.sh` then restores into a separate site and the harness is run against it. Two defects in the restore path were found only by doing it: the db root password is in `compose.yaml` as `MYSQL_ROOT_PASSWORD`, not in `common_site_config.json`, and `--no-mariadb-socket` is deprecated in favour of `--mariadb-user-host-login-scope`
 
 Six accounting and scope assumptions are still awaiting MSCAST and the CA. They are listed in the implementation report and written into the narration of the affected vouchers, so whoever reviews the books meets the assumption where it matters.
 

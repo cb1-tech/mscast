@@ -24,3 +24,6 @@ erpnext-poc/backups/
 __pycache__/
 *.pyc
 erpnext-poc/scripts/.*.sh
+
+# Database dumps. Real data, large, and not the repo's job.
+backups/

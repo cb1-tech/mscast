@@ -164,7 +164,7 @@ Added after the findings above were worked. **Nothing above has been edited.** T
 | **A2** — real GSTIN and real directors on a public demo | Shareholders are now `Promoter A / B / C`; client-facing print formats carry a demonstration watermark |
 | **A6** — report counts wrong in the documents | 28 custom reports; every document now says 28, asserted by the census script |
 | **B2** — "MSCAST Director is read-only, so every approval path is broken" | **The reviewer's premise was wrong, and this is worth recording.** `MSCAST Director` is the *approving* role and always was; the read-only role is `Auditor`, held by the external CA. No approval path was broken. The confusion came from the documents themselves, which had described the Director role as read-only — the documents were wrong, not the system |
-| **C4** — no path from POC to production | `mscast_erp` is an installable app carrying every doctype, report, print format, workflow and control; the repository is `github.com/cb1-tech/mscast` at tagged release `v0.9.0`; fixtures are exported; the app reinstalls onto an empty site. The residual risk named in section 10 of the POC README is that `reset-poc.sh` has not been re-run end to end since the four most recent scripts joined it |
+| **C4** — no path from POC to production | `mscast_erp` is an installable app carrying every doctype, report, print format, workflow and control; the repository is `github.com/cb1-tech/mscast` at tagged release `v0.9.0`; fixtures are exported; the app reinstalls onto an empty site. *(The residual risk named here — that `reset-poc.sh` had never been re-run end to end — was tested on 21 September and was real. See Section G: the system reproduces, the demo data does not.)* |
 | **D** — "the 23-check harness" | Now **27 checks**: 25 pass, 2 warn, 0 fail |
 
 ## Confirmed, and worse than the reviewer knew
@@ -285,3 +285,34 @@ Both reviewers worked from the documents alone. From those, the arrangement look
    What reduces it is not paperwork but the things that make the system maintainable by someone else: the installable `mscast_erp` app rather than database-resident configuration, the fixtures, the 31 build checks, the reproducible rebuild, and documentation written for a reader who was not there. Those exist. What remains is naming someone at MSCAST who can run the monthly and annual jobs the SOPs describe, and proving the rebuild and the restore actually work rather than asserting they do.
 
 **Why this is recorded rather than edited away.** The reviewers were not careless; they had no way to know. Their reasoning from the available evidence was sound, and the finding it produced was wrong. That is worth keeping visible, because it is the same failure mode as B2 — a confident conclusion from documents rather than from the system — and it argues for the same correction: ask, then conclude.
+
+## C4 — the rebuild was tested for the first time, and it did not rebuild the system
+
+`reset-poc.sh` had never been run end to end. It was run three times on 21 September, from empty, against the live stack. What it produced was **not** the system: **23 PASS, 3 WARN, 5 FAIL of 31**, a balance sheet of ₹11,94,435 against the real ₹1,79,02,695, and a loss of ₹8,22,182 where the system shows a profit of ₹47,26,266.
+
+**The first cause was a missing step that was never written down.** The compose `create-site` service runs `bench new-site --install-app erpnext` and nothing more. `india_compliance`, `hrms`, `india_payroll` and `mscast_erp` had been installed by hand on the live site at some point, and that was never recorded anywhere. Eighty-three seed steps failed on the first run with `tabSalary Slip doesn't exist`, `tabGST HSN Code doesn't exist`, `tabPayroll Entry doesn't exist`. The script now installs all four in dependency order and **aborts** if any is missing, rather than continuing and producing a site that looks built.
+
+**The second cause is structural and is not fixed.** With all six apps present, 76 seed steps still failed, in a cascade: `Could not find Customer: Sahyadri Steels Ltd (DEMO)`, `Could not find Item Code: FA-CAD-WS`, `Could not find Component: Conveyance Allowance`. The seed scripts are a **historical record of how the POC was explored**, not a designed build order — masters are created by scripts numbered 150+ but referenced by scripts numbered 25, and a dozen `*_fix`, `*_fix2`, `*_fix3` scripts exist precisely because things were repaired in the order they were discovered. Replaying that sequence on an empty database does not reconstruct what days of interactive work produced.
+
+**What this does and does not mean.** It is worth separating carefully, because the headline sounds worse than the finding:
+
+| | Reproduces from empty? |
+|---|---|
+| **The system** — doctypes, 28 reports, 5 workflows, print formats, roles and permissions, the BRM payment control, the approval matrix | **Yes.** Every configuration check passed on the rebuilt site: T2, T6b, T6c, T6d, T6h, T6i, T6j, T7b. That is the `mscast_erp` app and its fixtures doing their job. |
+| **The demo data** — customers, projects, invoices, payroll, the worked examples | **No.** Every failure was a data failure. |
+
+So the thing C4 actually asked for — *can MSCAST rebuild, upgrade, or hand this to another Frappe partner* — is answered **yes for the system**. What does not replay is a demonstration dataset, which a production deployment would never want: MSCAST installs the app and enters its own data.
+
+**The practical conclusion is to stop treating the seed scripts as the rebuild mechanism.** There are two reproduction paths, and they are for different things:
+
+1. **A fresh MSCAST system** — create the site, install the six apps, let the app's fixtures configure it. This works today and is what a production install is.
+2. **This exact system, with its data** — restore a backup. This was tested on the same day and works: the backup restored into a separate site and passed all 31 checks identically, and when the rebuild left the demo broken, the same backup restored it in under three minutes.
+
+Repairing eighty exploratory scripts into a designed build order is a real piece of work with little production value. It is recorded here as a known limitation rather than quietly left as an untested claim.
+
+## Two mistakes made during that testing, recorded because the fixes are in the tooling
+
+Both were mine, and both are the kind that waste an afternoon silently.
+
+- **A running shell script was edited in place.** `bash` reads a script lazily, by byte offset, as it executes. Editing `reset-poc.sh` during a 25-minute run made `bash` resume at the old offset inside the new text and die with `app: unbound variable`. The runner now copies the script to a snapshot and runs that, so a run cannot be disturbed by an edit.
+- **A guard that could never match.** The check for "did the app install?" compared `bench list-apps` output with an exact-match grep, but that command prints `frappe  16.34.0  UNVERSIONED`. The guard failed on a **successful** install and aborted a good run. It now compares the first column only, in one helper used by every check.

@@ -1,0 +1,21 @@
+restoring 20260921_000120-frontend-database.sql.gz OVER site 'frontend'
+File restore/20260921_000120-frontend-database.sql.gz not found. Trying to check in alternative directories.
+File /home/frappe/frappe-bench/restore/20260921_000120-frontend-database.sql.gz found.
+App frappe already installed
+*** Scheduler is enabled ***
+Site frontend has been restored with files
+
+restarting so nothing serves stale state...
+ Container mscast-poc-backend-1 Restarting 
+ Container mscast-poc-queue-long-1 Restarting 
+ Container mscast-poc-websocket-1 Restarting 
+ Container mscast-poc-scheduler-1 Restarting 
+ Container mscast-poc-queue-short-1 Restarting 
+ Container mscast-poc-queue-long-1 Started 
+ Container mscast-poc-queue-short-1 Started 
+ Container mscast-poc-backend-1 Started 
+ Container mscast-poc-websocket-1 Started 
+ Container mscast-poc-scheduler-1 Started 
+ Container mscast-poc-frontend-1 Restarting 
+ Container mscast-poc-frontend-1 Started 
+  site answering (HTTP 200 after 1 attempt(s))

@@ -1,0 +1,2044 @@
+started 2026-09-21T03:57:34+09:00
+running snapshot /tmp/reset-poc.oJ8Uh0.sh
+using image: mscast/erpnext:v16-app
+ Container mscast-poc-scheduler-1 Stopping 
+ Container mscast-poc-queue-short-1 Stopping 
+ Container mscast-poc-queue-long-1 Stopping 
+ Container mscast-poc-create-site-1 Stopping 
+ Container mscast-poc-frontend-1 Stopping 
+ Container mscast-poc-redis-queue-1 Stopping 
+ Container mscast-poc-redis-cache-1 Stopping 
+ Container mscast-poc-db-1 Stopping 
+ Container mscast-poc-create-site-1 Stopped 
+ Container mscast-poc-create-site-1 Removing 
+ Container mscast-poc-create-site-1 Removed 
+ Container mscast-poc-queue-long-1 Stopped 
+ Container mscast-poc-queue-long-1 Removing 
+ Container mscast-poc-queue-long-1 Removed 
+ Container mscast-poc-redis-cache-1 Stopped 
+ Container mscast-poc-redis-cache-1 Removing 
+ Container mscast-poc-redis-queue-1 Stopped 
+ Container mscast-poc-redis-queue-1 Removing 
+ Container mscast-poc-redis-cache-1 Removed 
+ Container mscast-poc-redis-queue-1 Removed 
+ Container mscast-poc-queue-short-1 Stopped 
+ Container mscast-poc-queue-short-1 Removing 
+ Container mscast-poc-db-1 Stopped 
+ Container mscast-poc-db-1 Removing 
+ Container mscast-poc-queue-short-1 Removed 
+ Container mscast-poc-db-1 Removed 
+ Container mscast-poc-frontend-1 Stopped 
+ Container mscast-poc-frontend-1 Removing 
+ Container mscast-poc-frontend-1 Removed 
+ Container mscast-poc-websocket-1 Stopping 
+ Container mscast-poc-scheduler-1 Stopped 
+ Container mscast-poc-scheduler-1 Removing 
+ Container mscast-poc-backend-1 Stopping 
+ Container mscast-poc-websocket-1 Stopped 
+ Container mscast-poc-websocket-1 Removing 
+ Container mscast-poc-scheduler-1 Removed 
+ Container mscast-poc-websocket-1 Removed 
+ Container mscast-poc-backend-1 Stopped 
+ Container mscast-poc-backend-1 Removing 
+ Container mscast-poc-backend-1 Removed 
+ Container mscast-poc-configurator-1 Stopping 
+ Container mscast-poc-configurator-1 Stopped 
+ Container mscast-poc-configurator-1 Removing 
+ Container mscast-poc-configurator-1 Removed 
+ Volume mscast-poc_db-data Removing 
+ Network mscast-poc_frappe_network Removing 
+ Volume mscast-poc_redis-queue-data Removing 
+ Volume mscast-poc_logs Removing 
+ Volume mscast-poc_sites Removing 
+ Volume mscast-poc_db-data Removed 
+ Volume mscast-poc_redis-queue-data Removed 
+ Volume mscast-poc_logs Removed 
+ Volume mscast-poc_sites Removed 
+ Network mscast-poc_frappe_network Removed 
+ Network mscast-poc_frappe_network Creating 
+ Network mscast-poc_frappe_network Created 
+ Volume mscast-poc_sites Creating 
+ Volume mscast-poc_sites Created 
+ Volume mscast-poc_logs Creating 
+ Volume mscast-poc_logs Created 
+ Volume mscast-poc_redis-queue-data Creating 
+ Volume mscast-poc_redis-queue-data Created 
+ Volume mscast-poc_db-data Creating 
+ Volume mscast-poc_db-data Created 
+ Container mscast-poc-db-1 Creating 
+ Container mscast-poc-redis-cache-1 Creating 
+ Container mscast-poc-redis-queue-1 Creating 
+ Container mscast-poc-create-site-1 Creating 
+ Container mscast-poc-configurator-1 Creating 
+ Container mscast-poc-db-1 Created 
+ Container mscast-poc-redis-cache-1 Created 
+ Container mscast-poc-configurator-1 Created 
+ Container mscast-poc-backend-1 Creating 
+ Container mscast-poc-queue-long-1 Creating 
+ Container mscast-poc-websocket-1 Creating 
+ Container mscast-poc-queue-short-1 Creating 
+ Container mscast-poc-scheduler-1 Creating 
+ Container mscast-poc-create-site-1 Created 
+ Container mscast-poc-redis-queue-1 Created 
+ Container mscast-poc-queue-long-1 Created 
+ Container mscast-poc-queue-short-1 Created 
+ Container mscast-poc-websocket-1 Created 
+ Container mscast-poc-backend-1 Created 
+ Container mscast-poc-frontend-1 Creating 
+ Container mscast-poc-scheduler-1 Created 
+ Container mscast-poc-frontend-1 Created 
+ Container mscast-poc-redis-queue-1 Starting 
+ Container mscast-poc-configurator-1 Starting 
+ Container mscast-poc-create-site-1 Starting 
+ Container mscast-poc-db-1 Starting 
+ Container mscast-poc-redis-cache-1 Starting 
+ Container mscast-poc-configurator-1 Started 
+ Container mscast-poc-configurator-1 Waiting 
+ Container mscast-poc-configurator-1 Waiting 
+ Container mscast-poc-configurator-1 Waiting 
+ Container mscast-poc-configurator-1 Waiting 
+ Container mscast-poc-configurator-1 Waiting 
+ Container mscast-poc-redis-queue-1 Started 
+ Container mscast-poc-redis-cache-1 Started 
+ Container mscast-poc-db-1 Started 
+ Container mscast-poc-create-site-1 Started 
+ Container mscast-poc-configurator-1 Exited 
+ Container mscast-poc-websocket-1 Starting 
+ Container mscast-poc-configurator-1 Exited 
+ Container mscast-poc-queue-long-1 Starting 
+ Container mscast-poc-configurator-1 Exited 
+ Container mscast-poc-scheduler-1 Starting 
+ Container mscast-poc-configurator-1 Exited 
+ Container mscast-poc-backend-1 Starting 
+ Container mscast-poc-configurator-1 Exited 
+ Container mscast-poc-queue-short-1 Starting 
+ Container mscast-poc-queue-long-1 Started 
+ Container mscast-poc-backend-1 Started 
+ Container mscast-poc-websocket-1 Started 
+ Container mscast-poc-frontend-1 Starting 
+ Container mscast-poc-scheduler-1 Started 
+ Container mscast-poc-queue-short-1 Started 
+ Container mscast-poc-frontend-1 Started 
+waiting for site creation (several minutes)...
+installing the remaining apps...
+  installing india_compliance
+Creating Workspace Sidebars
+Creating Desktop Icons
+Updating Dashboard for india_compliance
+  installing hrms
+Creating Workspace Sidebars
+Creating Desktop Icons
+Updating Dashboard for hrms
+  installing india_payroll
+Creating Workspace Sidebars
+Creating Desktop Icons
+Updating Dashboard for india_payroll
+  installing mscast_erp
+Creating Sidebar Items for MSCAST Stores
+Creating Desktop Icons
+Updating Dashboard for mscast_erp
+apps now on the site:
+  
+  frappe           16.34.0 UNVERSIONED
+  erpnext          16.35.0 UNVERSIONED
+  india_compliance 16.9.1  UNVERSIONED
+  hrms             16.19.0 UNVERSIONED
+  india_payroll    16.0.4  UNVERSIONED
+  mscast_erp       0.1.0   UNVERSIONED
+  
+all six apps confirmed on the site
+enabling server scripts...
+seed scripts copied
+=================== 00_setup_wizard ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+/home/frappe/frappe-bench/apps/frappe/frappe/database/mariadb/mysqlclient.py:504: UserWarning: Commit/rollback are disabled during certain events. This command will
+be ignored. Commit/Rollback from here WILL CAUSE very hard to debug problems with atomicity and
+concurrent data update bugs.
+  self.commit()
+Updating Dashboard for frappe
+Updating Dashboard for erpnext
+Updating Dashboard for india_compliance
+Updating Dashboard for hrms
+Updating Dashboard for india_payroll
+Updating Dashboard for mscast_erp
+[seed-00] setup_complete -> {'status': 'ok'}
+[seed-00] company exists: MSCAST Engineering Pvt Ltd
+[seed-00] fiscal years: ['2026-2027']
+[seed-00] DONE
+=================== 01_company_masters ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-01] company exists
+[seed-01] basics done
+[seed-01] parties done: 5 customers, 10 suppliers
+Traceback (most recent call last):
+  File "<string>", line 6, in <module>
+    exec(open('../seed/01_company_masters.py').read())
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 262, in <module>
+  File "<string>", line 257, in run
+  File "<string>", line 248, in setup_items
+  File "<string>", line 29, in make
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 486, in insert
+    self.run_before_save_methods()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 1411, in run_before_save_methods
+    self.run_method("validate")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 1260, in run_method
+    out = Document.hook(fn)(self, *args, **kwargs)
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 1661, in composer
+    return composed(self, method, *args, **kwargs)
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 1643, in runner
+    add_to_return_value(self, f(self, method, *args, **kwargs))
+                              ~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/india_compliance/india_compliance/gst_india/overrides/item.py", line 10, in validate
+    validate_hsn_code(doc)
+    ~~~~~~~~~~~~~~~~~^^^^^
+  File "/home/frappe/frappe-bench/apps/india_compliance/india_compliance/gst_india/overrides/item.py", line 30, in validate_hsn_code
+    _validate_hsn_code(doc.gst_hsn_code)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/india_compliance/india_compliance/gst_india/doctype/gst_hsn_code/gst_hsn_code.py", line 122, in validate_hsn_code
+    frappe.throw(
+    ~~~~~~~~~~~~^
+        _("HSN/SAC Code is required. Please enter a valid HSN/SAC code."),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        frappe.MandatoryError,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/utils/messages.py", line 159, in throw
+    msgprint(
+    ~~~~~~~~^
+    	msg,
+     ^^^^
+    ...<7 lines>...
+    	allow_dangerous_html=allow_dangerous_html,
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/utils/messages.py", line 118, in msgprint
+    _raise_exception()
+    ~~~~~~~~~~~~~~~~^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/utils/messages.py", line 59, in _raise_exception
+    raise exc
+frappe.exceptions.MandatoryError: HSN/SAC Code is required. Please enter a valid HSN/SAC code.
+=================== 02_custom_doctypes ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-02] exists: MSCAST PCC Item
+[seed-02] exists: MSCAST PCC
+[seed-02] exists: MSCAST Drawing Revision
+[seed-02] exists: MSCAST Drawing
+[seed-02] exists: MSCAST MDF Item
+[seed-02] exists: MSCAST MDF
+[seed-02] exists: MSCAST BRM
+[seed-02] exists: MSCAST MDM Item
+[seed-02] exists: MSCAST MDM
+[seed-02] exists: MSCAST Delivery Instruction
+[seed-02] exists: MSCAST Inspection Plan
+[seed-02] exists: MSCAST Project Certificate
+[seed-02] custom fields created for 7 doctypes
+[seed-02] DONE
+=================== 03b_transactions ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-03] FAIL P1 lead->SO :: LinkValidationError('Could not find Party: Sahyadri Steels Ltd (DEMO), Row #1: Item Code: CCM-2S-130')
+[seed-03] FAIL P2 :: LinkValidationError('Could not find Customer: Deccan Extrusions Pvt Ltd (DEMO), Row #1: Item Code: ALBC-7')
+[seed-03] FAIL enquiries & spares :: LinkValidationError('Could not find Party: Konark Alloys Pvt Ltd (DEMO), Row #1: Item Code: SPR-MOULD-TUBE')
+[seed-03] DONE
+=================== 04b_reports_workspace ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-04] updated report: MSCAST PO vs PCC Variance
+[seed-04] updated report: MSCAST Project MIS
+[seed-04] updated report: MSCAST Free Issue at Vendor
+[seed-04] updated report: MSCAST Drawing Register
+[seed-04] updated report: MSCAST Dispatch Schedule
+[seed-04] updated report: MSCAST Retention and Certificates
+[seed-04] updated report: MSCAST BRM Register
+[seed-04] updated report: MSCAST Inspection Status
+[seed-04] workspace created
+[seed-04] system settings: India / Asia/Kolkata / dd-mm-yyyy
+[seed-04] DONE
+ALL DONE
+seed scripts copied
+=================== 05_gst_setup ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-05] OK   company GST + address
+[seed-05] party GST + MSME data set for 15 parties
+[seed-05] OK   party GST + MSME
+[seed-05] HSN/SAC + GST 18% template set on 0 items
+[seed-05] OK   item HSN/SAC + GST rate
+[seed-05] FAIL GST sales invoices :: LinkValidationError('Could not find Customer: Sahyadri Steels Ltd (DEMO), Row #1: Item: SPR-ROLL')
+[seed-05] FAIL GST purchase invoice :: LinkValidationError('Could not find Supplier: Suvarna Copper Moulds (DEMO), Row #1: Item: BO-MOULD-TUBE')
+[seed-05] OK   audit trail -> audit trail enabled=1
+[seed-05] OK   GST settings -> e-invoice off (no API credentials), e-way bill forms available
+[seed-05] DONE
+=================== 05b_gst_fix ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-05b] addresses created: 0
+[seed-05b] OK   party GSTIN + addresses
+[seed-05b] OK   HSN fallback
+[seed-05b] FAIL GST sales invoices :: LinkValidationError('Could not find Customer: Sahyadri Steels Ltd (DEMO), Row #1: Item: SPR-ROLL')
+[seed-05b] FAIL GST purchase invoice :: LinkValidationError('Could not find Supplier: Suvarna Copper Moulds (DEMO), Row #1: Item: BO-MOULD-TUBE')
+[seed-05b] DONE
+=================== 12_gst_pi ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-12] company address=MSCAST Pune Office-Billing (27AAGCM8444B1ZI) supplier address=None (None)
+[seed-12] purchase invoice failed: AttributeError("'NoneType' object has no attribute 'payment_terms'")
+[seed-12] DONE
+=================== 13_gst_pi2 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-13] casting machine HSN -> 845430
+[seed-13] supplier  vs company 27 -> Input GST Out-state - MSCAST
+[seed-13] PI failed: LinkValidationError('Could not find Supplier: Suvarna Copper Moulds (DEMO), Row #1: Item: BO-MOULD-TUBE')
+[seed-13] DONE
+ALL DONE
+seed scripts copied
+=================== 06_hr_payroll ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-06] OK   org structure
+[seed-06] employees: 6
+[seed-06] OK   employees -> [('HR-EMP-00001', 150000), ('HR-EMP-00002', 85000), ('HR-EMP-00003', 62000), ('HR-EMP-00004', 48000), ('HR-EMP-00005', 42000), ('HR-EMP-00006', 38000)]
+[seed-06] attendance rows: 72
+[seed-06] OK   attendance
+[seed-06] FAIL leaves :: AttendanceAlreadyMarkedError('Attendance for employee HR-EMP-00006 is already marked for the following dates: <br><ul><li><a href="http://frontend/desk/attendance/HR-ATT-2026-00066">12-09-2026</a></li></ul>')
+[seed-06] FAIL salary structure :: ValidationError('Row #2: The <strong>House Rent Allowance</strong> Component has the options <strong>Amount based on formula</strong> and <strong>Depends On Payment Days</strong> enabled.<br><br>Disable <strong>Depends On Payment Days</strong> for the <strong>House Rent Allowance</strong> component,
+[seed-06] expense claim created for project None
+[seed-06] OK   expense claim
+[seed-06] DONE
+=================== 06b_hr_fix ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-06b] OK   fix salary components -> 0 components fixed
+[seed-06b] components: [('A', 'Arrear'), ('B', 'Basic'), ('EDLI', 'Employees Deposit Linked Insurance'), ('EPFADM', 'EPF Admin Charges'), ('EREPF', 'Employer Provident Fund'), ('EREPS', 'Employer Pension Scheme'), ('ERESI', 'Employer State Insurance'), ('ESI', 'Employee State Insurance'), ('HRA', 'House Rent Allowance'), ('IT', 'Income Tax'), ('LE', 'Leave Encashment'), ('LWF', 'Labour Welfare Fund')]
+[seed-06b] FAIL salary structure :: LinkValidationError('Could not find Row #3: Component: Conveyance Allowance, Row #4: Component: Special Allowance, Row #2: Component: ESI')
+[seed-06b] FAIL leaves :: ValidationError('No Holiday List was found for Employee <strong>HR-EMP-00006</strong> or their company <strong>MSCAST Engineering Pvt Ltd</strong> for date <strong>21-09-2026</strong>. Please assign through <a href="http://frontend/desk/holiday-list-assignment">Holiday List Assignment</a>')
+[seed-06b] OK   expense claim types -> expense claim types mapped
+[seed-06b] OK   expense claim -> already exists
+[seed-06b] FAIL payroll run :: ValidationError('No employees found for the mentioned criteria:<br>Company: <strong>MSCAST Engineering Pvt Ltd</strong><br> Currency: <strong>INR</strong><br>Payroll Payable Account: <strong>2120 - Payroll Payable - MSCAST</strong><br>Start date: <strong>2026-08-01</strong><br>End date: <strong>2026-08-31</strong>')
+[seed-06b] OK   submit salary slips -> submitted 0 slips; gross/ded/net = (None, None, None)
+[seed-06b] DONE
+=================== 06c_hr_fix2 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-06c]   component: Employee State Insurance               ESI    Deduction
+[seed-06c]   component: Income Tax                             IT     Deduction
+[seed-06c]   component: Labour Welfare Fund                    LWF    Deduction
+[seed-06c]   component: Professional Tax                       PT     Deduction
+[seed-06c]   component: Provident Fund                         PF     Deduction
+[seed-06c]   component: Voluntary Provident Fund               VPF    Deduction
+[seed-06c]   component: Arrear                                 A      Earning
+[seed-06c]   component: Basic                                  B      Earning
+[seed-06c]   component: House Rent Allowance                   HRA    Earning
+[seed-06c]   component: Leave Encashment                       LE     Earning
+[seed-06c]   component: Employees Deposit Linked Insurance     EDLI   Employer Contribution
+[seed-06c]   component: Employer Pension Scheme                EREPS  Employer Contribution
+[seed-06c]   component: Employer Provident Fund                EREPF  Employer Contribution
+[seed-06c]   component: Employer State Insurance               ERESI  Employer Contribution
+[seed-06c]   component: EPF Admin Charges                      EPFADM Employer Contribution
+[seed-06c] company holiday list: MSCAST 2026-27
+[seed-06c]   employee: HR-EMP-00006 Ganesh Pawar hl=MSCAST 2026-27
+[seed-06c]   employee: HR-EMP-00005 Anita Deshpande hl=MSCAST 2026-27
+[seed-06c]   employee: HR-EMP-00004 Sameer Lokhande hl=MSCAST 2026-27
+[seed-06c]   employee: HR-EMP-00003 Rohit Kulkarni hl=MSCAST 2026-27
+[seed-06c]   employee: HR-EMP-00002 Aiqaz Chandankeri hl=MSCAST 2026-27
+[seed-06c]   employee: HR-EMP-00001 Mustaque Chandankeri hl=MSCAST 2026-27
+[seed-06c] cost centers: ['Main - MSCAST']
+[seed-06c] OK   diagnostics -> listed
+[seed-06c] OK   holiday lists -> company + 0 employees set to MSCAST 2026-27
+[seed-06c] using components: Basic / House Rent Allowance / Conveyance Allowance / Special Allowance | Provident Fund / Employee State Insurance / Professional Tax
+[seed-06c] FAIL salary structure :: ValidationError('Row #2: The <strong>House Rent Allowance</strong> Component has the options <strong>Amount based on formula</strong> and <strong>Depends On Payment Days</strong> enabled.<br><br>Disable <strong>Depends On Payment Days</strong> for the <strong>House Rent Allowance</strong> component, to prevent the amount from being deducted twice, as its formula already uses a payment-days-based c
+[seed-06c] FAIL leaves :: ValidationError('No Holiday List was found for Employee <strong>HR-EMP-00006</strong> or their company <strong>MSCAST Engineering Pvt Ltd</strong> for date <strong>21-09-2026</strong>. Please assign through <a href="http://frontend/desk/holiday-list-assignment">Holiday List Assignment</a>')
+[seed-06c] OK   expense claim -> already exists
+[seed-06c] FAIL payroll run :: ValidationError('No employees found for the mentioned criteria:<br>Company: <strong>MSCAST Engineering Pvt Ltd</strong><br> Currency: <strong>INR</strong><br>Payroll Payable Account: <strong>2120 - Payroll Payable - MSCAST</strong><br>Start date: <strong>2026-08-01</strong><br>End date: <strong>2026-08-31</strong>')
+[seed-06c] OK   submit slips -> submitted 0; totals(count, gross, ded, net)=(0, None, None, None)
+[seed-06c] DONE
+=================== 06d_hr_fix3 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-06d] OK   fix component masters -> depends_on_payment_days=0 for: House Rent Allowance, Provident Fund, Employee State Insurance, Professional Tax
+[seed-06d] existing HL 2026-04-01..2027-03-31 holidays=60
+[seed-06d] OK   holiday list -> holiday list ok
+[seed-06d] FAIL salary structure :: LinkValidationError('Could not find Row #3: Component: Conveyance Allowance, Row #4: Component: Special Allowance')
+[seed-06d] FAIL leaves :: ValidationError('No Holiday List was found for Employee <strong>HR-EMP-00006</strong> or their company <strong>MSCAST Engineering Pvt Ltd</strong> for date <strong>21-09-2026</strong>. Please assign through <a href="http://frontend/desk/holiday-list-assignment">Holiday List Assignment</a>')
+[seed-06d] FAIL payroll run :: ValidationError('No employees found for the mentioned criteria:<br>Company: <strong>MSCAST Engineering Pvt Ltd</strong><br> Currency: <strong>INR</strong><br>Payroll Payable Account: <strong>2120 - Payroll Payable - MSCAST</strong><br>Start date: <strong>2026-08-01</strong><br>End date: <strong>2026-08-31</strong>')
+[seed-06d] OK   submit slips -> submitted 0; (count, gross, deductions, net)=(0, None, None, None)
+[seed-06d] DONE
+=================== 06e_hr_fix4 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-06e] OK   salary components -> created: Conveyance Allowance, Special Allowance
+[seed-06e] Holiday List Assignment fields: ['section_break_wnwa', 'naming_series', 'applicable_for', 'assigned_to', 'employee_name', 'employee_company', 'amended_from', 'column_break_lzvp', 'holiday_list', 'from_date', 'holiday_list_start', 'holiday_list_end']
+[seed-06e] OK   holiday list assignment -> created HR-HLA-2026-00001
+[seed-06e] OK   salary structure -> MSCAST Staff 2026-27
+[seed-06e] OK   assignments -> 6 assignments
+[seed-06e] leave application: ValidationError('No Holiday List was found for Employee <strong>HR-EMP-00006</strong> or their company <strong>MSCAST Engineering Pvt Ltd</strong> for date <strong>21-09-2026</strong>. Please assign t
+[seed-06e] OK   leaves -> 6 allocations
+[seed-06e] employees picked: 6
+[seed-06e] FAIL payroll run :: ValidationError('Account type should be set <strong>Payable</strong> for payroll payable account <strong><a href="http://frontend/desk/account/2120%20-%20Payroll%20Payable%20-%20MSCAST">2120 - Payroll Payable - MSCAST</a></strong>, please set and try again')
+[seed-06e] OK   submit slips -> submitted 0; (count, gross, deductions, net)=(0, None, None, None)
+[seed-06e] DONE
+=================== 06f_hr_fix5 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-06f] OK   payroll payable account -> 2120 - Payroll Payable - MSCAST set to Payable
+[seed-06f] OK   holiday list assignment per employee -> 6 employee assignments
+[seed-06f] OK   leave application -> exists
+[seed-06f] employees picked: 6
+[seed-06f] OK   payroll run -> HR-PRUN-2026-00001 slips=6
+[seed-06f]   Mustaque Chandankeri     gross     150000  ded        0  net     150000
+[seed-06f]   Aiqaz Chandankeri        gross      85000  ded        0  net      85000
+[seed-06f]   Rohit Kulkarni           gross      62000  ded        0  net      62000
+[seed-06f]   Sameer Lokhande          gross      48000  ded        0  net      48000
+[seed-06f]   Anita Deshpande          gross      42000  ded        0  net      42000
+[seed-06f]   Ganesh Pawar             gross      38000  ded        0  net      38000
+[seed-06f] OK   submit slips -> submitted 6 slips
+[seed-06f] DONE
+ALL DONE
+seed scripts copied
+=================== 17_payroll_fix ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-17] OK   component masters -> Provident Fund, Employee State Insurance, Professional Tax
+[seed-17] OK   structure rows -> 3 deduction rows updated
+[seed-17] FAIL employee statutory ids :: MandatoryError('[India Payroll Company Setting, lkj18n4d3q]: parent, parenttype')
+[seed-17]   Mustaque Chandankeri     gross    150000  ded       0  net    150000
+[seed-17]   Aiqaz Chandankeri        gross     85000  ded       0  net     85000
+[seed-17]   Rohit Kulkarni           gross     62000  ded       0  net     62000
+[seed-17]   Sameer Lokhande          gross     48000  ded       0  net     48000
+[seed-17]   Anita Deshpande          gross     42000  ded       0  net     42000
+[seed-17]   Ganesh Pawar             gross     38000  ded       0  net     38000
+[seed-17]   sample deductions: []
+[seed-17] OK   re-run payroll -> HR-PRUN-2026-00001, 6 slips submitted
+[seed-17] DONE
+=================== 18_statutory ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-18] SSA india_payroll fields: ['employment_state', 'designation', 'income_tax_slab', 'taxable_earnings_till_date', 'tax_deducted_till_date', 'india_payroll_esi_section', 'is_person_with_disability', 'india_payroll_lwf_section', 'lwf_exempted', 'lwf_exemption_reason', 'india_payroll_epf_section', 'epf_applicable', 'contribute_on_actual_pf_wage', 'india_payroll_epf_cb', 'vpf_mode', 'vpf_percentage', 'vpf_amount']
+[seed-18] OK   SSA fields -> employment_state, designation, income_tax_slab, taxable_earnings_till_date, tax_deducted_till_date, india_payroll_esi_section, is_person_with_disability, india_payroll_lwf_section, lwf_exempted, lwf_exemption_reason, india_payroll_epf_section, epf_applicable, contribute_on_actual_pf_wage, india_payroll_epf_cb, vpf_mode, vpf_percentage, vpf_amount
+[seed-18] OK   configure SSA -> 6 assignments updated with {'employment_state': 'Maharashtra', 'epf_applicable': 1, 'lwf_exempted': 0}
+[seed-18] OK   revert formulas -> statutory components handed back to india_payroll
+[seed-18]   Mustaque Chandankeri     gross    150000  ded       0  net    150000
+[seed-18]   Aiqaz Chandankeri        gross     85000  ded       0  net     85000
+[seed-18]   Rohit Kulkarni           gross     62000  ded       0  net     62000
+[seed-18]   Sameer Lokhande          gross     48000  ded       0  net     48000
+[seed-18]   Anita Deshpande          gross     42000  ded       0  net     42000
+[seed-18]   Ganesh Pawar             gross     38000  ded       0  net     38000
+[seed-18]   sample earnings:   [('Basic', 31000.0), ('House Rent Allowance', 12400.0), ('Conveyance Allowance', 1600.0), ('Special Allowance', 17000.0)]
+[seed-18]   sample deductions: []
+[seed-18] OK   re-run payroll -> HR-PRUN-2026-00001, 6 slips
+[seed-18] DONE
+=================== 19_statutory2 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-19] Payroll Settings child table field: company_payroll_settings
+[seed-19] is_statutory_enabled check: KeyError('esi')
+[seed-19] OK   payroll company settings -> company registrations saved
+[seed-19]   Mustaque Chandankeri     gross    150000  ded       0  net    150000
+[seed-19]   Aiqaz Chandankeri        gross     85000  ded       0  net     85000
+[seed-19]   Rohit Kulkarni           gross     62000  ded       0  net     62000
+[seed-19]   Sameer Lokhande          gross     48000  ded       0  net     48000
+[seed-19]   Anita Deshpande          gross     42000  ded       0  net     42000
+[seed-19]   Ganesh Pawar             gross     38000  ded       0  net     38000
+[seed-19]   lowest-paid slip deductions: []
+[seed-19] OK   re-run payroll -> HR-PRUN-2026-00001, 6 slips
+[seed-19] DONE
+=================== 20_payroll_final ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-20] OK   deduction components -> created PF Employee 12%, ESIC Employee 0.75%, Professional Tax MH, TDS on Salary
+[seed-20] OK   demo salary structure -> MSCAST Staff 2026-27 (Demo)
+[seed-20] OK   assignments -> 6 assignments from 2026-08-01
+[seed-20]   Mustaque Chandankeri     gross    150000  ded    9500  net    140500
+[seed-20]   Aiqaz Chandankeri        gross     85000  ded    2000  net     83000
+[seed-20]   Rohit Kulkarni           gross     62000  ded    2000  net     60000
+[seed-20]   Sameer Lokhande          gross     48000  ded    2000  net     46000
+[seed-20]   Anita Deshpande          gross     42000  ded    2000  net     40000
+[seed-20]   Ganesh Pawar             gross     38000  ded    2000  net     36000
+[seed-20]   Ganesh Pawar deductions: [('PF Employee 12%', 1800.0), ('Professional Tax MH', 200.0)]
+[seed-20] OK   re-run payroll -> HR-PRUN-2026-00001, 6 slips
+[seed-20] DONE
+ALL DONE
+seed scripts copied
+=================== 07_print_formats ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-07] letter head ready
+[seed-07] updated MSCAST PCC Sheet
+[seed-07] updated MSCAST MDF Sheet
+[seed-07] updated MSCAST Material Dispatch Memo
+[seed-07] updated MSCAST Delivery Instruction Print
+[seed-07] updated MSCAST Billing Routing Memo
+[seed-07] updated MSCAST Inspection Report
+[seed-07] updated MSCAST Project Certificate Print
+[seed-07] DONE
+=================== 21b_branding_dashboard ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-21] OK   branding -> logo /files/mscast-logo.svg, banner /files/mscast-banner.svg
+[seed-21] OK   dark theme -> 3 users set to dark desk theme
+[seed-21] OK   number cards -> Order Book (submitted SO), PO Committed, Drawings pending approval, BRMs pending certification, Inspections due
+[seed-21] OK   dashboard charts -> (all existed)
+[seed-21] OK   workspace -> workspace rebuilt with 6 cards and 5 charts
+[seed-21] DONE
+=================== 22_polish ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-22] HR Settings: standard working hours = 8
+[seed-22] default workspace set for 3 users
+[seed-22] DONE
+ALL DONE
+seed scripts copied
+=================== 25_gapfill ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-25] OK   MSME supplier data -> 0 MSME suppliers tagged
+[seed-25] FAIL bank guarantees :: LinkValidationError('Could not find Customer: Sahyadri Steels Ltd (DEMO), Project: PROJ-0001, Bank: HDFC Bank')
+[seed-25] FAIL quality inspections :: DoesNotExistError('Purchase Receipt None not found')
+[seed-25] FAIL spares dispatch (DN + packing slip) :: LinkValidationError('Could not find Row #1: Item Code: SPR-MOULD-TUBE, Row #2: Item Code: SPR-ROLL')
+[seed-25] OK   cheque print template -> HDFC cheque layout
+[seed-25] FAIL fixed assets :: MandatoryError('HSN/SAC Code is required. Please enter a valid HSN/SAC code.')
+[seed-25] FAIL alerts & scheduled reports :: LinkValidationError('Could not find Row #1: Recipient: director@mcast.co.in')
+[seed-25] FAIL supplier scorecard :: LinkValidationError('Could not find Supplier: Pushkar Fabricators (DEMO)')
+[seed-25] FAIL warranty claim :: LinkValidationError('Could not find Customer: Sahyadri Steels Ltd (DEMO), Item Code: SPR-ROLL')
+[seed-25] DONE
+=================== 26_gapfill2 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-26] FAIL bank guarantees :: LinkValidationError('Could not find Customer: Sahyadri Steels Ltd (DEMO), Project: PROJ-0001')
+[seed-26] FAIL quality inspections :: DoesNotExistError('Purchase Receipt None not found')
+[seed-26] FAIL fixed assets :: MandatoryError('Net Purchase Amount is mandatory')
+[seed-26] OK   alerts & scheduled reports -> drawing approval, MSCAST Project MIS - weekly, MSCAST Dispatch schedule - weekly, daily digest
+[seed-26] FAIL supplier scorecard :: InvalidFormulaVariable('Unable to find variable: rejected_qty')
+[seed-26] DONE
+=================== 27_gapfill3 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-27] FAIL quality inspection template + inspections :: LinkValidationError('Could not find Row #1: Parameter: Overall length, Row #2: Parameter: Material grade / MTC, Row #3: Parameter: Surface finish, Row #4: Parameter: Hardness (HRC)')
+[seed-27] FAIL fixed assets :: LinkValidationError('Could not find Item Code: FA-CAD-WS')
+[seed-27] available scorecard variables: ['total_invoiced', 'total_ordered', 'total_shipments', 'tot_days_late', 'tot_cost_shipments', 'total_working_days', 'cost_of_on_time_shipments', 'cost_of_delayed_shipments', 'on_time_shipment_num', 'tot_item_days', 'rfq_total_items', 'rfq_total_number', 'sq_total_number', 'sq_total_items', 'rfq_response_days', 'total_received_amount', 'total_received_items', 'total_rejected_amount', 'total_rejected_items', 'total_accepted_amount']
+[seed-27] formulas: delivery=100 * {on_time_shipment_num} / {total_shipments} quality=100 * {total_accepted_items} / {total_received_items}
+[seed-27] FAIL supplier scorecard :: LinkValidationError('Could not find Supplier: Pushkar Fabricators (DEMO)')
+[seed-27] DONE
+=================== 28_gapfill4 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-28] OK   QI parameters -> 4 parameters (group MSCAST Mechanical)
+[seed-28] OK   QI template -> template applied to 0 items
+[seed-28] FAIL QI inspections :: DoesNotExistError('Purchase Receipt None not found')
+[seed-28] FAIL asset items :: LinkValidationError('Could not find Asset Category: Plant & Machinery (Demo)')
+[seed-28] FAIL assets :: LinkValidationError('Could not find Item Code: FA-CAD-WS')
+[seed-28] DONE
+ALL DONE
+seed scripts copied
+=================== 29_assets ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-29] accounts: fixed=1770 - Software - MSCAST accum=1780 - Accumulated Depreciation - MSCAST expense=5203 - Depreciation - MSCAST
+[seed-29] OK   asset category -> category created
+[seed-29] OK   asset items -> FA-CAD-WS, FA-WELD-SET
+[seed-29] FAIL assets :: FiscalYearError('Date 21-08-2025 is not in any active Fiscal Year')
+[seed-29] DONE
+=================== 30_assets2 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-29] OK   asset category -> exists
+[seed-29] OK   asset items -> (existed)
+[seed-29] OK   assets -> ACC-ASS-2026-00001 draft: ValidationError('Target Location is required while receiving Asset ACC-ASS-2026-00001'); ACC-ASS-2026-00002 draft: ValidationError('Target Location is required while receiving Asset ACC-ASS-2026-00002')
+[seed-29] DONE
+=================== 31_assets3 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-31] location created
+Traceback (most recent call last):
+  File "<string>", line 6, in <module>
+    exec(open('../seed/31_assets3.py').read())
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 30, in <module>
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/__init__.py", line 1405, in get_all
+    return get_list(doctype, *args, **kwargs)
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/__init__.py", line 1380, in get_list
+    return frappe.model.qb_query.DatabaseQuery(doctype).execute(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/qb_query.py", line 222, in execute
+    result = query.run(debug=debug, as_dict=not as_list, update=update)
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/query_builder/utils.py", line 139, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/database/database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/database/database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+    ~~~~~~~~^^^
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/MySQLdb/connections.py", line 280, in query
+    _mysql.connection.query(self, query)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+MySQLdb.OperationalError: (1054, "Unknown column 'gross_purchase_amount' in 'SELECT'")
+=================== 32_assets4 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[seed-32] asset fields: ['location', 'net_purchase_amount', 'purchase_amount', 'value_after_depreciation', 'insured_value', 'custodian']
+[seed-32] assets: [{'name': 'ACC-ASS-2026-00002', 'asset_name': 'Welding & testing equipment', 'docstatus': 1}, {'name': 'ACC-ASS-2026-00001', 'asset_name': 'CAD workstation - engineering', 'docstatus': 1}]
+[seed-32]   ACC-ASS-2026-00002 | Welding & testing equipment | docstatus=1 | status=Draft
+[seed-32]   ACC-ASS-2026-00001 | CAD workstation - engineering | docstatus=1 | status=Draft
+[seed-32] depreciation schedules: 2
+[seed-32] DONE
+ALL DONE
+seed scripts copied
+=================== 40_batch_a ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[A] parents: {'liability': '2000 - Source of Funds (Liabilities) - MSCAST', 'equity': '3000 - Equity - MSCAST', 'expense': '5200 - Indirect Expenses - MSCAST', 'cash': '1100 - Cash In Hand - MSCAST'}
+[A] OK   COA heads (reserves, borrowings, lease, prior period, penalties, petty cash) -> Reserves and Surplus, Borrowings - HDFC Term Loan, Lease Liabilities, Prior Period Expenses, Fines and Penalties under Law, Retention Receivable, Petty Cash, Mode of Payment: Petty Cash
+[A] FAIL non-project payments + petty cash :: ValidationError('Reference No & Reference Date is required for Bank Entry')
+[A] FAIL travel / insurance / cargo journal vouchers :: ValidationError('Reference No & Reference Date is required for Bank Entry')
+[A] FAIL landed cost voucher :: DoesNotExistError('Purchase Receipt None not found')
+[A] FAIL credit note + debit note :: DoesNotExistError('Sales Invoice None not found')
+[A] FAIL TDS 194C on fabrication bill :: OperationalError(1054, "Unknown column 'tax_withholding_after_threshold' in 'SET'")
+[A] OK   supplier credit terms -> 0 suppliers reviewed (credit terms set where the field exists)
+[A] OK   receivables follow-up (dunning + payment request) -> (already exist)
+[A] OK   email templates -> (all existed)
+[A] OK   expense analysis report -> updated
+[A] BATCH A DONE
+=================== 41_batch_a2 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[A2] FAIL payments, petty cash, travel, insurance, cargo :: LinkValidationError('Could not find Row #2: Party: Vidarbha Heavy Transport (DEMO)')
+[A2] FAIL TDS 194C :: LinkValidationError('Could not find Supplier: Pushkar Fabricators (DEMO), Row #1: Item: FAB-SPRAY-CHAMBER, Row #1: Accepted Warehouse: Vendor WIP - MSCAST')
+[A2] OK   dunning type -> First reminder - MSCAST
+[A2] OK   payment reminder (dunning) -> no outstanding invoice
+[A2] FAIL advance payment request :: DoesNotExistError('Sales Order None not found')
+[A2] BATCH A2 DONE
+=================== 42_batch_a3 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[A3] OK   dunning type -> First reminder - MSCAST
+[A3] OK   payment reminder (dunning) -> no outstanding invoice
+[A3] FAIL advance payment request :: DoesNotExistError('Sales Order None not found')
+[A3] BATCH A3 DONE
+=================== 43_dunning ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[A4] dunning type First reminder - MSCAST set to zero interest/fee
+Traceback (most recent call last):
+  File "<string>", line 6, in <module>
+    exec(open('../seed/43_dunning.py').read())
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 20, in <module>
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/utils/__init__.py", line 225, in wrapper
+    return dispatch(args[0])(*args, **kw)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 144, in get_doc_str
+    doc = controller(doctype, name, **kwargs)
+  File "/home/frappe/frappe-bench/apps/erpnext/erpnext/accounts/doctype/sales_invoice/sales_invoice.py", line 261, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 227, in __init__
+    self.load_from_db()
+    ~~~~~~~~~~~~~~~~~^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 295, in load_from_db
+    frappe.throw(
+    ~~~~~~~~~~~~^
+    	_("{0} {1} not found").format(_(self.doctype), self.name),
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    	frappe.DoesNotExistError(doctype=self.doctype),
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/utils/messages.py", line 159, in throw
+    msgprint(
+    ~~~~~~~~^
+    	msg,
+     ^^^^
+    ...<7 lines>...
+    	allow_dangerous_html=allow_dangerous_html,
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/utils/messages.py", line 118, in msgprint
+    _raise_exception()
+    ~~~~~~~~~~~~~~~~^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/utils/messages.py", line 59, in _raise_exception
+    raise exc
+frappe.exceptions.DoesNotExistError: Sales Invoice None not found
+ALL DONE
+seed scripts copied
+=================== 44_batch_b ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[B] FAIL request for quotation :: DoesNotExistError('Material Request None not found')
+[B] OK   proforma invoice print -> print format on Sales Order
+[B] FAIL client claims register :: LinkValidationError('Could not find Customer: Sahyadri Steels Ltd (DEMO)')
+[B] FAIL intangible assets + CWIP :: ValidationError('Please create purchase receipt or purchase invoice for the item FA-TEST-BENCH')
+[B] FAIL customer-owned asset register :: LinkValidationError('Could not find Owned by (Customer): Sahyadri Steels Ltd (DEMO)')
+[B] FAIL share capital records :: DuplicateEntryError('The shares already exist')
+[B] BATCH B DONE
+=================== 45_batch_b2 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[B2] FAIL request for quotation :: DoesNotExistError('Material Request None not found')
+[B2] OK   asset categories + fixed-asset items -> Software (Intangible), Plant under construction (CWIP), FA-ERP-SW, FA-TEST-BENCH
+[B2] OK   intangible asset (software) -> ACC-ASS-2026-00003 amortised over 36 months
+[B2] FAIL CWIP asset via purchase invoice :: MandatoryError('Please set <strong>Select Billing Address</strong> to ensure Company GSTIN is fetched in the transaction.')
+[B2] OK   share capital records -> 3 shareholders; 10,000 equity shares of Rs 10 issued (paid-up Rs 1,00,000)
+[B2] BATCH B2 DONE
+=================== 47_cwip_asset2 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[47] asset amount/flag fields: ['net_purchase_amount', 'purchase_amount', 'value_after_depreciation', 'insured_value']
+[47] CWIP ledger balance: None
+[47] created ACC-ASS-2026-00004
+[47] submitted ACC-ASS-2026-00004
+[47]   ACC-ASS-2026-00004 | Hydraulic test bench (under construction) | Plant under construction (CWIP) | 1 | Submitted | 780000.0 | 780000.0
+[47]   ACC-ASS-2026-00003 | ERP software licence | Software (Intangible) | 1 | Submitted | 240000.0 | 240000.0
+[47]   ACC-ASS-2026-00002 | Welding & testing equipment | Plant & Machinery (Demo) | 1 | Draft | 420000.0 | 420000.0
+[47]   ACC-ASS-2026-00001 | CAD workstation - engineering | Plant & Machinery (Demo) | 1 | Draft | 185000.0 | 185000.0
+[47] DONE
+=================== 48_asset_tidy ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[48] CWIP account in COA: None
+[48] assets: 4
+[48] DONE
+ALL DONE
+seed scripts copied
+=================== 51_batch_c1 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[C1] OK   auditor + director roles and demo users -> read-only permissions on 23 / 30 doctypes; auditor@mscast.demo; director@mscast.demo
+[C1] OK   MSME supplier flags -> 0 suppliers flagged as MSME
+[C1] OK   query reports -> MSCAST MSME 45-Day Dues (s.15 MSMED / s.43B(h)); MSCAST SO - PO - Invoice Tracker; MSCAST Project Closure Report
+[C1] OK   report smoke test -> MSCAST MSME 45-Day Dues (s.15 MSMED / s.43B(h)) -> 0 rows | MSCAST SO - PO - Invoice Tracker -> 0 rows | MSCAST Project Closure Report -> 0 rows
+[C1] BATCH C1 DONE
+=================== 53_batch_c2b ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[C2b] FAIL document / drawing transmittal register :: LinkValidationError('Could not find Customer: Sahyadri Steels Ltd (DEMO)')
+[C2b] FAIL commissioning report :: LinkValidationError('Could not find Customer: Sahyadri Steels Ltd (DEMO)')
+[C2b] FAIL spares handover note :: LinkValidationError('Could not find Customer: Sahyadri Steels Ltd (DEMO)')
+[C2b] FAIL kick-off and customer-PO-check workflow :: LinkValidationError('Could not find Customer: Sahyadri Steels Ltd (DEMO)')
+[C2b] BATCH C2b DONE
+=================== 54_batch_c3 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[C3] OK   retention reclassification -> no open invoice
+[C3] OK   supplementary invoice against agreed claim -> no open claim
+[C3] FAIL gratuity rule and provision :: OperationalError(1054, "Unknown column 'sd.parent_field' in 'WHERE'")
+[C3] OK   Schedule III statements -> MSCAST Balance Sheet (Schedule III grouping) -> 0 rows | MSCAST Statement of Profit and Loss (Schedule III grouping) -> 0 rows
+[C3] BATCH C3 DONE
+=================== 55_batch_c3b ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[C3b] FAIL retention reclassification :: AttributeError("'NoneType' object has no attribute 'grand_total'")
+[C3b] OK   gratuity rule and provision -> Provision for Gratuity account; Gratuity Expense account; Gratuity Rule (15/26 days per completed year); ACC-JV-2026-00001 provision Rs 991079 for 6 employees
+[C3b] BATCH C3b DONE
+ALL DONE
+seed scripts copied
+=================== 56_batch_c4 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[C4] OK   client schedule and status prints
+[C4] OK   daily management summary + auto email -> MSCAST Daily Management Summary (15 indicators) + daily auto email
+[C4] OK   archival job and retention log -> first archival log; backup retention set to 12 rolling backups
+[C4] OK   BRM payment block -> server script on Payment Entry (Before Submit); BRM statuses: Pending/Certified/Rejected/Paid
+[C4] BATCH C4 DONE
+=================== 57_batch_c4b ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[C4b] DONE
+=================== 58_batch_c4c ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[C4c] DONE
+ALL DONE
+seed scripts copied
+=================== 61_email_account ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[mail] relevant fields: ['enable_outgoing', 'password', 'awaiting_password', 'ascii_encode_password', 'login_id_is_different', 'login_id', 'use_ssl', 'validate_ssl_certificate', 'use_starttls', 'outgoing_tab', 'default_outgoing', 'always_use_account_email_id_as_sender', 'always_use_account_name_as_sender_name', 'outgoing_mail_settings', 'use_tls', 'use_ssl_for_outgoing', 'smtp_server', 'smtp_port', 'no_smtp_authentication']
+[mail] creating account
+[mail] Email Account 'mscast-test' saved: smtp.purelymail.com:465 as uattech@carobar.net (outgoing default)
+[mail] PASSWORD IS BLANK - open http://localhost:8080/app/email-account/mscast-test and enter it, then Save
+[mail] auto email report 'MSCAST Daily Management Summary' -> autoelectron.jp@gmail.com
+[mail] auto email report 'MSCAST Dispatch Schedule' -> autoelectron.jp@gmail.com
+[mail] auto email report 'MSCAST Project MIS' -> autoelectron.jp@gmail.com
+Traceback (most recent call last):
+  File "<string>", line 6, in <module>
+    exec(open('../seed/61_email_account.py').read())
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 66, in <module>
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 557, in save
+    return self._save(*args, **kwargs)
+           ~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 593, in _save
+    self._validate_links()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 1221, in _validate_links
+    frappe.throw(_("Could not find {0}").format(msg), frappe.LinkValidationError)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/utils/messages.py", line 159, in throw
+    msgprint(
+    ~~~~~~~~^
+    	msg,
+     ^^^^
+    ...<7 lines>...
+    	allow_dangerous_html=allow_dangerous_html,
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/utils/messages.py", line 118, in msgprint
+    _raise_exception()
+    ~~~~~~~~~~~~~~~~^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/utils/messages.py", line 59, in _raise_exception
+    raise exc
+frappe.exceptions.LinkValidationError: Could not find Row #1: Recipient: autoelectron.jp@gmail.com
+=================== 62_email_digest ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[mail2] created user autoelectron.jp@gmail.com (System Manager + MSCAST Director)
+[mail2] digest 'MSCAST daily digest' enabled, daily, -> autoelectron.jp@gmail.com
+[mail2] outgoing account: {'email_id': 'uattech@carobar.net', 'smtp_server': 'smtp.purelymail.com', 'smtp_port': '465', 'use_ssl_for_outgoing': 1, 'default_outgoing': 1, 'enable_outgoing': 1}
+[mail2] password set? False
+[mail2] DONE
+=================== 68_email_incoming ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[mail5] imap.purelymail.com:993 OK  * OK PM IMAP ready
+[mail5] imap.purelymail.com:143 OK  * OK PM IMAP ready
+[mail5] auth_method = 'Basic'
+[mail5]   email_id               = 'uattech@carobar.net'
+[mail5]   auth_method            = 'Basic'
+[mail5]   enable_incoming        = 0
+[mail5]   email_server           = 'imap.purelymail.com'
+[mail5]   use_imap               = 1
+[mail5]   use_ssl                = 1
+[mail5]   incoming_port          = '993'
+[mail5]   enable_outgoing        = 1
+[mail5]   smtp_server            = 'smtp.purelymail.com'
+[mail5]   smtp_port              = '465'
+[mail5]   use_ssl_for_outgoing   = 1
+[mail5]   default_outgoing       = 1
+[mail5] imap folders: [{'folder_name': 'INBOX', 'append_to': 'Communication'}]
+[mail5] DONE - reload the form (Ctrl+Shift+R) and enter the password
+=================== 69_mail_polish ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[mail6] System Settings candidates: ['login_with_email_link', 'login_with_email_link_expiry', 'rate_limit_email_link_login', 'email_tab', 'email', 'email_footer_address', 'email_retry_limit', 'disable_standard_email_footer', 'hide_footer_in_auto_email_reports', 'welcome_email_template', 'max_auto_email_report_per_user']
+[mail6]   login_with_email_link              = 1
+[mail6]   login_with_email_link_expiry       = 10
+[mail6]   rate_limit_email_link_login        = 0
+[mail6]   email_tab                          = None
+[mail6]   email                              = None
+[mail6]   email_footer_address               = ''
+[mail6]   email_retry_limit                  = 3
+[mail6]   disable_standard_email_footer      = 0
+[mail6]   hide_footer_in_auto_email_reports  = 0
+[mail6]   welcome_email_template             = ''
+[mail6]   max_auto_email_report_per_user     = 20
+[mail6] Email Account footer fields: ['set_footer', 'footer']
+[mail6] site host_name in conf: None
+[mail6] frappe.utils.get_url() -> http://frontend
+[mail6] custom footer set on the email account
+[mail6] System Settings.disable_standard_email_footer set
+[mail6] System Settings.email_footer_address set
+[mail6] DONE
+=================== 70_footer_flag ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+Traceback (most recent call last):
+  File "<string>", line 6, in <module>
+    exec(open('../seed/70_footer_flag.py').read())
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 4, in <module>
+    frappe.connect()
+    ~~~~~~~~~~~~~~^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/database/database.py", line 1001, in set_value
+    query.run(debug=debug)
+    ~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/query_builder/utils.py", line 139, in execute_query
+    result = frappe.local.db.sql(query, params, *args, **kwargs)  # nosemgrep
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/database/database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/database/database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+    ~~~~~~~~^^^
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/MySQLdb/connections.py", line 280, in query
+    _mysql.connection.query(self, query)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+MySQLdb.OperationalError: (1054, "Unknown column 'set_footer' in 'SET'")
+ALL DONE
+seed scripts copied
+=================== 73_send_summary2 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[send2] site time zone: Asia/Kolkata   (daily jobs fire early morning in this zone)
+[send2] scheduler inactive? False (site config pause_scheduler=None, disable_scheduler=None)
+[send2] auto email report fields present: ['day_of_week', 'description', 'dynamic_date_period', 'email_to', 'enabled', 'format', 'frequency', 'from_date_field', 'no_of_rows', 'reference_report', 'send_if_data', 'sender', 'to_date_field']
+[send2] MSCAST Daily Management Summary    -> HTML, send_if_data=0, rows=100
+[send2] MSCAST Dispatch Schedule           -> XLSX, send_if_data=1, rows=500
+[send2] MSCAST Project MIS                 -> XLSX, send_if_data=1, rows=500
+[send2] sending 'MSCAST Daily Management Summary' to autoelectron.jp@gmail.com ...
+[send2] send() returned without error
+[send2] DONE
+=================== 76_demo_user_mail ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[nobounce] user mail-control fields: ['allowed_in_mentions', 'document_follow_notify', 'enabled', 'mute_sounds', 'send_me_a_copy', 'thread_notify', 'unsubscribed']
+[nobounce] director@mscast.demo -> {'unsubscribed': 1, 'thread_notify': 0, 'send_me_a_copy': 0, 'document_follow_notify': 0, 'modified': '2026-09-21 00:43:35.081865', 'modified_by': 'Administrator'} (login still works, no outbound mail)
+[nobounce] auditor@mscast.demo -> {'unsubscribed': 1, 'thread_notify': 0, 'send_me_a_copy': 0, 'document_follow_notify': 0, 'modified': '2026-09-21 00:43:35.084614', 'modified_by': 'Administrator'} (login still works, no outbound mail)
+[nobounce] role Accounts Manager   -> ['autoelectron.jp@gmail.com', 'admin@mscast.local', 'Administrator']
+[nobounce] role Projects Manager   -> ['autoelectron.jp@gmail.com', 'admin@mscast.local', 'Administrator']
+[nobounce] role Purchase Manager   -> ['admin@mscast.local', 'Administrator']
+[nobounce] role Stock Manager      -> ['admin@mscast.local', 'Administrator']
+[nobounce] DONE
+=================== 77_nobounce2 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[nobounce2] keeping      autoelectron.jp@gmail.com    (real mailbox)
+[nobounce2] unsubscribed admin@mscast.local           (domain mscast.local does not resolve)
+[nobounce2] unsubscribed Administrator                (domain example.com does not resolve)
+[nobounce2] --- who now receives role-based notifications ---
+[nobounce2]   Accounts Manager   -> ['autoelectron.jp@gmail.com']
+[nobounce2]   Projects Manager   -> ['autoelectron.jp@gmail.com']
+[nobounce2]   Purchase Manager   -> (nobody - notification will be skipped)
+[nobounce2]   Stock Manager      -> (nobody - notification will be skipped)
+[nobounce2]   Sales Manager      -> (nobody - notification will be skipped)
+[nobounce2]   HR Manager         -> (nobody - notification will be skipped)
+[nobounce2] DONE
+=================== 78_notify_recipients ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[notify] roles added to autoelectron.jp@gmail.com: ['Purchase Manager', 'Stock Manager', 'Sales Manager', 'HR Manager', 'Purchase User', 'Item Manager', 'Quality Manager', 'Employee']
+[notify] --- MSCAST notifications and who they reach ---
+[notify] MSCAST drawing awaiting customer approval      enabled=1 event=Value Change -> ['autoelectron.jp@gmail.com']
+[notify] MSCAST PO over PCC                             enabled=1 event=Submit -> ['autoelectron.jp@gmail.com']
+[notify] MSCAST BG expiry alert                         enabled=1 event=Days Before -> ['autoelectron.jp@gmail.com']
+[notify] DONE
+ALL DONE
+seed scripts copied
+=================== 80_summary_v2 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[sum2] report query replaced
+[sum2]   Report         Position as at                                       %d %b %Y         
+[sum2]   Cash           Cash and bank balance                                Rs 0             ACT - low
+[sum2]   Receivables    Outstanding from customers                           Rs 0             OK
+[sum2]   Receivables    Overdue beyond due date                              Rs 0             OK
+[sum2]   Receivables    Falling due in the next 7 days                       Rs 0             OK
+[sum2]   Receivables    Retention held by customers                          Rs 0             OK
+[sum2]   Payables       Outstanding to suppliers                             Rs 0             OK
+[sum2]   Payables       MSME dues beyond 45 days (s.43B(h) risk)             Rs 0             OK
+[sum2]   Payables       MSME dues due within the next 15 days                Rs 0             OK
+[sum2]   Order book     Orders in hand (booked less billed)                  Rs 0             OK
+[sum2]   Order book     Billed this month                                    Rs 0             OK
+[sum2]   Projects       Open projects                                        0                OK
+[sum2]   Engineering    Drawings sitting with the customer for approval      0                OK
+[sum2]   Engineering    Drawings still in draft with us                      0                OK
+[sum2]   Quality        Inspection stages pending                            0                OK
+[sum2]   Quality        Inspections rejected or accepted with deviation      0                OK
+[sum2]   Purchase       Purchase orders not fully received                   0                OK
+[sum2]   Billing control BRMs pending certification (payment blocked)         0                OK
+[sum2]   Claims         Client claims open                                   0                OK
+[sum2]   Contracts      Acceptance certificates awaited from customers       0                OK
+[sum2] 20 rows
+[sum2] DONE
+=================== 81_summary_fix ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[sum3] date expression replaced
+[sum3] row 1 now: ('Report', 'Position as at', '20 Sep 2026', '')
+[sum3] 20 rows, 1 flagged (1 ACT)
+[sum3] corrected summary enqueued to autoelectron.jp@gmail.com
+[sum3] DONE
+=================== 82_ist_dates ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[ist] db global tz=SYSTEM session tz=SYSTEM
+[ist] db now()=2026-09-20 19:13:50  utc_timestamp()=2026-09-20 19:13:50
+[ist] db curdate()=2026-09-20   <-- what the reports were using
+[ist] indian date =2026-09-21   <-- what they should use
+[ist] site time zone = Asia/Kolkata
+[ist] patched MSCAST MSME 45-Day Dues (s.15 MSMED / s.43B(h))      (4 date references)
+[ist] patched MSCAST Dispatch Schedule                             (1 date references)
+[ist] patched MSCAST Daily Management Summary                      (17 date references)
+[ist] --- smoke test every custom report ---
+[ist]   OK   MSCAST Statement of Profit and Loss (Schedule III)   17 rows
+[ist]   OK   MSCAST Statement of Profit and Loss (Schedule III grouping) 1 rows
+[ist]   OK   MSCAST SO - PO - Invoice Tracker                     0 rows
+[ist]   OK   MSCAST Schedule III - Trade Receivable Ageing        0 rows
+[ist]   OK   MSCAST Schedule III - Trade Payable Ageing (MSME / others) 0 rows
+[ist]   OK   MSCAST Schedule III - Ratios                         11 rows
+[ist]   OK   MSCAST Retention and Certificates                    0 rows
+[ist]   OK   MSCAST Project WIP Valuation                         0 rows
+[ist]   OK   MSCAST Project MIS                                   0 rows
+[ist]   OK   MSCAST Project Closure Report                        0 rows
+[ist]   OK   MSCAST PO vs PCC Variance                            0 rows
+[ist]   OK   MSCAST Notes to Accounts                             25 rows
+[ist]   OK   MSCAST MSME 45-Day Dues (s.15 MSMED / s.43B(h))      0 rows
+[ist]   OK   MSCAST Installed Base and Revamp Radar               0 rows
+[ist]   OK   MSCAST Inspection Status                             0 rows
+[ist]   OK   MSCAST GST on Closing Inventory (ITC and ITC-04)     0 rows
+[ist]   OK   MSCAST Free Issue at Vendor                          0 rows
+[ist]   OK   MSCAST Finance Scaling - Funding and Capacity        11 rows
+[ist]   OK   MSCAST Expense Analysis (vs last year, % of sales)   1 rows
+[ist]   OK   MSCAST Drawing Register                              0 rows
+[ist]   OK   MSCAST Dispatch Schedule                             0 rows
+[ist]   OK   MSCAST Daily Management Summary                      20 rows
+[ist]   OK   MSCAST BRM Register                                  0 rows
+[ist]   OK   MSCAST Biometric Attendance Audit                    0 rows
+[ist]   OK   MSCAST Billing and Dispatch Schedule                 0 rows
+[ist]   OK   MSCAST Bid Win-Loss Analysis                         0 rows
+[ist]   OK   MSCAST Balance Sheet (Schedule III)                  35 rows
+[ist]   OK   MSCAST Balance Sheet (Schedule III grouping)         1 rows
+[ist] DONE
+=================== 87_morning_batch2 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[morning2] built-in daily job: g3j62bj14i
+[morning2] stopped the midnight batch (reversible: set stopped=0 on g3j62bj14i)
+[morning2] cron server script 'MSCAST morning report batch' set to 30 8 * * *
+[morning2] scheduled job rows for the script: [{'name': 'iplus96v3e', 'frequency': 'Cron', 'cron_format': '30 8 * * *', 'stopped': 0}]
+[morning2]   next execution (site time / IST): 2026-09-21 08:30:00
+[morning2] --- sanity: what fires daily now ---
+[morning2]   frappe.email.doctype.auto_email_report.auto_email_report.send_monthly | Monthly | stopped=0
+[morning2]   frappe.email.doctype.auto_email_report.auto_email_report.send_daily | Daily Maintenance | stopped=1
+[morning2]   AER MSCAST Daily Management Summary    enabled=1 frequency=Daily
+[morning2]   AER MSCAST Dispatch Schedule           enabled=1 frequency=Daily
+[morning2]   AER MSCAST Project MIS                 enabled=1 frequency=Daily
+[morning2] DONE
+ALL DONE
+seed scripts copied
+=================== 90_gaps_config ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[90] OK   PC-02 billing and dispatch schedule on the project ->  + procurement report
+[90] OK   A-09 payment receipt print -> print format created; no receive payment to render
+[90]   webhook fields: ['condition', 'enabled', 'request_method', 'request_structure', 'request_url', 'webhook_docevent', 'webhook_doctype', 'webhook_json']
+[90] FAIL AC-05 Google Chat webhooks for major-value transactions :: ValidationError('Please set the document name')
+[90] SCRIPT 90 DONE
+=================== 91_tax_wip_gst ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[91] FAIL AC-05 chat webhooks :: ValidationError("Invalid Condition: '>' not supported between instances of 'NoneType' and 'int'")
+[91]   income 0.0, expense 991079.0, PBT -991079.0 -> current tax 0.0
+[91] OK   AC-11 income tax and deferred tax provisions -> ACC-JV-2026-00002 deferred tax DTA 249435 / DTL 80538
+[91] OK   AC-17 project WIP valuation -> MSCAST Project WIP Valuation (no WIP to carry)
+[91] OK   AC-18 GST on closing inventory -> MSCAST GST on Closing Inventory (ITC and ITC-04) -> 0 stock lines
+[91] SCRIPT 91 DONE
+=================== 92_schedule3 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[92] FAIL A-14 Schedule III balance sheet :: TypeError('not enough arguments for format string')
+[92] FAIL A-14 Schedule III statement of profit and loss :: TypeError('not enough arguments for format string')
+[92] OK   Schedule III ageing tables (2021 amendment) -> MSCAST Schedule III - Trade Receivable Ageing (0 rows); MSCAST Schedule III - Trade Payable Ageing (MSME / others) (0 rows)
+[92]   Current ratio (times)                                          0.23
+[92]   Debt-equity ratio (times)                                      0.0
+[92]   Debt service coverage ratio (times)                            -822182.0
+[92]   Return on equity (%)                                           100.0
+[92]   Inventory turnover (times)                                     None
+[92]   Trade receivables turnover (times)                             None
+[92]   Trade payables turnover (times)                                None
+[92]   Net capital turnover (times)                                   0.0
+[92]   Net profit ratio (%)                                           None
+[92]   Return on capital employed (%)                                 100.0
+[92]   Return on investment (%) - same base as ROCE for an unlisted S 100.0
+[92] OK   Schedule III eleven ratios -> MSCAST Schedule III - Ratios
+[92] SCRIPT 92 DONE
+=================== 93_schedule3_fix ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[93]   equities+liabilities = 249435.0 | assets = 249435.0
+[93] OK   Schedule III balance sheet -> MSCAST Balance Sheet (Schedule III) | difference 0 (balances)
+[93]   I.    Revenue from operations                                         0.0
+[93]   II.   Other income                                                    0.0
+[93]   III.  Total income                                                    0.0
+[93]              Cost of materials consumed and bought-out                  0.0
+[93]              Employee benefits expense                             991079.0
+[93]              Finance costs                                              0.0
+[93]              Depreciation and amortisation expense                      0.0
+[93]              Other expenses                                             0.0
+[93]              Total expenses                                        991079.0
+[93]   V.    Profit before tax                                         -991079.0
+[93]              (a) Current tax                                            0.0
+[93]              (b) Deferred tax                                     -168897.0
+[93]   VII.  Profit for the period                                     -822182.0
+[93]   VIII. Earnings per equity share - basic and diluted (Rs)           -82.22
+[93] OK   Schedule III statement of profit and loss -> MSCAST Statement of Profit and Loss (Schedule III)
+[93]   Current ratio (times)                                      0.23
+[93]   Debt-equity ratio (times)                                  0.0
+[93]   Debt service coverage ratio (times)                        n/a
+[93]   Return on equity (%)                                       100.0
+[93]   Inventory turnover (times)                                 n/a
+[93]   Trade receivables turnover (times)                         n/a
+[93]   Trade payables turnover (times)                            n/a
+[93]   Net capital turnover (times)                               0.0
+[93]   Net profit ratio (%)                                       n/a
+[93]   Return on capital employed (%)                             100.0
+[93]   Return on investment (%)                                   100.0
+[93] OK   Schedule III ratios (guarded) -> MSCAST Schedule III - Ratios (6 of 11 meaningful on the demo ledger)
+[93] SCRIPT 93 DONE
+ALL DONE
+seed scripts copied
+=================== 97_schedule3_v4 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[97] OK   share capital brought on to the books -> ACC-JV-2026-00003 - share capital Rs 100000 now in the ledger
+[97] OK   PPE opening balances -> ACC-JV-2026-00004 - PPE Rs 1625000 capitalised (4 assets)
+[97]           (a) Share capital                                        100000.0
+[97]           (b) Reserves and surplus                                 802818.0
+[97]           (a) Long-term borrowings                                      0.0
+[97]           (b) Deferred tax liabilities (net)                        80538.0
+[97]           (c) Long-term provisions - gratuity                      991079.0
+[97]           (a) Trade payables - micro and small enterprises              0.0
+[97]           (b) Trade payables - other than micro and small               0.0
+[97]           (c) Advances from customers                                   0.0
+[97]           (d) Statutory dues - GST, TDS, PT, payroll                    0.0
+[97]           (e) Goods received but not billed                             0.0
+[97]           (f) Short-term provisions - income tax                        0.0
+[97]           (g) Unclassified - to map into Schedule III                   0.0
+[97]   TOTAL                                                           1974435.0
+[97]           (a) Property, plant and equipment                             0.0
+[97]           (b) Intangible assets - software                        1625000.0
+[97]           (c) Capital work-in-progress                                  0.0
+[97]           (d) Deferred tax assets (net)                            249435.0
+[97]           (a) Inventories including project work-in-progress            0.0
+[97]           (b) Trade receivables - gross                                 0.0
+[97]           (c) Cash and cash equivalents                            100000.0
+[97]           (d) Input GST credit (ITC)                                    0.0
+[97]           (e) Advances to suppliers                                     0.0
+[97]           (f) Retention receivable                                      0.0
+[97]           (g) Unclassified - to map into Schedule III                   0.0
+[97]   TOTAL                                                           1974435.0
+[97] OK   Schedule III balance sheet (final) -> MSCAST Balance Sheet (Schedule III) | difference 0 - balances
+[97]   I.    Revenue from operations                                         0.0
+[97]   II.   Other income                                                    0.0
+[97]   III.  Total income                                                    0.0
+[97]              Cost of materials consumed and bought-out                  0.0
+[97]              Changes in inventories and work-in-progress                0.0
+[97]              Employee benefits expense                             991079.0
+[97]              Finance costs                                              0.0
+[97]              Depreciation and amortisation expense                      0.0
+[97]              Other expenses                                             0.0
+[97]              Total expenses                                        991079.0
+[97]   V.    Profit before tax                                         -991079.0
+[97]              (a) Current tax                                            0.0
+[97]              (b) Deferred tax                                     -168897.0
+[97]   VII.  Profit for the period                                     -822182.0
+[97]   VIII. Earnings per equity share - basic and diluted (Rs)           -82.22
+[97]   P&L profit -822182.0 vs ledger surplus -822182.0 -> tie
+[97] OK   Schedule III statement of profit and loss (final) -> MSCAST Statement of Profit and Loss (Schedule III) | profit ties to the ledger: True
+[97] SCRIPT 97 DONE
+=================== 98_ppe_fix ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[98] cancelled ACC-JV-2026-00004
+[98] --- assets and where their cost already sits ---
+[98]   ACC-ASS-2026-00001         CAD workstation - engineering    Rs 185000     already in books: False
+[98]   ACC-ASS-2026-00002         Welding & testing equipment      Rs 420000     already in books: False
+[98]   ACC-ASS-2026-00003         ERP software licence             Rs 240000     already in books: False
+[98]   ACC-ASS-2026-00004         Hydraulic test bench (under cons Rs 780000     already in books: True
+[98] plant and machinery account: 1770 - Software - MSCAST
+[98] software account          : 1770 - Software - MSCAST
+[98] posted ACC-JV-2026-00005 - Rs 845000 across 3 assets
+[98]   fixed asset ledger: 1770 - Software - MSCAST                     845000.0
+[98] DONE
+=================== 99_ppe_split ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[99] fixed asset parent group: 1700 - Fixed Assets - MSCAST
+[99] created Plant and Machinery - MSCAST
+[99] posted ACC-JV-2026-00006
+[99]   1770 - Software - MSCAST                       240000.0
+[99]   Plant and Machinery - MSCAST                   605000.0
+[99] asset category 'Plant & Machinery (Demo)' now posts to Plant and Machinery - MSCAST
+[99] asset category 'Plant under construction (CWIP)' now posts to Plant and Machinery - MSCAST
+[99] DONE
+ALL DONE
+seed scripts copied
+=================== 100_biometric_scaling ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[100] OK   M-03 biometric attendance chain -> shift type; 72 punches from device MSCAST-DOOR-01; auto attendance: 73 -> 144 records
+[100]   Order book   Confirmed orders in hand (booked less billed)                       0.0
+[100]   Order book   Open enquiries and quotations not yet won                           0.0
+[100]   Next 90 days Collections scheduled from milestones                               0.0
+[100]   Next 90 days Receivables already due or falling due                              0.0
+[100]   Next 90 days Committed outflow - open purchase orders not received               0.0
+[100]   Next 90 days Committed outflow - supplier bills payable                          0.0
+[100]   Next 90 days Committed outflow - payroll and statutory (3 months)          1275000.0
+[100]   Position     Cash and bank today                                            100000.0
+[100]   Position     Sanctioned bank limit (HDFC charge)                          25000000.0
+[100]   Headroom     Projected net cash over 90 days                              -1175000.0
+[100]   Capacity     Order book covered by one years revenue run rate                    0.0
+[100] OK   M-02 finance scaling - funding and capacity -> MSCAST Finance Scaling - Funding and Capacity
+[100] SCRIPT 100 DONE
+=================== 101_workflows_users ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[101] OK   department users -> accounts@mscast.demo, purchase@mscast.demo, design@mscast.demo, stores@mscast.demo, hr@mscast.demo
+[101] OK   PCC approval workflow -> exists
+[101] OK   purchase order approval workflow -> exists
+[101] OK   BRM certification workflow -> exists
+[101] OK   verify workflows -> MSCAST Purchase Order Approval on Purchase Order (field workflow_state, 4 states, 3 transitions, active=1) | MSCAST Project Kick-off on MSCAST Project Kickoff (field workflow_state, 4 states, 5 transitions, active=1) | MSCAST PCC Approval on MSCAST PCC (field workflow_state, 4 states, 4 transitions, active=1) | MSCAST Drawing Release on MSCAST Drawing (field status, 5 states, 6 transitions, active=1) | MSCAST BRM Certification on MSCAST BRM (field status, 4 states, 3 transitions, active=1)
+[101] SCRIPT 101 DONE
+ALL DONE
+seed scripts copied
+=================== 103_test_fixes ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[103] disabled the IRS 1099 Form print format (US-only, throws on render)
+[103] set the cost centre on 0 entries (party control lines left alone by design)
+[103] remaining non-party entries without a cost centre: 0
+[103] DONE
+=================== 104_notes_accounts ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[104]   note 1   Share capital                  Authorised, issued, subscribed and fully paid: 10000 equity shares of Rs 10 each
+[104]   note 1   Share capital                  Shares outstanding at the beginning and end of the period - no movement
+[104]   note 1   Share capital                  Shareholder holding more than 5 percent: Zameer Alam Chandankeri - 7000 shares (70.0 percent)
+[104]   note 1   Share capital                  Shareholder holding more than 5 percent: Aiqaz M. Chandankeri - 2000 shares (20.0 percent)
+[104]   note 1   Share capital                  Shareholder holding more than 5 percent: Mustaque Ahmed N. Chandankeri - 1000 shares (10.0 perce
+[104]   note 2   Reserves and surplus           Surplus in the statement of profit and loss - profit for the period
+[104]   note 3   Long-term borrowings           Facility from HDFC Bank secured by a charge of Rs 2,50,00,000 registered with the MCA (charge cr
+[104]   note 4   Deferred tax                   Deferred tax asset on the gratuity provision (allowed under s.43B on payment) net of the deferre
+[104]   note 5   Long-term provisions           Gratuity provided at 15/26 days of last drawn basic per completed year of service under the Paym
+[104]   note 6   Trade payables - MSMED disclos Principal amount remaining unpaid to micro and small enterprises at the period end
+[104]   note 6   Trade payables - MSMED disclos Of which outstanding beyond the 45-day appointed date under s.15 of the MSMED Act
+[104]   note 6   Trade payables - MSMED disclos Interest due and payable under s.16 MSMED - to be computed by the auditor on the overdue princip
+[104]   note 6   Trade payables - MSMED disclos Identification of micro and small enterprises is based on the Udyam registration numbers recorde
+[104]   note 8   Provisions                     Provision for income tax at 25.168 percent under s.115BAA
+[104]   note 9   Property, plant and equipment  Gross block brought on to the books at the ERP cut-over; depreciation on the straight-line metho
+[104]   note 10  Capital work-in-progress       Hydraulic test bench under construction - ageing less than 1 year, completion expected within 3 
+[104]   note 11  Inventories                    Raw material and bought-out components at weighted average cost; project work-in-progress at cos
+[104]   note 12  Trade receivables              Ageing in the prescribed buckets is given in the report 'MSCAST Schedule III - Trade Receivable 
+[104]   note 21  Earnings per share             Basic and diluted earnings per share are the same - the company has no potential dilutive equity
+[104]   note 22  Related party disclosures (AS  Key management personnel: Mustaque Ahmed N. Chandankeri, Aiqaz M. Chandankeri, Zameer Alam Chand
+[104]   note 24  Basis of preparation           The financial statements are prepared under the historical cost convention on the accrual basis,
+[104]   note 25  Other Schedule III disclosures No transactions with companies struck off under s.248; no benami property held; no charges pendi
+[104]   note 26  Audit trail (Companies (Accoun The books are maintained in ERPNext with the audit trail feature enabled and not capable of bein
+[104] 23 note lines
+[104] DONE
+=================== 105_data_fixes ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[105]   before: ACC-SHT-2026-00001 -> Zameer Alam Chandankeri 7000 shares (1-7000)
+[105]   before: ACC-SHT-2026-00002 -> Aiqaz M. Chandankeri 2000 shares (7001-9000)
+[105]   before: ACC-SHT-2026-00003 -> Mustaque Ahmed N. Chandankeri 1000 shares (9001-10000)
+[105] cleared 3 share transfers
+[105] reissued: Mustaque 7000 (70%), Aiqaz 2000 (20%), Zameer 1000 (10%)
+[105] BG expiry notification: {'name': 'MSCAST BG expiry alert', 'document_type': 'Bank Guarantee', 'event': 'Days Before', 'date_changed': 'end_date', 'days_in_advance': 30, 'enabled': 1}
+[105] guarantees that would trigger the alert in the next 30 days: 0
+[105] DONE
+ALL DONE
+seed scripts copied
+=================== 112_home_api ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+server script saved: MSCAST Home Data -> mscast_home_data
+OK as_at: Monday, 21 September 2026
+indicators: 20
+    Cash and bank balance => {'value': 'Rs 1.00 L', 'attention': 'ACT - low'}
+    Outstanding from customers => {'value': 'Rs 0', 'attention': 'OK'}
+    Billed this month => {'value': 'Rs 0', 'attention': 'OK'}
+    Orders in hand (booked less billed) => {'value': 'Rs 0', 'attention': 'OK'}
+    Retention held by customers => {'value': 'Rs 0', 'attention': 'OK'}
+    MSME dues due within the next 15 days => {'value': 'Rs 0', 'attention': 'OK'}
+counts: {'opportunity_open': 0, 'quotation': 0, 'so_open': 0, 'drawing_customer': 0, 'drawing_draft': 0, 'drawing_total': 0, 'mdf_draft': 0, 'transmittal': 0, 'mr_pending': 0, 'rfq': 0, 'po_open': 0, 'brm_pending': 0, 'brm_certified': 0, 'insp_pending': 0, 'insp_plans': 0, 'qi': 0, 'spares': 0, 'cert_awaited': 0, 'bg': 0, 'items': 4, 'employees': 6, 'leave_pending': 0, 'expense_claims': 0, 'claims_open': 0, 'mdm': 0, 'di': 0, 'kickoff_open': 0}
+=================== 114_home_block ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+custom html block saved: MSCAST Home html 1120 css 6651 js 21122
+=================== 115_workspaces ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+landing workspace saved: MSCAST title: Home
+space: MSCAST Sales -> Sales & estimation | links 13 | roles ['Sales Manager', 'Sales User', 'MSCAST Director', 'Accounts Manager']
+space: MSCAST Projects -> Projects & design | links 20 | roles ['Projects User', 'Projects Manager', 'MSCAST Director']
+space: MSCAST Purchase -> Purchase & vendors | links 14 | roles ['Purchase User', 'Purchase Manager', 'MSCAST Director']
+space: MSCAST Stores -> Stores & dispatch | links 14 | roles ['Stock User', 'Stock Manager', 'Purchase User', 'MSCAST Director']
+space: MSCAST Quality -> Quality | links 6 | roles ['Quality Manager', 'Projects User', 'Purchase User', 'MSCAST Director']
+space: MSCAST Accounts -> Accounts & compliance | links 16 | roles ['Accounts User', 'Accounts Manager', 'MSCAST Director', 'MSCAST Statutory Auditor']
+space: MSCAST People -> People | links 11 | roles ['HR User', 'HR Manager', 'MSCAST Director']
+space: MSCAST Director -> Director's desk | links 15 | roles ['MSCAST Director', 'MSCAST Statutory Auditor']
+space: MSCAST Setup -> Setup | links 14 | roles ['System Manager']
+hidden 31 stock spaces: Assets, Build, Buying, CRM, ERPNext Settings, Expenses, Financial Reports, GST India, HR Setup, Home, Income Tax India, India Payroll, Integrations, Invoicing, Leaves, Manufacturing, Payroll, Performance, Projects, Quality, Recruitment, Selling, Shift & Attendance, Stock, Subcontracting, Support, Tax & Benefits, Tenure, Users, Website, Welcome Workspace
+DONE
+=================== 116_fix_bounce ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+  hr@mscast.demo | unsub 1 | System User
+  stores@mscast.demo | unsub 1 | System User
+  design@mscast.demo | unsub 1 | System User
+  purchase@mscast.demo | unsub 1 | System User
+  accounts@mscast.demo | unsub 1 | System User
+  autoelectron.jp@gmail.com | unsub 0 | System User
+  director@mscast.demo | unsub 1 | System User
+  auditor@mscast.demo | unsub 1 | System User
+  admin@mscast.local | unsub 1 | System User
+  Guest | unsub 0 | Website User
+  Administrator | unsub 1 | System User
+would bounce: []
+ALL DONE
+seed scripts copied
+=================== 119_default_workspace ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+User fields about workspaces/app: ['workspace_section', 'default_workspace', 'default_app']
+desktop:home_page default = workspace
+  default workspace set for hr@mscast.demo
+  default workspace set for stores@mscast.demo
+  default workspace set for design@mscast.demo
+  default workspace set for purchase@mscast.demo
+  default workspace set for accounts@mscast.demo
+  default workspace set for autoelectron.jp@gmail.com
+  default workspace set for director@mscast.demo
+  default workspace set for auditor@mscast.demo
+  default workspace set for admin@mscast.local
+  default workspace set for Administrator
+desktop:home_page now = workspace
+caches cleared
+=================== 123_desk_redirect ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+redirects: [('/', '/desk/mscast'), ('/desk', '/desk/mscast'), ('/app', '/desk/mscast')]
+                         -> /desk/mscast
+  /                      -> /desk/mscast
+  /desk                  -> desk
+  /app                   -> /desk
+  /desk/mscast           -> desk
+  /desk/mscast-accounts  -> desk
+  /login                 -> login
+ALL DONE
+seed scripts copied
+=================== 127_exception_engine ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+doctype ready: MSCAST Exception fields: 18
+server script saved: MSCAST Exception Sweep cron 0 6 * * *
+
+=== EXCEPTIONS RAISED: 0 ===
+=================== 128_demo_safeguards ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+not found: Mustaque Ahmed N. Chandankeri
+not found: Aiqaz M. Chandankeri
+not found: Zameer Alam Chandankeri
+shareholders now: ['ACC-SH-2026-00004', 'ACC-SH-2026-00003', 'ACC-SH-2026-00002', 'ACC-SH-2026-00001']
+
+watermarked 12 print formats:
+    MSCAST Project Status Report
+    MSCAST Project Schedule (Client)
+    MSCAST Project Certificate Print
+    MSCAST Proforma Invoice
+    MSCAST PCC Sheet
+    MSCAST Payment Receipt
+    MSCAST MDF Sheet
+    MSCAST Material Dispatch Memo
+    MSCAST Inspection Report
+    MSCAST Delivery Instruction Print
+    MSCAST Billing Routing Memo
+    IRS 1099 Form
+already watermarked: ['MSCAST Transmittal Note', 'MSCAST Spares Handover Note', 'MSCAST Commissioning Report Print', 'MSCAST Client Claim Print']
+=================== 129_shareholder_names ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+before:
+    ACC-SH-2026-00004 | MSCAST Engineering Pvt Ltd | None
+    ACC-SH-2026-00003 | Zameer Alam Chandankeri | FOLIO-1000
+    ACC-SH-2026-00002 | Aiqaz M. Chandankeri | FOLIO-2000
+    ACC-SH-2026-00001 | Mustaque Ahmed N. Chandankeri | FOLIO-7000
+retitled ACC-SH-2026-00003 : Zameer Alam Chandankeri -> Promoter C (DEMO)
+retitled ACC-SH-2026-00002 : Aiqaz M. Chandankeri -> Promoter B (DEMO)
+retitled ACC-SH-2026-00001 : Mustaque Ahmed N. Chandankeri -> Promoter A (DEMO)
+
+after:
+    ACC-SH-2026-00004 | MSCAST Engineering Pvt Ltd | [{'no_of_shares': 7000, 'amount': 70000.0}, {'no_of_shares': 2000, 'amount': 20000.0}, {'no_of_shares': 1000, 'amount': 10000.0}]
+    ACC-SH-2026-00003 | Promoter C (DEMO) | [{'no_of_shares': 1000, 'amount': 10000.0}]
+    ACC-SH-2026-00002 | Promoter B (DEMO) | [{'no_of_shares': 2000, 'amount': 20000.0}]
+    ACC-SH-2026-00001 | Promoter A (DEMO) | [{'no_of_shares': 7000, 'amount': 70000.0}]
+
+reverted watermark on IRS 1099 Form (not an MSCAST format)
+ALL DONE
+seed scripts copied
+=================== 150_masters_expand ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+Traceback (most recent call last):
+  File "<string>", line 6, in <module>
+    exec(open('../seed/150_masters_expand.py').read())
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 128, in <module>
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/utils/__init__.py", line 225, in wrapper
+    return dispatch(args[0])(*args, **kw)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 144, in get_doc_str
+    doc = controller(doctype, name, **kwargs)
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 227, in __init__
+    self.load_from_db()
+    ~~~~~~~~~~~~~~~~~^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 295, in load_from_db
+    frappe.throw(
+    ~~~~~~~~~~~~^
+    	_("{0} {1} not found").format(_(self.doctype), self.name),
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    	frappe.DoesNotExistError(doctype=self.doctype),
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/utils/messages.py", line 159, in throw
+    msgprint(
+    ~~~~~~~~^
+    	msg,
+     ^^^^
+    ...<7 lines>...
+    	allow_dangerous_html=allow_dangerous_html,
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/utils/messages.py", line 118, in msgprint
+    _raise_exception()
+    ~~~~~~~~~~~~~~~~^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/utils/messages.py", line 59, in _raise_exception
+    raise exc
+frappe.exceptions.DoesNotExistError: Item None not found
+customers added: 6
+    Bhilai Rolling Mills Pvt Ltd
+    Godavari Ispat Ltd
+    Nagpur Steel & Power Ltd
+    Surya Metallics Pvt Ltd
+    Kalinga Casting Works
+    Vidarbha Alloys Pvt Ltd
+suppliers added: 5
+    Ashoka Heavy Fabricators (DEMO)
+    Sai Hydraulics & Systems (DEMO)
+    Deccan Roll Manufacturing (DEMO)
+    Elektra Drives India (DEMO)
+    Raipur Refractories Pvt Ltd (DEMO)
+=================== 151_installed_and_bids ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+installed machines added: 14
+bid outcomes added: 14
+
+win / loss so far: 6 won, 6 lost
+reasons we lose: [{'reason_lost': 'Price', 'c': 2}, {'reason_lost': 'Lead time', 'c': 2}, {'reason_lost': 'Technical scope', 'c': 1}, {'reason_lost': 'References / track record', 'c': 1}]
+
+installed base: 14 machines, revamp leads: 4
+=================== 155_project_three ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+Traceback (most recent call last):
+  File "<string>", line 6, in <module>
+    exec(open('../seed/155_project_three.py').read())
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 95, in <module>
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 479, in insert
+    self._validate_links()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 1221, in _validate_links
+    frappe.throw(_("Could not find {0}").format(msg), frappe.LinkValidationError)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/utils/messages.py", line 159, in throw
+    msgprint(
+    ~~~~~~~~^
+    	msg,
+     ^^^^
+    ...<7 lines>...
+    	allow_dangerous_html=allow_dangerous_html,
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/utils/messages.py", line 118, in msgprint
+    _raise_exception()
+    ~~~~~~~~~~~~~~~~^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/utils/messages.py", line 59, in _raise_exception
+    raise exc
+frappe.exceptions.LinkValidationError: Could not find Row #1: Item Code: SRV-REVAMP, Row #2: Item Code: SRV-COMMISSION
+customer created: Ambika Steel Rolling Mills
+project created: PROJ-0001 - Caster revamp - Ambika Steel
+ALL DONE
+seed scripts copied
+=================== 153_real_users ===================
+       roles: Accounts Manager, Item Manager, MSCAST Director, Projects Manager, Purchase Manager, Sales Manager, Sales User
+       approves: Cost sheets, quotations, purchase orders, kick-off, claims, project closure, payroll
+  Aiqaz Chandankeri          latookaushik@hotmail.com           Director - Projects & Engineering
+       roles: Item Manager, Projects Manager, Projects User, Quality Manager, Sales User, Stock User
+       approves: Kick-off, drawings released for manufacture, inspection sign-off
+  Sameer Lokhande            uattech@carobar.net                Purchase & Stores
+       roles: Item Manager, Purchase Manager, Purchase User, Stock Manager, Stock User
+       approves: Billing Routing Memos - certifies a supplier bill before Accounts may pay
+  Anita Deshpande            carobar.tradecars@gmail.com        Accounts & HR
+       roles: Accounts Manager, Accounts User, HR Manager, HR User
+       approves: Payments, invoices, payroll entry
+  Rohit Kulkarni             autoelectron.jp@gmail.com          Design Engineer
+       roles: Accounts Manager, HR Manager, Item Manager, MSCAST Director, Projects Manager, Projects User, Purchase Manager, Purchase User, Quality Manager, Sales Manager, Stock Manager, Stock User, System Manager
+       approves: Drawing revisions, MDF release to procurement
+  Ganesh Pawar               autoelectron.jp+site@gmail.com     Site Supervisor
+       roles: Projects User, Quality Manager, Stock User
+       approves: Inspection results, commissioning reports, site expense claims
+
+=== external ===
+  S. Joshi                   autoelectron.jp+ca@gmail.com       Joshi & Associates, Chartered Accountants
+       roles: Auditor, MSCAST Statutory Auditor
+
+=== retired ===
+  disabled hr@mscast.demo
+  disabled stores@mscast.demo
+  disabled design@mscast.demo
+  disabled purchase@mscast.demo
+  disabled accounts@mscast.demo
+  disabled director@mscast.demo
+  disabled auditor@mscast.demo
+
+=== can the approval chain actually run? ===
+  MSCAST Purchase Order Approval
+     Draft                  Send for Approval  -> Pending Approval       needs Purchase User      admin, autoelectron.jp, uattech
+     Pending Approval       Approve            -> Approved               needs MSCAST Director    admin, autoelectron.jp, latookaushik
+     Pending Approval       Reject             -> Rejected               needs Purchase Manager   admin, autoelectron.jp, latookaushik, uattech
+  MSCAST Project Kick-off
+     Draft                  Verify Customer PO -> PO Verified            needs Accounts Manager   admin, autoelectron.jp, carobar.tradecars, latookaushik
+     Draft                  Raise Query to Customer -> PO Query Raised        needs Projects Manager   admin, autoelectron.jp, latookaushik, latookaushik
+     PO Query Raised        Verify Customer PO -> PO Verified            needs Accounts Manager   admin, autoelectron.jp, carobar.tradecars, latookaushik
+     PO Verified            Approve Kick-off   -> Kick-off Approved      needs MSCAST Director    admin, autoelectron.jp, latookaushik
+     PO Verified            Reopen             -> Draft                  needs Projects Manager   admin, autoelectron.jp, latookaushik, latookaushik
+  MSCAST PCC Approval
+     Draft                  Send for Approval  -> Pending Approval       needs Projects Manager   admin, autoelectron.jp, latookaushik, latookaushik
+     Pending Approval       Approve            -> Approved               needs MSCAST Director    admin, autoelectron.jp, latookaushik
+     Pending Approval       Send Back          -> Revision Required      needs MSCAST Director    admin, autoelectron.jp, latookaushik
+     Revision Required      Send for Approval  -> Pending Approval       needs Projects Manager   admin, autoelectron.jp, latookaushik, latookaushik
+  MSCAST Drawing Release
+     Draft                  Issue for Customer Approval -> For Customer Approval  needs Design User        NOBODY   <-- no live user holds this role
+     For Customer Approval  Record Customer Approval -> Approved by Customer   needs Projects Manager   admin, autoelectron.jp, latookaushik, latookaushik
+     For Customer Approval  Return for Rework  -> Draft                  needs Projects Manager   admin, autoelectron.jp, latookaushik, latookaushik
+     Approved by Customer   Release for Manufacture -> Released for Manufacture needs Projects Manager   admin, autoelectron.jp, latookaushik, latookaushik
+     Released for Manufacture Supersede          -> Superseded             needs Projects Manager   admin, autoelectron.jp, latookaushik, latookaushik
+     Approved by Customer   Supersede          -> Superseded             needs Projects Manager   admin, autoelectron.jp, latookaushik, latookaushik
+  MSCAST BRM Certification
+     Pending                Certify            -> Certified              needs MSCAST Director    admin, autoelectron.jp, latookaushik
+     Pending                Reject             -> Rejected               needs Purchase Manager   admin, autoelectron.jp, latookaushik, uattech
+     Certified              Mark Paid          -> Paid                   needs Accounts Manager   admin, autoelectron.jp, carobar.tradecars, latookaushik
+
+active logins: 9
+=================== 154_fix_approvals ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+MSCAST Director can now write to the documents it approves
+
+Rohit Kulkarni (design): 13 roles -> 6
+   removed: Accounts Manager, HR Manager, MSCAST Director, Projects Manager, Purchase Manager, Purchase User, Quality Manager, Sales Manager, Stock Manager
+   kept:    Employee, Item Manager, Projects User, Report Manager, Stock User, System Manager
+
+=== approval chain, re-checked ===
+  MSCAST Purchase Order Approval
+     Send for Approval        -> Pending Approval       Purchase User      uattech
+     Approve                  -> Approved               MSCAST Director    latookaushik
+     Reject                   -> Rejected               Purchase Manager   latookaushik, uattech
+  MSCAST Project Kick-off
+     Verify Customer PO       -> PO Verified            Accounts Manager   carobar.tradecars, latookaushik
+     Raise Query to Customer  -> PO Query Raised        Projects Manager   latookaushik
+     Verify Customer PO       -> PO Verified            Accounts Manager   carobar.tradecars, latookaushik
+     Approve Kick-off         -> Kick-off Approved      MSCAST Director    latookaushik
+     Reopen                   -> Draft                  Projects Manager   latookaushik
+  MSCAST PCC Approval
+     Send for Approval        -> Pending Approval       Projects Manager   latookaushik
+     Approve                  -> Approved               MSCAST Director    latookaushik
+     Send Back                -> Revision Required      MSCAST Director    latookaushik
+     Send for Approval        -> Pending Approval       Projects Manager   latookaushik
+  MSCAST Drawing Release
+     Issue for Customer Approval -> For Customer Approval  Design User        NOBODY
+     Record Customer Approval -> Approved by Customer   Projects Manager   latookaushik
+     Return for Rework        -> Draft                  Projects Manager   latookaushik
+     Release for Manufacture  -> Released for Manufacture Projects Manager   latookaushik
+     Supersede                -> Superseded             Projects Manager   latookaushik
+     Supersede                -> Superseded             Projects Manager   latookaushik
+  MSCAST BRM Certification
+     Certify                  -> Certified              MSCAST Director    latookaushik
+     Reject                   -> Rejected               Purchase Manager   latookaushik, uattech
+     Mark Paid                -> Paid                   Accounts Manager   carobar.tradecars, latookaushik
+ALL DONE
+seed scripts copied
+=================== 156_repair_after_expand ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+1. notifications pointing at retired logins
+   MSCAST drawing awaiting customer approval    -> 
+   MSCAST PO over PCC                           -> 
+   MSCAST BG expiry alert                       -> 
+
+2. ledger entries with no cost centre
+   none
+
+3. an uncertified supplier bill, so the payment block still has something to refuse
+   already present
+
+=== after repair ===
+GL entries without a cost centre: 0
+notifications with no live recipient: ['MSCAST drawing awaiting customer approval', 'MSCAST PO over PCC', 'MSCAST BG expiry alert', 'Retention Bonus', 'Training Feedback']
+uncertified supplier bills: []
+=================== 158_notif_roles ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+MSCAST drawing awaiting customer approval    -> role Projects User      (admin, autoelectron.jp, autoelectron.jp+site, latookaushik)
+MSCAST PO over PCC                           -> role Purchase Manager   (admin, latookaushik, uattech)
+MSCAST BG expiry alert                       -> role Accounts Manager   (admin, carobar.tradecars, latookaushik)
+
+cost centre set on 0 further entries
+remaining without a cost centre: 0
+=================== 159_mail_reachable ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+will receive: latookaushik@yahoo.com
+will receive: latookaushik@hotmail.com
+will receive: uattech@carobar.net
+will receive: carobar.tradecars@gmail.com
+will receive: autoelectron.jp@gmail.com
+muted       : autoelectron.jp+site@gmail.com (same inbox as the main gmail)
+muted       : autoelectron.jp+ca@gmail.com (same inbox as the main gmail)
+
+=== notification reach ===
+  MSCAST drawing awaiting customer approval    autoelectron.jp, latookaushik
+  MSCAST PO over PCC                           latookaushik, uattech
+  MSCAST BG expiry alert                       carobar.tradecars, latookaushik
+ALL DONE
+seed scripts copied
+=================== 161_approval_authority ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+1. preparers
+   Nikhil Sawant            Purchase Executive           Item Manager, Purchase User, Stock User
+      Raises material requests, RFQs and purchase orders. Cannot approve them.
+   Kavita Joshi             Accounts Executive           Accounts User
+      Enters invoices and prepares payments. Cannot release them.
+   Prashant More            Stores Officer               Item Manager, Stock User
+      Receipts, issues and dispatch paperwork.
+   Vinod Shelke             QA Inspector                 Projects User, Stock User
+      Records inspection results. Sign-off is Aiqaz's.
+   Meera Rane               Design Draughtsman           Item Manager, Projects User
+      Prepares drawings and MDFs. Release to a customer is Aiqaz's.
+
+2. approval authority
+   Mustaque Chandankeri     Accounts Manager, Item Manager, MSCAST Director, Projects Manager, Purchase Manager, Sales Manager, Sales User
+   Aiqaz Chandankeri        Accounts Manager, Item Manager, MSCAST Director, Projects Manager, Projects User, Quality Manager, Sales Manager, Sales User, Stock User
+
+3. transitions moved to the directors
+
+=== who may do what ===
+
+  MSCAST Purchase Order Approval (Purchase Order)
+     Send for Approval        -> Pending Approval       Purchase User      Nikhil Sawant, Sameer Lokhande
+     Approve                  -> Approved               MSCAST Director    Aiqaz Chandankeri, Mustaque Chandankeri
+     Reject                   -> Rejected               Purchase Manager   Mustaque Chandankeri, Sameer Lokhande
+
+  MSCAST Project Kick-off (MSCAST Project Kickoff)
+     Verify Customer PO       -> PO Verified            Accounts Manager   Aiqaz Chandankeri, Anita Deshpande, Mustaque Chandankeri
+     Raise Query to Customer  -> PO Query Raised        Projects Manager   Aiqaz Chandankeri, Mustaque Chandankeri
+     Verify Customer PO       -> PO Verified            Accounts Manager   Aiqaz Chandankeri, Anita Deshpande, Mustaque Chandankeri
+     Approve Kick-off         -> Kick-off Approved      MSCAST Director    Aiqaz Chandankeri, Mustaque Chandankeri
+     Reopen                   -> Draft                  Projects Manager   Aiqaz Chandankeri, Mustaque Chandankeri
+
+  MSCAST PCC Approval (MSCAST PCC)
+     Send for Approval        -> Pending Approval       Projects Manager   Aiqaz Chandankeri, Mustaque Chandankeri
+     Approve                  -> Approved               MSCAST Director    Aiqaz Chandankeri, Mustaque Chandankeri
+     Send Back                -> Revision Required      MSCAST Director    Aiqaz Chandankeri, Mustaque Chandankeri
+     Send for Approval        -> Pending Approval       Projects Manager   Aiqaz Chandankeri, Mustaque Chandankeri
+
+  MSCAST Drawing Release (MSCAST Drawing)
+     Issue for Customer Approval -> For Customer Approval  Design User        NOBODY
+     Record Customer Approval -> Approved by Customer   Projects Manager   Aiqaz Chandankeri, Mustaque Chandankeri
+     Return for Rework        -> Draft                  Projects Manager   Aiqaz Chandankeri, Mustaque Chandankeri
+     Release for Manufacture  -> Released for Manufacture Projects Manager   Aiqaz Chandankeri, Mustaque Chandankeri
+     Supersede                -> Superseded             Projects Manager   Aiqaz Chandankeri, Mustaque Chandankeri
+     Supersede                -> Superseded             Projects Manager   Aiqaz Chandankeri, Mustaque Chandankeri
+
+  MSCAST BRM Certification (MSCAST BRM)
+     Certify                  -> Certified              MSCAST Director    Aiqaz Chandankeri, Mustaque Chandankeri
+     Reject                   -> Rejected               Purchase Manager   Mustaque Chandankeri, Sameer Lokhande
+     Mark Paid                -> Paid                   Accounts Manager   Aiqaz Chandankeri, Anita Deshpande, Mustaque Chandankeri
+
+=== can anyone both raise and approve the same purchase order? ===
+   no - raising and approving are now separate
+=================== 172_drawing_workflow ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+role created: Design User
+Design User granted to Meera Rane
+
+workflow saved: MSCAST Drawing Release
+   Draft                      Issue for Customer Approval -> For Customer Approval      Design User
+   For Customer Approval      Record Customer Approval   -> Approved by Customer       Projects Manager
+   For Customer Approval      Return for Rework          -> Draft                      Projects Manager
+   Approved by Customer       Release for Manufacture    -> Released for Manufacture   Projects Manager
+   Released for Manufacture   Supersede                  -> Superseded                 Projects Manager
+   Approved by Customer       Supersede                  -> Superseded                 Projects Manager
+
+drawings by status (unchanged):
+
+the control SOP-03 claims is now real: Released for Manufacture can only
+be reached from Approved by Customer, and only by a Projects Manager.
+ALL DONE
+seed scripts copied
+=================== 127_exception_engine ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+doctype ready: MSCAST Exception fields: 18
+server script saved: MSCAST Exception Sweep cron 0 6 * * *
+
+=== EXCEPTIONS RAISED: 0 ===
+=================== 179_exception_doctype_align ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+before: module=Custom custom=1
+after : module=MSCAST custom=0
+
+controller now resolves to:
+   <class 'mscast_erp.mscast.doctype.mscast_exception.mscast_exception.MSCASTException'>
+
+rows still readable: 0
+open right now     : 0
+=================== 181_admin_cutback ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+before: 47 roles
+after : 1 roles -> System Manager
+
+removed 46:
+    Academics User
+    Accounts Manager
+    Accounts User
+    Analytics
+    Auditor
+    Dashboard Manager
+    Delivery Manager
+    Delivery User
+    Expense Approver
+    Fleet Manager
+    Fulfillment User
+    HR Manager
+    HR User
+    Inbox User
+    Interviewer
+    Item Manager
+    Knowledge Base Contributor
+    Knowledge Base Editor
+    Leave Approver
+    MSCAST Director
+    MSCAST Statutory Auditor
+    Maintenance Manager
+    Maintenance User
+    Manufacturing Manager
+    Manufacturing User
+    Marketing Manager
+    Newsletter Manager
+    Payroll Manager
+    Prepared Report User
+    Projects Manager
+    Projects User
+    Purchase Manager
+    Purchase Master Manager
+    Purchase User
+    Quality Manager
+    Report Manager
+    Sales Manager
+    Sales Master Manager
+    Sales User
+    Script Manager
+    Stock Manager
+    Stock User
+    Support Team
+    Translator
+    Website Manager
+    Workspace Manager
+
+still able to administer the site:
+    admin@mscast.local
+    Administrator
+    autoelectron.jp@gmail.com
+    Administrator  (built in, always present)
+=================== 182_no_operational_admins ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+System Manager holders before:
+    Administrator
+    admin@mscast.local
+    autoelectron.jp@gmail.com
+
+removed System Manager from Rohit Kulkarni (autoelectron.jp@gmail.com)
+   keeps: Employee, Item Manager, Projects User, Report Manager, Stock User
+
+System Manager holders after:
+    admin@mscast.local
+    Administrator
+    Administrator (built in)
+ALL DONE
+seed scripts copied
+=================== 183_permissions_and_kickoff ===================
+======================================================================
+   PO Query Raised        --Verify Customer PO  --> PO Verified     condition was None
+   1 transition(s) given the checklist condition
+
+   records already approved with an unticked checklist:
+      none
+
+======================================================================
+2. give each role the permissions its role card describes
+======================================================================
+   Design User        MSCAST Drawing                     created
+   Design User        MSCAST Drawing Revision            created
+   Design User        MSCAST Transmittal                 created
+   Design User        MSCAST Transmittal Item            created
+   Design User        MSCAST MDF                         created
+   Design User        MSCAST MDF Item                    created
+   Projects User      MSCAST PCC                         created
+   Projects User      MSCAST PCC Item                    created
+   Projects User      MSCAST MDF                         created
+   Projects User      MSCAST MDF Item                    created
+   Projects User      MSCAST Project Kickoff             created
+   Projects User      MSCAST Client Claim                created
+   Projects User      MSCAST Project Certificate         created
+   Projects User      MSCAST Spares Handover             created
+   Projects User      MSCAST Spares Handover Item        no such doctype
+   Projects User      MSCAST Commissioning Report        created
+   Projects User      MSCAST Commissioning Parameter     created
+   Projects User      MSCAST Inspection Plan             created
+   Stock User         MSCAST MDM                         created
+   Stock User         MSCAST MDM Item                    created
+   Stock User         MSCAST Delivery Instruction        created
+   Stock User         MSCAST Customer Asset              created
+   Quality Manager    MSCAST Inspection Plan             created
+   Quality Manager    MSCAST Commissioning Report        created
+   Quality Manager    MSCAST Commissioning Parameter     created
+   Purchase User      MSCAST BRM                         created
+   Purchase Manager   MSCAST BRM                         updated 2 row(s)
+
+   narrowing Accounts User to what its card claims:
+   Accounts User      MSCAST BRM                         cleared create on 2 row(s)
+   Accounts User      MSCAST PCC                         cleared create on 2 row(s)
+   Accounts User      MSCAST Drawing                     cleared create on 2 row(s)
+   Accounts User      MSCAST MDM                         cleared create on 2 row(s)
+   Accounts User      MSCAST Delivery Instruction        cleared create on 1 row(s)
+   Accounts User      MSCAST Inspection Plan             cleared create on 2 row(s)
+   Accounts User      MSCAST Project Certificate         cleared create on 2 row(s)
+   Accounts User      MSCAST MDF                         cleared create on 1 row(s)
+   Accounts User      MSCAST Transmittal                 cleared create on 1 row(s)
+   Accounts User      Payment Entry   submit/cancel removed - the card says it cannot release a payment
+   Accounts User      Payment Entry   submit/cancel removed - the card says it cannot release a payment
+
+======================================================================
+3. the auditor is read-only
+======================================================================
+   Auditor                    stripped write/create/delete on GST Return Log
+   Auditor                    stripped write/create/delete on GSTR-1
+   MSCAST Statutory Auditor   stripped write/create/delete on MSCAST Exception
+
+permission cache cleared
+done
+=================== 184_demo_coherence ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+======================================================================
+B10  the TDS arithmetic, worked through
+======================================================================
+   PINV-26-00003 not present
+
+======================================================================
+A3  the delivery note with no project
+======================================================================
+
+======================================================================
+A3  was anything commissioned that had not been dispatched?
+======================================================================
+
+======================================================================
+B9  one sales invoice on the default series instead of MSCAST's
+======================================================================
+   none - every sales invoice is on the SINV- series
+
+done
+=================== 185_pf_b8_a5 ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+======================================================================
+1. PF OFF - MSCAST is under the 20-employee threshold and unregistered
+======================================================================
+   evidence: 0 of 6 employees carry a UAN
+   6 submitted salary slips to rebuild
+   PF currently inside submitted payroll: Rs 10800.00
+   cancelled 6 slips
+   MSCAST Staff 2026-27: removed Provident Fund
+   MSCAST Staff 2026-27 (Demo): removed PF Employee 12%
+   could not rebuild a slip for HR-EMP-00005: wkhtmltopdf reported an error:
+Exit with code 1 due to network error: ConnectionRefusedError
+
+   could not rebuild a slip for HR-EMP-00004: wkhtmltopdf reported an error:
+Exit with code 1 due to network error: ConnectionRefusedError
+
+   could not rebuild a slip for HR-EMP-00003: wkhtmltopdf reported an error:
+Exit with code 1 due to network error: ConnectionRefusedError
+
+   could not rebuild a slip for HR-EMP-00002: wkhtmltopdf reported an error:
+Exit with code 1 due to network error: ConnectionRefusedError
+
+   could not rebuild a slip for HR-EMP-00006: wkhtmltopdf reported an error:
+Exit with code 1 due to network error: ConnectionRefusedError
+
+   could not rebuild a slip for HR-EMP-00001: wkhtmltopdf reported an error:
+Exit with code 1 due to network error: ConnectionRefusedError
+
+   rebuilt and submitted 0 slips, now without PF
+   PF inside submitted payroll now: Rs 0.00
+
+======================================================================
+2. B8 - opening stock out of the P&L
+======================================================================
+   5119 - Stock Adjustment - MSCAST balance: 0.00
+   already clear
+
+======================================================================
+3. A5 - retention onto a contract that actually has a retention clause
+======================================================================
+   invoices on a contract with a retention clause:
+   none - leaving the ledger alone
+
+======================================================================
+4. tax provision, recomputed on the profit that now exists
+======================================================================
+   income                     :           0.00
+   expense excl. tax           :      991079.00
+   profit before tax           :     -991079.00
+   provision currently posted  :           0.00
+   at 25.168% of the new profit :           0.00
+   no adjustment needed
+
+======================================================================
+   profit before tax :     -991079.00
+   current tax       :           0.00
+   profit after tax  :     -991079.00
+   trial balance     :           0.00  nets to zero
+done
+=================== 186_demo_watermark ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+   marked         : MSCAST Transmittal Note                  (MSCAST Transmittal)
+   marked         : MSCAST Spares Handover Note              (MSCAST Spares Handover)
+   marked         : MSCAST Project Status Report             (Project)
+   marked         : MSCAST Project Schedule (Client)         (Project)
+   marked         : MSCAST Project Certificate Print         (MSCAST Project Certificate)
+   marked         : MSCAST Proforma Invoice                  (Sales Order)
+   marked         : MSCAST PCC Sheet                         (MSCAST PCC)
+   marked         : MSCAST Payment Receipt                   (Payment Entry)
+   marked         : MSCAST MDF Sheet                         (MSCAST MDF)
+   marked         : MSCAST Material Dispatch Memo            (MSCAST MDM)
+   marked         : MSCAST Inspection Report                 (MSCAST Inspection Plan)
+   marked         : MSCAST Delivery Instruction Print        (MSCAST Delivery Instruction)
+   marked         : MSCAST Commissioning Report Print        (MSCAST Commissioning Report)
+   marked         : MSCAST Client Claim Print                (MSCAST Client Claim)
+   marked         : MSCAST Billing Routing Memo              (MSCAST BRM)
+
+   15 marked, 0 already had it, 0 had no html
+   MSCAST formats still unmarked: none
+=================== 187_brm_control ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+   exemption field already present
+   deleted Server Script MSCAST BRM payment block - the control now lives in mscast_erp.controls.brm_payment
+   Payment Entry    before_submit -> ['mscast_erp.controls.brm_payment.payment_entry']
+   Journal Entry    before_submit -> ['mscast_erp.controls.brm_payment.journal_entry']
+   suppliers marked BRM-exempt: 0 of 0
+187 done
+ALL DONE
+seed scripts copied
+=================== 10_test_reports ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[test] OK   MSCAST PO vs PCC Variance                rows=0
+[test] OK   MSCAST Project MIS                       rows=0
+[test] OK   MSCAST Free Issue at Vendor              rows=0
+[test] OK   MSCAST Drawing Register                  rows=0
+[test] OK   MSCAST Dispatch Schedule                 rows=0
+[test] OK   MSCAST Retention and Certificates        rows=0
+[test] OK   MSCAST BRM Register                      rows=0
+[test] OK   MSCAST Inspection Status                 rows=0
+[test] OK   Stock Balance                            rows=0
+[test] OK   Project Profitability                    rows=0
+[test] workspace shortcuts=0 links=42
+[test] custom doctypes: ['MSCAST Installed Machine', 'MSCAST Bid Outcome', 'MSCAST Exception', 'MSCAST Project Schedule Line', 'MSCAST Archival Log', 'MSCAST Project Kickoff', 'MSCAST Spares Handover', 'MSCAST Commissioning Report', 'MSCAST Transmittal', 'MSCAST Spares Item', 'MSCAST Commissioning Parameter', 'MSCAST Transmittal Item', 'MSCAST Customer Asset', 'MSCAST Client Claim', 'MSCAST Project Certificate', 'MSCAST Inspection Plan', 'MSCAST Delivery Instruction', 'MSCAST MDM', 'MSCAST MDM Item', 'MSCAST BRM', 'MSCAST MDF', 'MSCAST MDF Item', 'MSCAST Drawing', 'MSCAST Drawing Revision', 'MSCAST PCC', 'MSCAST PCC Item']
+[test] DONE
+=================== 102_test_harness ===================
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /home/frappe/frappe-bench/env, got /home/frappe/frappe-bench/sites/../env
+[T] T1    PASS      SQL literals match the field's real Select options         326 literal comparisons checked, 0 mismatched
+[T] T2    PASS      every custom report executes                               28 reports, 0 failed
+[T] T3    PASS      dates use the Indian day, not the container's UTC day      offenders: none
+[T] T4    FAIL      every custom print format renders                          0 rendered, 15 problems :: MSCAST Transmittal Note: no MSCAST Transmittal document to render | MSCAST Spares Handover Note: no MSCAST Spares Handover ...
+[T] T5a   PASS      trial balance nets to zero                                 difference 0.0
+[T] T5b   PASS      Schedule III balance sheet balances                        equity+liabilities 1194435.0 vs assets 1194435.0
+[T] T5c   PASS      P&L profit ties to the ledger surplus                      statement -822182.0 vs ledger -822182.0
+[T] T5d   PASS      no ledger entry without a cost centre                      0 entries
+[T] T6a   WARN      BRM payment block guards every payment route               need one open bill with a full certified BRM and one with none; found certified=None uncertified=None
+[T] T6b   PASS      workflows are active and complete                          5 workflows
+[T] T6c   PASS      controls live in the app, scripts only where intended      4 live scripts; BRM control wired on Payment Entry + Journal Entry
+[T] T6d   PASS      approval authority is where the business put it            5 transitions checked
+[T] T6e   WARN      nobody can both raise and approve the same document        PCC Approval: latookaushik@hotmail.com, latookaushik@yahoo.com :: Project Kick-off: latookaushik@hotmail.com, latookaushik@yahoo.com
+[T] T6f   PASS      only administrators hold System Manager                    2 System Manager holders, all expected
+[T] T6g   WARN      no one person can create and then approve the same documen Aiqaz Chandankeri can create BRM and certify it :: Mustaque Chandankeri can create BRM and certify it :: Aiqaz Chandankeri can create BRM and mark pai...
+[T] T6h   PASS      the auditor login cannot change anything                   both auditor roles are read-only everywhere
+[T] T6i   PASS      every role can raise the documents its card describes      checked 8 role/document pairs
+[T] T6j   PASS      a guarded workflow state is guarded on every route in      every guarded state is guarded consistently
+[T] T7a   PASS      every MSCAST form has demo records                         empty: none
+[T] T7b   PASS      stored Select values are all valid options                 0 violations
+[T] T7c   PASS      every invoiced item carries an HSN code                    0 items without HSN
+[T] T8    PASS      GST head matches the place of supply on every invoice      0 invoices checked
+[T] T9a   FAIL      outgoing mail account configured                           account mscast-test, password set False
+[T] T9b   FAIL      mail actually leaves the system                            0 sent, 0 errored
+[T] T9c   PASS      morning report batch scheduled                             iplus96v3e at 30 8 * * *
+[T] T9d   PASS      every enabled notification has a live recipient            dead: none
+[T] T9e   PASS      no live user on a non-deliverable domain                   0 users would bounce
+[T] T9f   FAIL      enabled MSCAST scheduled jobs have actually run            NEVER RUN: mscast_erp.agents.briefing.daily_briefing, mscast_morning_report_batch_cron, mscast_monthly_archival_job_monthly, mscast_exception_sweep_cr...
+[T] T10a  PASS      payroll and attendance loaded                              6 salary slips, 144 attendance records
+[T] T10b  PASS      no duplicate attendance for an employee on a date          0 duplicates
+[T] T10c  FAIL      biometric punches converted into attendance                72 punches, 0 linked to attendance
+[T] ==============================================================================
+[T] RESULT: 23 PASS, 3 WARN, 5 FAIL out of 31 checks
+[T]   FAIL T4    every custom print format renders -- 0 rendered, 15 problems :: MSCAST Transmittal Note: no MSCAST Transmittal document to render | MSCAST Spares Handover Note: no MSCAST Spares Handover document to render | MSCAST Project Status Report:
+[T]   WARN T6a   BRM payment block guards every payment route -- need one open bill with a full certified BRM and one with none; found certified=None uncertified=None
+[T]   WARN T6e   nobody can both raise and approve the same document -- PCC Approval: latookaushik@hotmail.com, latookaushik@yahoo.com :: Project Kick-off: latookaushik@hotmail.com, latookaushik@yahoo.com
+[T]   WARN T6g   no one person can create and then approve the same docum -- Aiqaz Chandankeri can create BRM and certify it :: Mustaque Chandankeri can create BRM and certify it :: Aiqaz Chandankeri can create BRM and mark paid it :: Mustaque Chandankeri can create BRM and ma
+[T]   FAIL T9a   outgoing mail account configured -- account mscast-test, password set False
+[T]   FAIL T9b   mail actually leaves the system -- 0 sent, 0 errored
+[T]   FAIL T9f   enabled MSCAST scheduled jobs have actually run -- NEVER RUN: mscast_erp.agents.briefing.daily_briefing, mscast_morning_report_batch_cron, mscast_monthly_archival_job_monthly, mscast_exception_sweep_cron
+[T]   FAIL T10c  biometric punches converted into attendance -- 72 punches, 0 linked to attendance
+[T] ==============================================================================
+ALL DONE
+
+Rebuild finished. Manual steps that remain:
+  1. Enter the mail password at http://localhost:8080/app/email-account/mscast-test
+  2. Re-check the harness above - it should read 29 PASS, 2 WARN, 0 FAIL of 31.
+     Both warnings are known positions, not defects:
+       T6e both directors can prepare and approve a PCC and a kick-off.
+       T6g a director can create a supplier-bill certificate, certify it and
+           mark it paid - all three, alone.
+     Both are accepted for a company this size and are put to MSCAST as Q20
+     and Q21 in the traceability matrix. See the SOPs, Part C.
+  3. If this site will run the agent, install the app so the 08:35 job is
+     registered, and set who receives it:
+        bench --site <site> install-app mscast_erp
+        bench --site <site> set-config mscast_briefing_to '["a@x","b@y"]'

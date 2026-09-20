@@ -28,6 +28,52 @@ for i in $(seq 1 60); do
   sleep 20
 done
 
+# --- install the other four apps -------------------------------------------
+#
+# The compose `create-site` step runs `bench new-site ... --install-app erpnext`
+# and nothing else. The other four were installed by hand on the live site at
+# some point and never written down, so until 21 Sep 2026 this script produced a
+# site with one app where the real one has five - and 83 seed steps failed with
+# "Table 'tabSalary Slip' doesn't exist", "tabGST HSN Code doesn't exist" and
+# the like. The rebuild did not rebuild the system, which is the whole point of
+# having a rebuild.
+#
+# Order is a dependency order, not a preference: india_payroll extends hrms, and
+# mscast_erp declares erpnext as required_apps. Installing out of order fails.
+# `bench list-apps` prints "frappe  16.34.0  UNVERSIONED", not a bare name, so
+# every check here goes through this and compares the first column only. Getting
+# that wrong is not cosmetic: a guard that never matches either skips the
+# install or aborts a good run, and both happened before this was factored out.
+installed_apps() {
+  docker exec mscast-poc-backend-1 bash -c \
+    "cd /home/frappe/frappe-bench && bench --site frontend list-apps" 2>/dev/null \
+    | awk 'NF {print $1}'
+}
+
+echo "installing the remaining apps..."
+for app in india_compliance hrms india_payroll mscast_erp; do
+  if installed_apps | grep -qx "$app"; then
+    echo "  $app already installed"
+  else
+    echo "  installing $app"
+    docker exec mscast-poc-backend-1 bash -c \
+      "cd /home/frappe/frappe-bench && bench --site frontend install-app $app" 2>&1 \
+      | tail -3
+  fi
+done
+
+echo "apps now on the site:"
+docker exec mscast-poc-backend-1 bash -c \
+  "cd /home/frappe/frappe-bench && bench --site frontend list-apps" | sed 's/^/  /'
+
+# A missing app here means every seed script after this point builds on sand,
+# so stop rather than produce a site that looks built and is not.
+for app in frappe erpnext india_compliance hrms india_payroll mscast_erp; do
+  installed_apps | grep -qx "$app" \
+    || { echo "FATAL: $app is not installed - stopping" >&2; exit 1; }
+done
+echo "all six apps confirmed on the site"
+
 # server scripts (BRM payment block, scheduled jobs) will not install without this
 echo "enabling server scripts..."
 docker exec mscast-poc-backend-1 bash -c \
