@@ -295,6 +295,36 @@ def t6_controls():
         "warn" if clashes else True,
         " :: ".join(clashes) if clashes else "no overlap on %d workflows" % len(PAIRS))
 
+    # T6f - who bypasses all of the above.
+    #
+    # T6e excludes System Manager holders, because someone who can do anything
+    # is not a meaningful segregation breach. That exclusion is correct and it
+    # is also a blind spot: an ordinary member of staff carrying System Manager
+    # disappears from T6e entirely while being able to approve anything. That
+    # is exactly what had happened - an operational account held it and nothing
+    # said so. So the exclusion is reported rather than hidden.
+    #
+    # Administrator is expected. A named administrator is expected. An account
+    # that also does day-to-day work is not.
+    EXPECTED_ADMINS = {"Administrator", "admin@mscast.local"}
+    admins = {u[0] for u in frappe.db.sql(
+        """select h.parent from `tabHas Role` h join `tabUser` u on u.name = h.parent
+           where h.role = 'System Manager' and u.enabled = 1
+             and u.user_type = 'System User'""")}
+    unexpected = sorted(admins - EXPECTED_ADMINS)
+    detail = []
+    for name in unexpected:
+        other = sorted(x[0] for x in frappe.db.sql(
+            """select role from `tabHas Role` where parent = %s
+               and role != 'System Manager'""", (name,)))
+        detail.append("%s (also holds %s)"
+                      % (name, ", ".join(other[:4]) + ("..." if len(other) > 4 else "")
+                         if other else "nothing else"))
+    rec("T6f", "controls", "only administrators hold System Manager",
+        "warn" if unexpected else True,
+        " :: ".join(detail) if unexpected
+        else "%d System Manager holders, all expected" % len(admins))
+
 
 # ---------------------------------------------------------------- T7 data
 def t7_data():
