@@ -368,6 +368,85 @@ def t6_controls():
         else "checked %d document/approval pairs" % len(END_TO_END))
 
 
+    # T6h - the auditor really is read-only.
+    #
+    # Four documents state that the CA's login cannot change anything. It could:
+    # `Auditor` held write and create on GSTR-1 and GST Return Log, and
+    # `MSCAST Statutory Auditor` held write, create and DELETE on MSCAST
+    # Exception - the ability to erase the output of the overnight sweep. This is
+    # the claim an auditor is most likely to test in person.
+    writable = []
+    for role in ("Auditor", "MSCAST Statutory Auditor"):
+        if not frappe.db.exists("Role", role):
+            continue
+        for tbl in ("Custom DocPerm", "DocPerm"):
+            for r in frappe.get_all(tbl, filters={"role": role},
+                                    fields=["parent", "write", "create", "delete",
+                                            "submit", "cancel", "amend"]):
+                if r.write or r.create or r.delete or r.submit or r.cancel or r.amend:
+                    writable.append("%s on %s" % (role, r.parent))
+    rec("T6h", "controls", "the auditor login cannot change anything", not writable,
+        " :: ".join(sorted(set(writable))[:6]) if writable
+        else "both auditor roles are read-only everywhere")
+
+    # T6i - can the people named in the Role Cards do the work described there?
+    #
+    # `Design User` had zero permission rows in the entire system, so the drawing
+    # office could not open a drawing, and the Draft -> For Customer Approval
+    # transition was executable by nobody at all. Stores, Quality and the
+    # Purchase Executive were in the same position on their own documents. The
+    # role cards are handed to staff; they have to be true.
+    MUST_CREATE = [
+        ("Design User", "MSCAST Drawing"),
+        ("Design User", "MSCAST Transmittal"),
+        ("Design User", "MSCAST MDF"),
+        ("Projects User", "MSCAST PCC"),
+        ("Stock User", "MSCAST MDM"),
+        ("Stock User", "MSCAST Delivery Instruction"),
+        ("Quality Manager", "MSCAST Inspection Plan"),
+        ("Purchase User", "MSCAST BRM"),
+    ]
+    cannot = []
+    for role, dt in MUST_CREATE:
+        if not frappe.db.exists("DocType", dt) or not frappe.db.exists("Role", role):
+            continue
+        rows = (frappe.get_all("Custom DocPerm", filters={"parent": dt, "role": role},
+                               fields=["create"])
+                + frappe.get_all("DocPerm", filters={"parent": dt, "role": role},
+                                 fields=["create"]))
+        if not any(r.create for r in rows):
+            cannot.append("%s cannot create %s" % (role, dt))
+    rec("T6i", "controls", "every role can raise the documents its card describes",
+        not cannot, " :: ".join(cannot) if cannot
+        else "checked %d role/document pairs" % len(MUST_CREATE))
+
+    # T6j - a guarded workflow state is guarded on EVERY route into it.
+    #
+    # The kick-off checklist condition sat on one transition into PO Verified and
+    # not on the other, so raising a query first was a way round the single
+    # highest-value control in the system - and a record in the demo data had
+    # already gone through that way. This is the general form of that bug: if one
+    # route into a state carries a condition, the others must carry it too.
+    holes = []
+    for w in frappe.get_all("Workflow", pluck="name"):
+        doc = frappe.get_doc("Workflow", w)
+        by_state = {}
+        for t in doc.transitions:
+            by_state.setdefault(t.next_state, []).append((t.state, t.action,
+                                                          (t.condition or "").strip()))
+        for state, routes in by_state.items():
+            conds = {c for _, _, c in routes}
+            if len(conds) > 1 and any(c for c in conds):
+                for frm, action, cond in routes:
+                    if not cond:
+                        holes.append("%s: %s --%s--> %s has no condition while "
+                                     "another route into %s does"
+                                     % (doc.document_type, frm, action, state, state))
+    rec("T6j", "controls", "a guarded workflow state is guarded on every route in",
+        not holes, " :: ".join(holes[:4]) if holes
+        else "every guarded state is guarded consistently")
+
+
 # ---------------------------------------------------------------- T7 data
 def t7_data():
     empty = []
