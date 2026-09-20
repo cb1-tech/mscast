@@ -326,6 +326,48 @@ def t6_controls():
         else "%d System Manager holders, all expected" % len(admins))
 
 
+    # T6g - the segregation question T6e cannot answer.
+    #
+    # T6e compares WORKFLOW TRANSITION roles. But creating a document is a
+    # permission, not a transition, so a user can hold create rights on a
+    # document and the approval role for the same document and never appear in
+    # T6e. That is not hypothetical: a director holds Projects Manager, which
+    # can create a BRM, and MSCAST Director, which certifies one. T6e sees no
+    # overlap because "prepare a BRM" is not a workflow transition at all.
+    #
+    # This asks the question in the form an auditor would: can one person carry
+    # this document from creation to the approval that commits money?
+    def can_create(roles, dt):
+        rows = (frappe.get_all("Custom DocPerm", filters={"parent": dt},
+                               fields=["role", "create"])
+                + frappe.get_all("DocPerm", filters={"parent": dt},
+                                 fields=["role", "create"]))
+        return sorted({r.role for r in rows if r.create and r.role in roles})
+
+    END_TO_END = [("MSCAST BRM", "MSCAST Director", "certify"),
+                  ("MSCAST BRM", "Accounts Manager", "mark paid"),
+                  ("Purchase Order", "MSCAST Director", "approve"),
+                  ("MSCAST PCC", "MSCAST Director", "approve")]
+    carries = []
+    for dt, appr_role, appr in END_TO_END:
+        if not frappe.db.exists("DocType", dt):
+            continue
+        for u in frappe.get_all("User", filters={"enabled": 1, "user_type": "System User"},
+                                fields=["name", "full_name"]):
+            rs = set(frappe.get_all("Has Role",
+                     filters={"parent": u.name, "parenttype": "User"}, pluck="role"))
+            # System Manager holders can do anything; T6f is where they are reported.
+            if "System Manager" in rs or appr_role not in rs:
+                continue
+            if can_create(rs, dt):
+                carries.append("%s can create %s and %s it"
+                               % (u.full_name or u.name, dt.replace("MSCAST ", ""), appr))
+    rec("T6g", "controls", "no one person can create and then approve the same document",
+        "warn" if carries else True,
+        " :: ".join(carries) if carries
+        else "checked %d document/approval pairs" % len(END_TO_END))
+
+
 # ---------------------------------------------------------------- T7 data
 def t7_data():
     empty = []
