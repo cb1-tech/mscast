@@ -4,11 +4,13 @@ title: "MSCAST ERP — Production Cutover Runbook"
 
 # MSCAST ERP — Production Cutover Runbook
 
-**For:** MSCAST Engineering Pvt Ltd · **Target:** self-managed VPS in India · **Version:** 2.1 · **Date:** 20 September 2026
+**For:** MSCAST Engineering Pvt Ltd · **Target:** self-managed VPS in India · **Version:** 2.2 · **Date:** 20 September 2026
 
 This is the sequence from "the POC works on a laptop in Japan" to "MSCAST runs its business on this". It assumes the `mscast_erp` app — the configuration as an installable package — because nothing here works if the system can only be rebuilt by hand.
 
 > **What changed in version 2.0.** An install during the build silently reverted the approval rules and nothing noticed. Section 2 now deploys from a tagged release, section 5a is new and covers what a deploy actually does to configuration, and the monitoring and upgrade sections check that the controls survived. This is the most important change in the document.
+>
+> **What changed in version 2.2.** The POC's own app was never in its image. `apps/` comes from the image and only `sites` and `logs` are volumes, so an app copied into one container existed in that container alone. The web workers could not import it — the site served HTTP 500 on every request while every build check passed — and neither could the scheduler or the queue workers, so **four of the five scheduled jobs had never run once**. Section 2 now builds the image with the app baked in, section 4 monitors whether jobs actually execute, and a new check, `T9f`, asks whether each one has a real `last_execution`. The build checks are now 28.
 >
 > **What changed in version 2.1.** The build checks went from 25 to 27 and now report **two** expected warnings rather than one. The second, `T6g`, found that a director can create a supplier-bill certificate, certify it and mark it paid alone — a separation three documents had claimed existed. Section 8 carries the decision to MSCAST. The administrator-account item in section 6 is closed, and the figure in it was wrong: the account held 41 roles, not fourteen.
 
@@ -78,7 +80,20 @@ A migrate also prints `Deleting entity Workspace MSCAST ...` partway through and
 
 6. HTTPS: Let's Encrypt via the reverse proxy, with renewal on a timer and an alert if renewal fails. A certificate that silently expires takes the business offline on a Sunday.
 
-7. Run the build checks before telling anyone the site exists. Expect **27 checks, 0 failures**. Two warnings are expected and documented (see the SOPs, Part C, and Q20/Q21 in the traceability matrix). Anything else is a stop.
+7. Run the build checks before telling anyone the site exists. Expect **28 checks, 0 failures**. Two warnings are expected and documented (see the SOPs, Part C, and Q20/Q21 in the traceability matrix). Anything else is a stop.
+
+**A note on the image, learned the hard way.** In the POC the application was not in the image at all — it had been copied into the running backend container by hand. Because `apps/` comes from the image and only `sites` and `logs` are volumes, that gave the app to exactly one container. The web workers could not import it, so the site returned HTTP 500 on every request while every script and every build check passed, because `bench console` and `bench execute` spawn a fresh python each time. Worse, the scheduler and both queue workers could not import it either, so the 06:00 exception sweep, the 08:35 briefing and the monthly archival **had never executed once**. They worked perfectly when run by hand, which is how they were built and demonstrated.
+
+On a server, install the app properly with `bench get-app` as above, or deploy an image that carries it. Then prove it, because "installed" and "runs" are different claims:
+
+```bash
+# every container, not just the one you happen to be in
+for c in backend scheduler queue-short queue-long; do
+  docker exec <project>-$c-1 bash -c \
+    'cd /home/frappe/frappe-bench && ./env/bin/python -c "import mscast_erp"' \
+      && echo "$c ok" || echo "$c CANNOT IMPORT THE APP"
+done
+```
 
 ---
 
@@ -100,6 +115,7 @@ The part most likely to be skipped and most likely to matter.
 Minimal, but it has to exist, because the failures are silent:
 
 - Is the site answering? (uptime check from outside)
+- **Has each MSCAST job actually run?** Check `last_execution` on every Scheduled Job Type, not just that the scheduler process is alive. This is `T9f` in the build checks, and it exists because four jobs sat at `last_execution = NULL` for the life of the POC while everything around them looked healthy. A job that is enabled, correctly scheduled and has never executed is the failure mode to watch for.
 - Is the **scheduler** running? This is the one that fails quietly — the daily summary, the overnight checks, the morning note and every notification stop, and the first symptom is a director noticing the 08:30 email hasn't arrived for a week.
 - **Did the morning note actually go out?** Check the Email Queue, not just that the job ran. A job that succeeds and reaches nobody is the worst kind of green light.
 - **Is there an Error Log entry titled "approval authority repaired after deploy"?** If one appears, a deploy changed who may approve something. Section 5a.
@@ -160,7 +176,7 @@ A monthly routine:
 
 1. Restore last night's production backup onto a staging site.
 2. `bench update` there.
-3. Run the build checks. **27 checks, 0 failures**, two expected warnings. They exist precisely for this.
+3. Run the build checks. **28 checks, 0 failures**, two expected warnings. They exist precisely for this.
 4. Read the deploy output for an approval-authority banner.
 5. Only then upgrade production, in a window MSCAST agrees to, from a tagged release.
 6. Re-run the checks on production afterwards. Do not announce the system is available until they pass.

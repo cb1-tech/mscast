@@ -5,7 +5,7 @@
 
 All company data in this POC is **fictional demo data**. Customer and supplier names end with "(DEMO)". MSCAST's own identity — name, GSTIN, CIN, branding — is real and deliberate, so the demonstration looks familiar to the client.
 
-**Build checks: 27, of which 25 pass, 2 are expected warnings, 0 fail.**
+**Build checks: 28, of which 26 pass, 2 are expected warnings, 0 fail.**
 
 ---
 
@@ -31,7 +31,7 @@ All company data in this POC is **fictional demo data**. Customer and supplier n
 | Piece | Detail |
 |---|---|
 | Stack | compose project `mscast-poc`, 9 containers, from `~/mscast-poc/compose.yaml` |
-| Image | **`mscast/erpnext:v16`** (5.12 GB), built locally from frappe_docker with apps.json |
+| Image | **`mscast/erpnext:v16-app`** (5.13 GB) — the frappe_docker build plus `mscast_erp` baked in, via `erpnext-poc/Containerfile.mscast`. The app **must** be in the image: `apps/` comes from the image and only `sites` and `logs` are volumes |
 | Apps | frappe 16.34.0 · erpnext 16.35.0 · **india_compliance 16.9.1** · **hrms 16.19.0** · **india_payroll 16.0.4** · **mscast_erp 0.1.0** |
 | Database | MariaDB 11.8 (ERPNext does not support PostgreSQL) |
 | Site | `frontend`, port 8080 · server scripts **enabled** |
@@ -59,7 +59,7 @@ wsl -d Ubuntu -e bash /mnt/d/MSCAST/erpnext-poc/scripts/run-seed.sh 102_test_har
 
 | Script | What it does |
 |---|---|
-| `run-seed.sh 102_test_harness` | the 27 build checks — **run this after any change** |
+| `run-seed.sh 102_test_harness` | the 28 build checks — **run this after any change** |
 | `run-harness.sh` | the same thing, with the output filtered to the result lines |
 | `run-seed.sh 127_exception_engine` | run the overnight rule sweep by hand |
 | `run-seed.sh 160_omni_test` | prove the AI briefing end to end |
@@ -68,11 +68,16 @@ wsl -d Ubuntu -e bash /mnt/d/MSCAST/erpnext-poc/scripts/run-seed.sh 102_test_har
 | `audit-sod.sh` | the segregation-of-duties audit in full, including create-permission overlaps |
 | `snapshot.sh <label>` | database + files backup, copied out to `backups\` |
 | `reset-poc.sh` | wipe and rebuild from every seed script (~25 min) |
-| `push-app.sh` | copy the app from the repo into the running bench without a rebuild |
+| `build-mscast-image.sh` | rebuild `mscast/erpnext:v16-app` with the current app baked in — **the real way to ship a code change** |
+| `push-app.sh` | copy the app into the running containers and restart them, for fast iteration only. The image is the source of truth; a container recreation discards anything pushed this way |
 | `pull-fixtures.sh` | copy exported fixtures out of the container into the app |
 | `test-stale-deploy.sh` | reproduce the stale-deploy failure and watch the guard catch it |
 
-**A trap worth knowing.** The container's copy of the app is a *copy*, not a mount. Editing `D:\MSCAST\mscast_erp` changes nothing until `push-app.sh` runs. Installing the app from a stale container copy is how the approval rules silently reverted once — see section 9.
+**Two traps worth knowing.**
+
+The container's copy of the app is a *copy*, not a mount. Editing `D:\MSCAST\mscast_erp` changes nothing until the image is rebuilt, or `push-app.sh` runs for a quick iteration. Installing the app from a stale container copy is how the approval rules silently reverted once — see section 9.
+
+And the one that cost a day: **`apps/` comes from the image.** For most of this POC the app was not in the image at all — it had been copied into the backend container by hand — so exactly one container had it. The web workers could not import it, and the site served HTTP 500 on every request while every script and every build check passed, because `bench console` and `bench execute` start a fresh python each time. The scheduler and the queue workers could not import it either, so **four of the five scheduled jobs had never run once**. `T9f` now checks `last_execution` on each of them.
 
 ## 3. Exposing the demo to clients in India
 
@@ -196,6 +201,10 @@ Two consequences:
 
 **The guard.** After every install and migrate, six control transitions are verified and repaired, with a banner and an Error Log entry naming each one. A banner means the package and the agreed configuration have diverged — reconcile them, do not just note it. `test-stale-deploy.sh` reproduces the whole thing.
 
+### The check that found the silent failure
+
+**`T9f` — has each enabled MSCAST scheduled job actually run?** Not "is it configured", not "is the scheduler alive", but does it have a real `last_execution`. Every other check asked the first question and all of them passed while four jobs had never executed. T9f failed the moment it was written, naming the monthly archival job. All five have since been enqueued through the real scheduler path and picked up by a worker.
+
 ### The two expected warnings
 
 `T6d` asserts the approval matrix. Two further checks ask whether the separation of duties is real, from two different angles, and **both warn on purpose**. Neither is a defect to chase; both are positions somebody has taken.
@@ -214,7 +223,7 @@ Two consequences:
 - Biometric attendance pull switched off
 - Hosting: VPS in India, HTTPS, daily India-resident backups (Companies (Accounts) Rules r.3(5))
 - The AI briefing points at a model router on this laptop; a server needs a hosted endpoint — three config lines, no code change
-- **`reset-poc.sh` has not been run end to end since scripts 172, 179, 181 and 182 were added to it.** Each was verified against the live site individually, but the claim "this rebuilds from nothing" is currently untested
+- **`reset-poc.sh` has not been run end to end** since the most recent scripts were added to it. Each was verified against the live site individually, but the claim "this rebuilds from nothing" is still untested. It now builds the image first if it is missing, so the rebuild should produce the same stack — that too is untested until someone runs it
 
 Six accounting and scope assumptions are still awaiting MSCAST and the CA. They are listed in the implementation report and written into the narration of the affected vouchers, so whoever reviews the books meets the assumption where it matters.
 
@@ -234,7 +243,7 @@ Six accounting and scope assumptions are still awaiting MSCAST and the CA. They 
 12. **Commissioning report and spares handover** — print both
 13. **MSME 45-Day Dues** and **Daily Management Summary**
 14. **Schedule III balance sheet and P&L**, then **Project Closure Report**
-15. **Run the harness** — 27 checks, 25 pass, 2 expected warnings
+15. **Run the harness** — 28 checks, 26 pass, 2 expected warnings
 
 ## 12. Files
 
