@@ -18,6 +18,32 @@ HIDE = [
 
 LANDING = "MSCAST"
 
+# The approval authority MSCAST decided on, asserted after every deploy.
+#
+# Why this exists. Fixtures are authoritative: install-app and migrate both
+# re-import fixtures/*.json from the app directory on disk and overwrite the
+# live rows. That was proved by experiment - a workflow role changed in the
+# database was silently reset to the fixture's value by a plain 'bench migrate'.
+#
+# Two ways that bites:
+#   1. Deploying from a stale checkout reverts business rules to whatever that
+#      checkout happened to contain. This already happened once: an install from
+#      a stale app directory moved PCC approval back to System Manager and BRM
+#      certification back to Purchase Manager, and nothing noticed.
+#   2. Anything an administrator changes in the ERPNext screens - a workflow
+#      role, a notification recipient - is reverted on the next upgrade.
+#
+# So the rule is: business rules live in git, not in the screens. And after
+# every deploy the system says out loud whether the rule survived.
+REQUIRED_AUTHORITY = {
+    ("MSCAST Purchase Order Approval", "Approve"): "MSCAST Director",
+    ("MSCAST PCC Approval", "Approve"): "MSCAST Director",
+    ("MSCAST PCC Approval", "Send Back"): "MSCAST Director",
+    ("MSCAST BRM Certification", "Certify"): "MSCAST Director",
+    ("MSCAST Project Kick-off", "Approve Kick-off"): "MSCAST Director",
+    ("MSCAST Drawing Release", "Release for Manufacture"): "Projects Manager",
+}
+
 
 def after_install():
     configure()
@@ -37,6 +63,57 @@ def configure():
     hide_stock_workspaces()
     set_landing_page()
     frappe.db.commit()
+    verify_controls()
+
+
+def verify_controls():
+    """Check the controls survived the deploy, repair them, and say so.
+
+    This runs last, after the fixtures have been imported, so it sees the state
+    the site will actually run with. It repairs rather than raising: refusing to
+    finish a migrate would leave the site half-upgraded, which is worse than a
+    wrong approval role. But it never repairs quietly - a repair is printed as a
+    banner and written to the Error Log, because a control that needed repairing
+    means the package and the intended configuration have diverged, and somebody
+    has to reconcile them before the next deploy."""
+    repaired = []
+    for (wf_name, action), want in sorted(REQUIRED_AUTHORITY.items()):
+        if not frappe.db.exists("Workflow", wf_name):
+            repaired.append("%s is MISSING ENTIRELY" % wf_name)
+            continue
+        doc = frappe.get_doc("Workflow", wf_name)
+        wrong = [t for t in doc.transitions if t.action == action and t.allowed != want]
+        if not wrong:
+            continue
+        for t in wrong:
+            repaired.append("%s / %s was %s, restored to %s"
+                            % (wf_name, action, t.allowed, want))
+            t.allowed = want
+        doc.flags.ignore_permissions = True
+        doc.save()
+
+    if not repaired:
+        print("mscast_erp: approval authority verified, %d transitions correct"
+              % len(REQUIRED_AUTHORITY))
+        return
+
+    frappe.db.commit()
+    banner = "\n".join(
+        ["", "!" * 72,
+         "MSCAST: THE DEPLOY CHANGED WHO MAY APPROVE. Repaired, but read this.",
+         "!" * 72]
+        + ["  - " + line for line in repaired]
+        + ["",
+           "  The package that was just deployed does not match the approval",
+           "  authority MSCAST agreed. Most likely the deploy ran from a stale",
+           "  checkout. Re-export the fixtures from a correct site and commit",
+           "  them before the next deploy, or this repeats every upgrade.",
+           "!" * 72, ""])
+    print(banner)
+    try:
+        frappe.log_error(banner, "MSCAST: approval authority repaired after deploy")
+    except Exception:
+        pass
 
 
 def sync_doctypes():
