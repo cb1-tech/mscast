@@ -53,13 +53,19 @@ bash $R 150_masters_expand 151_installed_and_bids 155_project_three
 bash $R 153_real_users 154_fix_approvals
 bash $R 156_repair_after_expand 158_notif_roles 159_mail_reachable
 # --- segregation of duties: preparers prepare, the two directors approve ---
-bash $R 161_approval_authority
+bash $R 161_approval_authority 172_drawing_workflow
 bash $R 127_exception_engine
 bash $R 10_test_reports 102_test_harness
 
 cat <<'NOTE'
 
-Rebuild finished. Two manual steps remain:
+Rebuild finished. Manual steps that remain:
   1. Enter the mail password at http://localhost:8080/app/email-account/mscast-test
-  2. Re-check the test harness result above - it should read 23 PASS, 0 FAIL.
+  2. Re-check the harness above - it should read 24 PASS, 1 WARN, 0 FAIL of 25.
+     The warning is expected: both directors can prepare and approve a PCC
+     and a kick-off. That is an accepted position, documented in the SOPs.
+  3. If this site will run the agent, install the app so the 08:35 job is
+     registered, and set who receives it:
+        bench --site <site> install-app mscast_erp
+        bench --site <site> set-config mscast_briefing_to '["a@x","b@y"]'
 NOTE
