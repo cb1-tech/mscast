@@ -329,9 +329,16 @@ def t9_automation():
     rec("T9d", "email", "every enabled notification has a live recipient", not dead,
         "dead: %s" % (", ".join(dead) if dead else "none"))
 
+    # Deliverable domains. The point of this check is to catch a live user on a
+    # made-up domain such as @mscast.demo, not to police which real provider
+    # somebody uses - so the mailboxes MSCAST actually gave us are listed here.
     bounce = frappe.db.sql("""select count(*) from `tabUser` where enabled = 1
-        and unsubscribed = 0 and name not like '%%@gmail.com'
-        and name not like '%%@carobar%%' and name not in ('Guest','Administrator')""")[0][0]
+        and unsubscribed = 0
+        and name not like '%%@gmail.com'
+        and name not like '%%@carobar%%'
+        and name not like '%%@yahoo.com'
+        and name not like '%%@hotmail.com'
+        and name not in ('Guest','Administrator')""")[0][0]
     rec("T9e", "email", "no live user on a non-deliverable domain", bounce == 0,
         "%d users would bounce" % bounce)
 

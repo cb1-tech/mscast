@@ -11,14 +11,18 @@ Design rules it keeps to:
   - if the model is unreachable, the briefing still goes out as a plain list.
     A missing model must never mean a missing morning email.
 
+It talks to any OpenAI-compatible endpoint. Here that is OmniRoute, which fronts
+several providers behind one combo name and falls back between them itself - so
+the ERP knows one address and the routing decisions live where they belong.
+
 Configuration, in site_config.json (never in the repo):
 
-    bench --site <site> set-config gemini_api_key "..."
+    bench --site <site> set-config omniroute_api_key "..."
+    bench --site <site> set-config omniroute_base_url "http://host.docker.internal:20128/v1"
+    bench --site <site> set-config omniroute_model "hermes-antigravity"
     bench --site <site> set-config mscast_briefing_to '["director@mscast.co.in"]'
-    bench --site <site> set-config gemini_model "gemini-3.1-flash-lite"
 
-Cost: the model sees a few thousand tokens a day. At Flash-Lite rates that is a
-few rupees a year, and the free tier covers it outright.
+Cost: the model sees a few thousand tokens a day.
 """
 
 import json
@@ -26,9 +30,9 @@ import json
 import frappe
 from frappe.utils import get_url
 
-DEFAULT_MODEL = "gemini-3.1-flash-lite"
-ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-TIMEOUT = 45
+DEFAULT_BASE_URL = "http://host.docker.internal:20128/v1"
+DEFAULT_MODEL = "hermes-antigravity"
+TIMEOUT = 90
 
 SYSTEM = """You are writing the morning note for the director of MSCAST Engineering,
 a Pune company of under ten people that builds continuous casting machines to order.
@@ -92,12 +96,14 @@ def collect():
 
 def write_note(data):
     """Ask the model. Fall back to a plain list if it cannot be reached."""
-    key = frappe.conf.get("gemini_api_key")
+    key = frappe.conf.get("omniroute_api_key")
     if not key:
         return plain(data), "no API key configured"
 
-    model = frappe.conf.get("gemini_model") or DEFAULT_MODEL
-    prompt = SYSTEM + "\n\nHere is this morning's material:\n\n" + json.dumps(
+    model = frappe.conf.get("omniroute_model") or DEFAULT_MODEL
+    base = (frappe.conf.get("omniroute_base_url") or DEFAULT_BASE_URL).rstrip("/")
+
+    material = json.dumps(
         {
             "date": data["date"],
             "exceptions": data["exceptions"],
@@ -112,23 +118,70 @@ def write_note(data):
         import requests
 
         response = requests.post(
-            ENDPOINT.format(model=model),
-            headers={"x-goog-api-key": key, "Content-Type": "application/json"},
+            base + "/chat/completions",
+            headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"},
             json={
-                "contents": [{"parts": [{"text": prompt}]}],
-                "generationConfig": {"temperature": 0.2, "maxOutputTokens": 700},
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": SYSTEM},
+                    {"role": "user", "content": "Here is this morning's material:\n\n" + material},
+                ],
+                "temperature": 0.2,
+                "max_tokens": 700,
             },
             timeout=TIMEOUT,
         )
         response.raise_for_status()
         payload = response.json()
-        text = payload["candidates"][0]["content"]["parts"][0]["text"].strip()
+        text = (payload["choices"][0]["message"]["content"] or "").strip()
         if not text:
             raise ValueError("empty response")
-        return text, model
+        served = payload.get("model") or model
+        label = model if served == model else "%s (served by %s)" % (model, served)
+        return text, label
     except Exception:
         frappe.log_error(frappe.get_traceback(), "MSCAST briefing: model unavailable")
         return plain(data), "model unavailable - plain list sent instead"
+
+
+@frappe.whitelist()
+def test_connection():
+    """One small request, so the wiring can be proved without waiting for 08:35."""
+    key = frappe.conf.get("omniroute_api_key")
+    if not key:
+        return {"ok": False, "detail": "no omniroute_api_key in site_config.json"}
+
+    model = frappe.conf.get("omniroute_model") or DEFAULT_MODEL
+    base = (frappe.conf.get("omniroute_base_url") or DEFAULT_BASE_URL).rstrip("/")
+    import time
+
+    import requests
+
+    started = time.time()
+    response = requests.post(
+        base + "/chat/completions",
+        headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"},
+        json={
+            "model": model,
+            "messages": [{"role": "user", "content": "Reply with exactly: MSCAST link up"}],
+            "max_tokens": 24,
+        },
+        timeout=TIMEOUT,
+    )
+    took = round(time.time() - started, 2)
+    if response.status_code != 200:
+        return {"ok": False, "status": response.status_code, "endpoint": base,
+                "combo": model, "detail": response.text[:400]}
+    payload = response.json()
+    return {
+        "ok": True,
+        "endpoint": base,
+        "combo": model,
+        "served_by": payload.get("model"),
+        "reply": (payload["choices"][0]["message"]["content"] or "").strip(),
+        "seconds": took,
+        "usage": payload.get("usage"),
+    }
 
 
 def plain(data):

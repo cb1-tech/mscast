@@ -48,6 +48,11 @@ bash $R 103_test_fixes 104_notes_accounts 105_data_fixes
 bash $R 112_home_api 114_home_block 115_workspaces 116_fix_bounce
 bash $R 119_default_workspace 123_desk_redirect
 bash $R 127_exception_engine 128_demo_safeguards 129_shareholder_names
+# --- a fuller MSCAST: more of the business, real people, a job at each stage ---
+bash $R 150_masters_expand 151_installed_and_bids 155_project_three
+bash $R 153_real_users 154_fix_approvals
+bash $R 156_repair_after_expand 158_notif_roles 159_mail_reachable
+bash $R 127_exception_engine
 bash $R 10_test_reports 102_test_harness
 
 cat <<'NOTE'
