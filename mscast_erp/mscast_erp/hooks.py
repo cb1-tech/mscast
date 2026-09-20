@@ -16,7 +16,8 @@ after_migrate = "mscast_erp.install.after_migrate"
 # Every customisation ships as a fixture. Nothing is configured by hand on a
 # production site; if it is not in this list it does not survive a rebuild.
 fixtures = [
-    {"dt": "DocType", "filters": [["custom", "=", 1]]},
+    # The custom documents are no longer fixtures - they are app doctypes under
+    # mscast/doctype/, so migrate creates their tables and upgrades keep them.
     {"dt": "Custom Field"},
     {"dt": "Property Setter"},
     {"dt": "Role", "filters": [["name", "like", "MSCAST%"]]},
@@ -34,3 +35,12 @@ fixtures = [
     {"dt": "Dashboard Chart", "filters": [["is_standard", "=", 0]]},
     {"dt": "Workspace", "filters": [["name", "like", "MSCAST%"]]},
 ]
+
+# The agent layer. The rules half is a Server Script inside the site and needs
+# no network; this is the judgement half, which calls a model and emails the note.
+# Times are the site's timezone (Asia/Kolkata in production).
+scheduler_events = {
+    "cron": {
+        "35 8 * * *": ["mscast_erp.agents.briefing.daily_briefing"],
+    }
+}
