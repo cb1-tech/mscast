@@ -167,48 +167,167 @@ def t5_ledger():
 
 
 # ---------------------------------------------------------------- T6 controls
-def t6_controls():
-    pi = frappe.db.get_value("Purchase Invoice", {"docstatus": 1, "outstanding_amount": (">", 0)},
-                             ["name", "supplier", "bill_no", "outstanding_amount", "credit_to"],
-                             as_dict=True)
-    blocked = None
-    if pi:
-        brm = frappe.db.get_value("MSCAST BRM", {"supplier": pi.supplier,
-                                                 "supplier_invoice_no": pi.bill_no}, "status")
-        try:
-            pe = frappe.new_doc("Payment Entry")
-            pe.payment_type = "Pay"
-            pe.company = COMPANY
-            pe.posting_date = TODAY
-            pe.party_type = "Supplier"
-            pe.party = pi.supplier
-            pe.paid_from = frappe.db.get_value("Account", {"company": COMPANY,
-                                                           "account_type": "Bank",
-                                                           "is_group": 0}, "name")
-            pe.paid_to = pi.credit_to
-            pe.paid_amount = pe.received_amount = pi.outstanding_amount
-            pe.reference_no = "HARNESS/T6"
-            pe.reference_date = TODAY
-            pe.append("references", {"reference_doctype": "Purchase Invoice",
-                                     "reference_name": pi.name,
-                                     "total_amount": pi.outstanding_amount,
-                                     "outstanding_amount": pi.outstanding_amount,
-                                     "allocated_amount": pi.outstanding_amount})
-            pe.flags.ignore_permissions = True
-            pe.insert()
-            pe.submit()
-            blocked = False
-            pe.cancel()
-        except Exception as e:
-            blocked = "Payment blocked" in str(e)
+# --------------------------------------------------------- T6a payment block
+def _bank_account():
+    return frappe.db.get_value("Account", {"company": COMPANY, "account_type": "Bank",
+                                           "is_group": 0}, "name")
+
+
+def _attempt(build):
+    """Run `build` to submit a document; return (went_through, message).
+
+    Everything is rolled back either way, so the harness can attempt payments
+    against live demo data without moving a rupee.
+    """
+    try:
+        doc = build()
+        doc.flags.ignore_permissions = True
+        doc.insert()
+        doc.submit()
+        return True, doc.name
+    except Exception as e:
+        return False, str(e)
+    finally:
         frappe.db.rollback()
-        expected = (brm != "Certified")
-        rec("T6a", "controls", "BRM payment block refuses an uncertified supplier bill",
-            blocked == expected,
-            "bill %s, BRM status %s, payment %s" % (pi.bill_no, brm,
-                                                    "blocked" if blocked else "allowed"))
-    else:
-        rec("T6a", "controls", "BRM payment block", "warn", "no open supplier bill to test with")
+
+
+def _pay_invoice(pi, amount=None):
+    def build():
+        pe = frappe.new_doc("Payment Entry")
+        pe.payment_type = "Pay"
+        pe.company = COMPANY
+        pe.posting_date = TODAY
+        pe.party_type = "Supplier"
+        pe.party = pi.supplier
+        pe.paid_from = _bank_account()
+        pe.paid_to = pi.credit_to
+        amt = flt(amount or pi.outstanding_amount)
+        pe.paid_amount = pe.received_amount = amt
+        pe.reference_no = "HARNESS/T6A"
+        pe.reference_date = TODAY
+        pe.append("references", {"reference_doctype": "Purchase Invoice",
+                                 "reference_name": pi.name,
+                                 "total_amount": pi.outstanding_amount,
+                                 "outstanding_amount": pi.outstanding_amount,
+                                 "allocated_amount": amt})
+        return pe
+    return build
+
+
+def t6a_payment_block():
+    open_pis = frappe.get_all(
+        "Purchase Invoice", filters={"docstatus": 1, "outstanding_amount": (">", 0)},
+        fields=["name", "supplier", "bill_no", "outstanding_amount", "credit_to"])
+
+    def brm_of(pi):
+        return frappe.db.get_value("MSCAST BRM",
+                                   {"supplier": pi.supplier,
+                                    "supplier_invoice_no": pi.bill_no},
+                                   ["name", "status", "amount"], as_dict=True)
+
+    certified = uncertified = None
+    for pi in open_pis:
+        b = brm_of(pi)
+        if b and b.status == "Certified" and flt(b.amount) >= flt(pi.outstanding_amount):
+            certified = certified or (pi, b)
+        elif not b:
+            uncertified = uncertified or pi
+
+    if not (certified and uncertified):
+        rec("T6a", "controls", "BRM payment block guards every payment route", "warn",
+            "need one open bill with a full certified BRM and one with none; "
+            "found certified=%s uncertified=%s"
+            % (certified[0].name if certified else None,
+               uncertified.name if uncertified else None))
+        return
+
+    cpi, cbrm = certified
+    upi = uncertified
+    fails = []
+
+    def case(label, expect_blocked, build, must_say=None):
+        went, msg = _attempt(build)
+        blocked = (not went) and ("Payment blocked" in msg)
+        ok = (blocked == expect_blocked)
+        if ok and blocked and must_say and must_say not in msg:
+            ok = False
+            msg = "blocked for the wrong reason: " + msg
+        if not went and not blocked and expect_blocked is False:
+            msg = "refused by ERPNext, not by the control: " + msg
+        if not ok:
+            fails.append("%s -> %s (%s)"
+                         % (label, "blocked" if blocked else "allowed", msg[:120]))
+        return ok
+
+    # 1. the control must not block a properly certified bill.
+    case("certified bill pays", False, _pay_invoice(cpi))
+
+    # 2. Payment Entry against a bill with no BRM at all.
+    case("no BRM, payment entry", True, _pay_invoice(upi),
+         must_say="no Billing Routing Memo")
+
+    # 3. Journal Entry - the door the Server Script never guarded.
+    def jv():
+        je = frappe.new_doc("Journal Entry")
+        je.company = COMPANY
+        je.posting_date = TODAY
+        je.voucher_type = "Journal Entry"
+        je.user_remark = "HARNESS/T6A"
+        je.append("accounts", {"account": upi.credit_to, "party_type": "Supplier",
+                               "party": upi.supplier,
+                               "debit_in_account_currency": upi.outstanding_amount})
+        je.append("accounts", {"account": _bank_account(),
+                               "credit_in_account_currency": upi.outstanding_amount})
+        return je
+    case("no BRM, journal entry", True, jv, must_say="no purchase invoice referenced")
+
+    # 4. an advance with no invoice reference - the empty-loop hole.
+    def advance():
+        pe = frappe.new_doc("Payment Entry")
+        pe.payment_type = "Pay"
+        pe.company = COMPANY
+        pe.posting_date = TODAY
+        pe.party_type = "Supplier"
+        pe.party = upi.supplier
+        pe.paid_from = _bank_account()
+        pe.paid_to = upi.credit_to
+        pe.paid_amount = pe.received_amount = 50000
+        pe.reference_no = "HARNESS/T6A"
+        pe.reference_date = TODAY
+        return pe
+    case("advance, no reference", True, advance,
+         must_say="no supplier invoice referenced")
+
+    # 5. paying more than the certificate covers. The BRM is trimmed inside the
+    #    attempt's own rollback window, so the demo data is untouched.
+    def over():
+        frappe.db.set_value("MSCAST BRM", cbrm.name, "amount",
+                            flt(cpi.outstanding_amount) / 2, update_modified=False)
+        return _pay_invoice(cpi)()
+    case("amount above the certificate", True, over, must_say="certifies")
+
+    # 6. the exemption - an electricity bill has to be payable.
+    def exempt():
+        frappe.db.set_value("Supplier", upi.supplier, "mscast_brm_exempt", 1,
+                            update_modified=False)
+        return _pay_invoice(upi)()
+    case("BRM-exempt supplier pays", False, exempt)
+
+    rec("T6a", "controls", "BRM payment block guards every payment route", not fails,
+        "6 routes tested on %s / %s%s"
+        % (cpi.name, upi.name, (" :: " + "; ".join(fails)) if fails else ""))
+
+
+def t6_controls():
+    # T6a - the BRM payment block, tested at every door rather than one.
+    #
+    # The Server Script this replaced guarded Payment Entry only, and a probe on
+    # 21 Sep 2026 walked round it four ways: a Journal Entry, an advance with no
+    # invoice reference, an amount larger than the certificate, and no exemption
+    # for bills that cannot have a BRM at all. Each of those is a case below, and
+    # each is proved by attempting the real transaction and reading what happened
+    # - not by reading the configuration, which is what missed it the first time.
+    t6a_payment_block()
 
     bad = []
     for w in frappe.get_all("Workflow", fields=["name", "is_active", "document_type",
@@ -223,10 +342,30 @@ def t6_controls():
         "%d workflows%s" % (frappe.db.count("Workflow"),
                             (" :: " + "; ".join(bad)) if bad else ""))
 
+    # T6c - one implementation of each control, in the right place.
+    #
+    # The BRM block was a Server Script until 21 Sep 2026. It now lives in the app
+    # (mscast_erp.controls.brm_payment) where it is version-controlled, shipped in
+    # the image and tested by T6a. This check fails if it comes back as a script,
+    # because two implementations of one rule drift apart in silence.
     ss = frappe.get_all("Server Script", fields=["name", "disabled", "script_type"])
     live = [s for s in ss if not s.disabled]
-    rec("T6c", "controls", "server scripts present and enabled where intended", len(live) >= 2,
-        "; ".join("%s (%s, disabled=%s)" % (s.name, s.script_type, s.disabled) for s in ss))
+    problems = []
+    if frappe.db.exists("Server Script", "MSCAST BRM payment block"):
+        problems.append("the retired 'MSCAST BRM payment block' Server Script is back")
+    if len(live) < 2:
+        problems.append("only %d live server scripts" % len(live))
+    hooks = frappe.get_hooks("doc_events") or {}
+    for dt in ("Payment Entry", "Journal Entry"):
+        wired = [h for h in ((hooks.get(dt) or {}).get("before_submit") or [])
+                 if "brm_payment" in h]
+        if not wired:
+            problems.append("%s before_submit is not wired to the BRM control" % dt)
+    rec("T6c", "controls", "controls live in the app, scripts only where intended",
+        not problems,
+        "%d live scripts; %s" % (len(live),
+                                 "; ".join(problems) if problems
+                                 else "BRM control wired on Payment Entry + Journal Entry"))
 
     # T6d - the approval authority, asserted.
     #

@@ -36,6 +36,20 @@ fixtures = [
     {"dt": "Workspace", "filters": [["name", "like", "MSCAST%"]]},
 ]
 
+# The controls. A rule that decides whether money leaves the company belongs in
+# version control and in the release, not in a Server Script edited in the desk:
+# it has to be reviewable, diffable and testable. `before_submit` is the right
+# hook because it fires on the real submit path whatever raised the document -
+# desk, API or background job - and a throw there leaves nothing half-posted.
+doc_events = {
+    "Payment Entry": {
+        "before_submit": "mscast_erp.controls.brm_payment.payment_entry",
+    },
+    "Journal Entry": {
+        "before_submit": "mscast_erp.controls.brm_payment.journal_entry",
+    },
+}
+
 # The agent layer. The rules half is a Server Script inside the site and needs
 # no network; this is the judgement half, which calls a model and emails the note.
 # Times are the site's timezone (Asia/Kolkata in production).
