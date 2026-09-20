@@ -5,10 +5,8 @@ import frappe, json
 key = frappe.conf.get("omniroute_api_key")
 print("endpoint:", frappe.conf.get("omniroute_base_url"))
 print("combo   :", frappe.conf.get("omniroute_model"))
-print("key     :", "set (%d chars)" % len(key) if key else "NOT SET - waiting on it")
-
-if not key:
-    raise SystemExit
+print("key     :", "set (%d chars)" % len(key) if key
+      else "none - OmniRoute is local and takes completions unauthenticated")
 
 import sys
 sys.path.insert(0, "/home/frappe/frappe-bench/apps/mscast_erp")

@@ -15,9 +15,12 @@ It talks to any OpenAI-compatible endpoint. Here that is OmniRoute, which fronts
 several providers behind one combo name and falls back between them itself - so
 the ERP knows one address and the routing decisions live where they belong.
 
-Configuration, in site_config.json (never in the repo):
+Configuration, in site_config.json (never in the repo). Every line is optional -
+the defaults below are what a local OmniRoute needs, and a local OmniRoute takes
+/v1/chat/completions without credentials, so there is no key to set until the
+endpoint is swapped for a hosted one:
 
-    bench --site <site> set-config omniroute_api_key "..."
+    bench --site <site> set-config omniroute_api_key "..."   # only if required
     bench --site <site> set-config omniroute_base_url "http://host.docker.internal:20128/v1"
     bench --site <site> set-config omniroute_model "hermes-antigravity"
     bench --site <site> set-config mscast_briefing_to '["director@mscast.co.in"]'
@@ -94,12 +97,23 @@ def collect():
     return {"date": str(today), "exceptions": exceptions, "watch": watch, "figures": figures}
 
 
+def auth_headers():
+    """OmniRoute runs on the operator's own machine and takes /v1/chat/completions
+    without credentials, so the key is optional. A hosted endpoint put in its place
+    will need one - set it with:
+
+        bench --site <site> set-config omniroute_api_key "..."
+
+    and it is sent only if it is there."""
+    headers = {"Content-Type": "application/json"}
+    key = frappe.conf.get("omniroute_api_key")
+    if key:
+        headers["Authorization"] = "Bearer " + key
+    return headers
+
+
 def write_note(data):
     """Ask the model. Fall back to a plain list if it cannot be reached."""
-    key = frappe.conf.get("omniroute_api_key")
-    if not key:
-        return plain(data), "no API key configured"
-
     model = frappe.conf.get("omniroute_model") or DEFAULT_MODEL
     base = (frappe.conf.get("omniroute_base_url") or DEFAULT_BASE_URL).rstrip("/")
 
@@ -119,7 +133,7 @@ def write_note(data):
 
         response = requests.post(
             base + "/chat/completions",
-            headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"},
+            headers=auth_headers(),
             json={
                 "model": model,
                 "messages": [
@@ -147,10 +161,6 @@ def write_note(data):
 @frappe.whitelist()
 def test_connection():
     """One small request, so the wiring can be proved without waiting for 08:35."""
-    key = frappe.conf.get("omniroute_api_key")
-    if not key:
-        return {"ok": False, "detail": "no omniroute_api_key in site_config.json"}
-
     model = frappe.conf.get("omniroute_model") or DEFAULT_MODEL
     base = (frappe.conf.get("omniroute_base_url") or DEFAULT_BASE_URL).rstrip("/")
     import time
@@ -160,7 +170,7 @@ def test_connection():
     started = time.time()
     response = requests.post(
         base + "/chat/completions",
-        headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"},
+        headers=auth_headers(),
         json={
             "model": model,
             "messages": [{"role": "user", "content": "Reply with exactly: MSCAST link up"}],
