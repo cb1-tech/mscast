@@ -66,6 +66,28 @@ def daily_briefing():
     send(body, data, model_used)
 
 
+def rupees(amount):
+    """Money the way a Pune office says it out loud.
+
+    The headline figures arrive from the report already worded this way; the
+    exception rows arrive as bare floats. Handing the model both shapes is how
+    a briefing ends up saying "285600.0" to a director, so both are worded here
+    before anything is sent."""
+    try:
+        value = float(amount or 0)
+    except (TypeError, ValueError):
+        return None
+    if not value:
+        return None
+    sign = "-" if value < 0 else ""
+    value = abs(value)
+    if value >= 1e7:
+        return "%sRs %.2f Cr" % (sign, value / 1e7)
+    if value >= 1e5:
+        return "%sRs %.2f L" % (sign, value / 1e5)
+    return "%sRs %s" % (sign, "{:,.0f}".format(value))
+
+
 def collect():
     """Everything the note is allowed to mention, and nothing else."""
     today = frappe.db.sql(
@@ -80,6 +102,8 @@ def collect():
            order by field(severity,'High','Medium','Low'), times_seen desc""",
         as_dict=True,
     )
+    for row in exceptions:
+        row["amount"] = rupees(row.get("amount"))
 
     watch, figures = [], []
     try:
