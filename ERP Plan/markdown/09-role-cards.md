@@ -4,13 +4,15 @@ title: "MSCAST ERP — Role Cards"
 
 # MSCAST ERP — Role Cards
 
-**For:** MSCAST Engineering Pvt Ltd · **Version:** 1.2 · **Date:** 20 September 2026
+**For:** MSCAST Engineering Pvt Ltd · **Version:** 1.3 · **Date:** 20 September 2026
 
 One page per role. Print it, or keep it open for the first fortnight.
 
 Each card answers four questions: **what you open**, **what you do**, **what you can approve**, and **what will stop you** — because being blocked by the system without knowing why is the fastest way to lose someone's trust in it.
 
 > **Corrected in version 1.2.** The Director card previously said the directors hold two extra roles and that purchase orders and BRMs were fully separated. Both were wrong — see that card. A build check (**T6g**) now reports this rather than leaving it to be discovered.
+
+> **Corrected in version 1.3.** An audit on 20 September found that four of the people named below could not do the work their card describes. `Design User` held no permissions anywhere in the system, so the drawing office could not open a drawing, and *Issue for Customer Approval* was executable by nobody at all; Stores, Quality and the Purchase Executive were in the same position on their own documents. The system has been corrected to match these cards rather than the cards softened to match the system, and `T6i` now checks it on every build. If a card says you can raise something and the system refuses, that is a defect — report it.
 
 Cards are written **per role**, not per person, because roles outlive people. The *Who holds this today* line names the accounts set up in the demo system; when MSCAST's real staff are loaded, only those names change.
 
@@ -343,7 +345,7 @@ Review the trial balance, the Schedule III statements, the ageing and the GST po
 
 ## What will stop you
 
-**You cannot change anything.** The account is read-only by design, so an external reviewer can never alter a record. If something needs correcting, it goes back to Accounts with a note.
+**You cannot change anything.** The account is read-only by design, so an external reviewer can never alter a record. *This was checked on 20 September and was not true at the time — the role could write and create on two GST documents, and delete records from the exception log. Both auditor roles are now read-only everywhere, and* `T6h` *asserts it on every build.* If something needs correcting, it goes back to Accounts with a note.
 
 The audit trail cannot be switched off, by anyone. That is deliberate.
 

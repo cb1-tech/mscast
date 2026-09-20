@@ -80,7 +80,7 @@ A migrate also prints `Deleting entity Workspace MSCAST ...` partway through and
 
 6. HTTPS: Let's Encrypt via the reverse proxy, with renewal on a timer and an alert if renewal fails. A certificate that silently expires takes the business offline on a Sunday.
 
-7. Run the build checks before telling anyone the site exists. Expect **28 checks, 0 failures**. Two warnings are expected and documented (see the SOPs, Part C, and Q20/Q21 in the traceability matrix). Anything else is a stop.
+7. Run the build checks before telling anyone the site exists. Expect **31 checks, 0 failures**. Two warnings are expected and documented (see the SOPs, Part C, and Q20/Q21 in the traceability matrix). Anything else is a stop.
 
 **A note on the image, learned the hard way.** In the POC the application was not in the image at all — it had been copied into the running backend container by hand. Because `apps/` comes from the image and only `sites` and `logs` are volumes, that gave the app to exactly one container. The web workers could not import it, so the site returned HTTP 500 on every request while every script and every build check passed, because `bench console` and `bench execute` spawn a fresh python each time. Worse, the scheduler and both queue workers could not import it either, so the 06:00 exception sweep, the 08:35 briefing and the monthly archival **had never executed once**. They worked perfectly when run by hand, which is how they were built and demonstrated.
 
@@ -176,7 +176,7 @@ A monthly routine:
 
 1. Restore last night's production backup onto a staging site.
 2. `bench update` there.
-3. Run the build checks. **28 checks, 0 failures**, two expected warnings. They exist precisely for this.
+3. Run the build checks. **31 checks, 0 failures**, two expected warnings. They exist precisely for this.
 4. Read the deploy output for an approval-authority banner.
 5. Only then upgrade production, in a window MSCAST agrees to, from a tagged release.
 6. Re-run the checks on production afterwards. Do not announce the system is available until they pass.

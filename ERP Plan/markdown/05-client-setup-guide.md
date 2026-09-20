@@ -4,7 +4,7 @@ title: "MSCAST ERP — Client Setup Guide"
 
 # MSCAST ERP — Client Setup Guide
 
-**For:** MSCAST Engineering Pvt Ltd · **System:** ERPNext v16 with India Compliance, Frappe HR and India Payroll · **Version:** 2.2 · **Date:** 20 September 2026
+**For:** MSCAST Engineering Pvt Ltd · **System:** ERPNext v16 with India Compliance, Frappe HR and India Payroll · **Version:** 2.3 · **Date:** 20 September 2026
 
 > **What changed in version 2.** Version 1.0 was written before the roles were rebuilt around real people and before the approval authority was settled. Its role table and two of its claims no longer matched the system. Every statement here has been checked against the running configuration. A new Step 12 covers deployment and upgrades, after a live incident in which an app install silently reverted the approval rules. Version 2.1 corrects the size of the administrator-account problem, which was worse than first reported. The differences are listed in the appendix.
 
@@ -117,7 +117,7 @@ This table reflects the configuration as it actually stands. *Role Cards* gives 
 | **Stock User / Item Manager** | Stores in-charge | Receipts, issues, free-issue transfers, dispatch, item masters | Change approved purchase orders |
 | **Quality Manager** | Quality | Inspection plans and results, commissioning reports | — |
 | **HR Manager / HR User** | HR and admin officer | Employees, attendance, leave, payroll | Accounts postings |
-| **Auditor** | External CA | Read, report, print, export — including version history | **Write anything at all** |
+| **Auditor** | External CA | Read, report, print, export — including version history | **Write anything at all.** Verified 20 Sep: it could, and no longer can (`T6h`) |
 
 The auditor role matters more than it looks. Giving your CA a read-only login with access to the version history means the audit-trail requirement is satisfied by evidence rather than by assertion.
 

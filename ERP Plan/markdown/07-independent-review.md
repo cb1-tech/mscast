@@ -180,11 +180,23 @@ The first segregation check, `T6e`, did not catch it because it compares *workfl
 
 The payment block itself — the thing that actually protects the money — was tested and holds: no certified BRM, no payment, for anyone, including a director. The reviewer's other B1 sub-cases (journal-entry payments, advance payments with no invoice reference, partial certification) **remain untested** and are still worth doing.
 
+## Closed later the same day, after a second audit
+
+A second, adversarial audit was run against the live system on the evening of 20 September. It found three things none of the reviewers above had reached, all now fixed and all now tested:
+
+| Found | What it was | Now |
+|---|---|---|
+| **The kick-off checklist did not hold** | The condition sat on one route into *PO Verified* and not the other, so raising a query first went round it. `KICK-2026-00002` was already sitting in *Kick-off Approved* with payment terms unticked — the exact scenario UC-2 uses to show the control working | Both routes carry the condition. `T6j` checks that **every** guarded state in every workflow is guarded on every route in, so the next workflow cannot acquire the same hole |
+| **Four roles could not do their job** | `Design User` had **zero permission rows anywhere in the system**. The drawing office could not open a drawing, and *Issue for Customer Approval* was executable by nobody. Stores, Quality and the Purchase Executive were the same on their own documents | The system now matches the Role Cards, which are the spec. `T6i` checks it |
+| **The auditor could write** | Four documents said the CA's login cannot change anything. `Auditor` had write and create on two GST documents; `MSCAST Statutory Auditor` could **delete MSCAST Exception records** — the output of the overnight sweep | Read-only everywhere. `T6h` checks it |
+
+This is the second time in a day that a control was described as enforced and was not. The pattern is worth naming: **every one of them was found by asking the system rather than reading the configuration.** T6d through T6j all exist because something passed a check that was asking an easier question.
+
 ## Still open, unchanged
 
 - **A1** — the Administrator password has not been rotated again. A deliberate decision: this is a POC on a laptop. It becomes mandatory the moment the system moves to a server or carries real data.
 - **A3, A4, A5** — the demo story contradictions, the draft dunning, and the retention posted against the wrong party. All still present. **A3 is the one most likely to be noticed in the room**, and it is a seeding fix, not a code fix.
-- **B3 to B10** — none has been tested. They need the CA session and a day of ledger work.
+- **B3 to B10** — none has been tested. They need the CA session and a day of ledger work. B1's remaining sub-cases — journal-entry payments, advance payments with no invoice reference, partial certification — are still untested and are the most likely place for the next finding.
 - **C1, C2, C3, C5, C6** — every structural finding stands untouched. The four real formats and the CA answers are exactly what the Data Request Covering Note asks MSCAST for; **C2, the absence of a signed scope, remains the largest commercial exposure and is still fixable with one page.**
 
 ## What this review got right

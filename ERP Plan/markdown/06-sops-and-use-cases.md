@@ -80,7 +80,7 @@ These are MSCAST's own terms, taken from the requirement document. They are used
 6. Enter the billing and dispatch schedule on the project: each milestone, its planned dispatch date, billing percentage and value.
 7. Hold the kick-off meeting and record attendees, agreed actions and open points.
 
-**Control:** The workflow will not let a kick-off be approved while price, scope, payment terms and GST are unticked. This is the single highest-value control in the system — nearly every loss-making project in this industry traces back to a purchase order accepted without being read against the offer.
+**Control:** The workflow will not let a kick-off reach *PO Verified* — and therefore cannot let it be approved — while price, scope, payment terms and GST are unticked. **On every route**, including via *PO Query Raised*. This is the single highest-value control in the system — nearly every loss-making project in this industry traces back to a purchase order accepted without being read against the offer.
 
 **The same limit as SOP-01 applies.** The directors also hold the Accounts Manager role, so a director can verify the customer PO and approve the kick-off. The checklist still has to be worked through and the answers are recorded, but two pairs of eyes are a practice here, not an enforcement. Anita in Accounts verifying the PO, and a director approving, is the stronger arrangement and is what should happen by default.
 
@@ -447,7 +447,9 @@ Four of these are now checked automatically on every build, so they cannot drift
 
 ## A closing note on discipline
 
-Most of what is described here can be bypassed by someone determined enough. Four things cannot, because the software enforces them: the BRM payment block, the purchase order approval, the drawing release sequence, and the kick-off checklist. Everything else depends on people entering documents when things happen rather than reconstructing them later.
+Most of what is described here can be bypassed by someone determined enough. Four things cannot, because the software enforces them: the BRM payment block, the purchase order approval, the drawing release sequence, and the kick-off checklist.
+
+*(The kick-off checklist earned its place on that list only on 20 September. Until then the condition sat on one route into* PO Verified *and not the other, so raising a query first went round it — and a record in the demonstration data had already done exactly that. Both routes now carry it, and* `T6j` *checks that every guarded state in every workflow is guarded on every route in.)* Everything else depends on people entering documents when things happen rather than reconstructing them later.
 
 The single habit that makes the difference is same-day entry. A system updated daily tells you the truth about the business; a system updated at month end tells you what somebody remembered.
 

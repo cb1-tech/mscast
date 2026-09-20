@@ -5,7 +5,7 @@
 
 All company data in this POC is **fictional demo data**. Customer and supplier names end with "(DEMO)". MSCAST's own identity — name, GSTIN, CIN, branding — is real and deliberate, so the demonstration looks familiar to the client.
 
-**Build checks: 28, of which 26 pass, 2 are expected warnings, 0 fail.**
+**Build checks: 31, of which 29 pass, 2 are expected warnings, 0 fail.**
 
 ---
 
@@ -59,7 +59,7 @@ wsl -d Ubuntu -e bash /mnt/d/MSCAST/erpnext-poc/scripts/run-seed.sh 102_test_har
 
 | Script | What it does |
 |---|---|
-| `run-seed.sh 102_test_harness` | the 28 build checks — **run this after any change** |
+| `run-seed.sh 102_test_harness` | the 31 build checks — **run this after any change** |
 | `run-harness.sh` | the same thing, with the output filtered to the result lines |
 | `run-seed.sh 127_exception_engine` | run the overnight rule sweep by hand |
 | `run-seed.sh 160_omni_test` | prove the AI briefing end to end |
@@ -243,7 +243,7 @@ Six accounting and scope assumptions are still awaiting MSCAST and the CA. They 
 12. **Commissioning report and spares handover** — print both
 13. **MSME 45-Day Dues** and **Daily Management Summary**
 14. **Schedule III balance sheet and P&L**, then **Project Closure Report**
-15. **Run the harness** — 28 checks, 26 pass, 2 expected warnings
+15. **Run the harness** — 31 checks, 29 pass, 2 expected warnings
 
 ## 12. Files
 
