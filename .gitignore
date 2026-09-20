@@ -16,3 +16,7 @@ __pycache__/
 Thumbs.db
 ~$*
 *.tmp
+
+# working scratch, not part of the deliverable
+Claude outputs/
+staging-build.log
