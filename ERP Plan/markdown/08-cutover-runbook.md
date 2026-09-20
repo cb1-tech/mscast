@@ -1,0 +1,236 @@
+---
+title: "MSCAST ERP — Production Cutover Runbook"
+---
+
+# MSCAST ERP — Production Cutover Runbook
+
+**For:** MSCAST Engineering Pvt Ltd · **Target:** self-managed VPS in India · **Version:** 2.1 · **Date:** 20 September 2026
+
+This is the sequence from "the POC works on a laptop in Japan" to "MSCAST runs its business on this". It assumes the `mscast_erp` app — the configuration as an installable package — because nothing here works if the system can only be rebuilt by hand.
+
+> **What changed in version 2.0.** An install during the build silently reverted the approval rules and nothing noticed. Section 2 now deploys from a tagged release, section 5a is new and covers what a deploy actually does to configuration, and the monitoring and upgrade sections check that the controls survived. This is the most important change in the document.
+>
+> **What changed in version 2.1.** The build checks went from 25 to 27 and now report **two** expected warnings rather than one. The second, `T6g`, found that a director can create a supplier-bill certificate, certify it and mark it paid alone — a separation three documents had claimed existed. Section 8 carries the decision to MSCAST. The administrator-account item in section 6 is closed, and the figure in it was wrong: the account held 41 roles, not fourteen.
+
+---
+
+## 0. What the server has to satisfy
+
+Three of these are legal requirements, not preferences.
+
+| Requirement | Where it comes from | What it means in practice |
+|---|---|---|
+| Books accessible in India | Companies (Accounts) Rules, r.3(5) | The server and its daily backups are both physically in India. A backup in Singapore does not satisfy it. |
+| Eight-year retention | Companies Act, s.128(5) | Backups older than a year cannot be rotated away. Plan the storage cost for eight years of monthlies. |
+| Audit trail always on | MCA audit trail rule, from 1 Apr 2023 | The auditor must be able to say it was operative and untampered all year. That means controlling who has database and console access, not just leaving the setting on. |
+| HTTPS with a real certificate | — | The POC's Cloudflare tunnel terminates TLS for you. A VPS does not: Let's Encrypt with auto-renewal. |
+
+---
+
+## 1. Sizing
+
+The current POC runs ten containers on an 8 GB WSL allocation and does not strain it. With real data and up to ten concurrent users:
+
+- **4 vCPU, 8 GB RAM, 100 GB SSD** is comfortable, with room for the database to grow and for backups to stage locally before shipping off-site.
+- 2 vCPU / 4 GB will run it, but MariaDB plus five Frappe apps plus the scheduler leaves nothing spare when a report and a payroll run collide.
+- Storage grows mainly from attachments — drawings, scanned bills, PDFs. Budget on MSCAST's document volume, not on transaction count.
+
+**Providers to quote** (Indian regions, self-managed): AWS Mumbai, DigitalOcean Bangalore, Akamai/Linode Mumbai, E2E Networks, CtrlS. Get a current quote — prices move, and the ERPens proposal's ₹10,000/month AWS line should be re-tested against what is actually needed.
+
+One thing worth pricing honestly against a VPS: managed Frappe hosting in Mumbai costs more per month but removes patching, backup verification and upgrade breakage from a one-person consultancy operating from a different time zone. The decision is self-managed, so the rest of this runbook assumes it — but the operational load below is the real price.
+
+---
+
+## 2. Build the server
+
+1. Provision the VPS in an Indian region. Ubuntu LTS.
+2. Harden before anything else: SSH keys only, root login disabled, `ufw` allowing 22, 80, 443, automatic security updates on, a non-root user for the stack.
+3. Install Docker and the compose plugin.
+4. Copy the existing `compose.yaml` from the POC. It already defines the whole stack; what changes is the image tag, the domain, and that ports are behind a reverse proxy rather than a tunnel.
+5. Bring up the stack with an empty site — **not** a copy of the POC database. The POC contains demo data and demo users; nothing from it carries across except the configuration, which arrives as the app.
+
+**Deploy from a tag, never from a copied folder.** This is not pedantry — see 5a.
+
+```bash
+git clone git@github.com:cb1-tech/mscast.git
+cd mscast
+git checkout v1.0.0            # the release being deployed. Write it down.
+git rev-parse --short HEAD     # record this in the deployment log
+
+bench get-app ./mscast_erp
+bench new-site erp.mscast.co.in --install-app erpnext
+bench --site erp.mscast.co.in install-app india_compliance hrms india_payroll
+bench --site erp.mscast.co.in install-app mscast_erp
+bench --site erp.mscast.co.in migrate
+```
+
+**Read the output of the last two commands.** They should end with:
+
+```
+mscast_erp: 25 document definitions synced
+mscast_erp: NN configuration records imported, 0 could not be
+mscast_erp: approval authority verified, 6 transitions correct
+```
+
+If instead you see a row of exclamation marks and *"THE DEPLOY CHANGED WHO MAY APPROVE"*, stop and read section 5a before going further. The system will have repaired itself, but something is wrong with what you deployed.
+
+A migrate also prints `Deleting entity Workspace MSCAST ...` partway through and then recreates them in the `after_migrate` step. That is expected and self-healing; it is not a failure.
+
+6. HTTPS: Let's Encrypt via the reverse proxy, with renewal on a timer and an alert if renewal fails. A certificate that silently expires takes the business offline on a Sunday.
+
+7. Run the build checks before telling anyone the site exists. Expect **27 checks, 0 failures**. Two warnings are expected and documented (see the SOPs, Part C, and Q20/Q21 in the traceability matrix). Anything else is a stop.
+
+---
+
+## 3. Backups
+
+The part most likely to be skipped and most likely to matter.
+
+- **Daily** database and file backups, `bench backup --with-files`, scheduled.
+- **Off the server**, to India-resident object storage. A backup on the same disk is not a backup.
+- **Monthly copies kept for eight years** (s.128(5)). Dailies can rotate at 30 days; monthlies cannot.
+- **Encrypted at rest**, because they contain employee salary data and customer commercials.
+- **Restore tested** before go-live, and then annually. Write down the actual time it took to get a working system from a backup — that number is what MSCAST is really buying. An untested backup is a belief, not a control.
+- **Before every install or upgrade**, take one. Not as a formality — restore it if the checks fail.
+
+---
+
+## 4. Monitoring
+
+Minimal, but it has to exist, because the failures are silent:
+
+- Is the site answering? (uptime check from outside)
+- Is the **scheduler** running? This is the one that fails quietly — the daily summary, the overnight checks, the morning note and every notification stop, and the first symptom is a director noticing the 08:30 email hasn't arrived for a week.
+- **Did the morning note actually go out?** Check the Email Queue, not just that the job ran. A job that succeeds and reaches nobody is the worst kind of green light.
+- **Is there an Error Log entry titled "approval authority repaired after deploy"?** If one appears, a deploy changed who may approve something. Section 5a.
+- Disk above 80%.
+- Did last night's backup complete, and did it leave the server?
+- Certificate expiry inside 21 days.
+
+Route all of it somewhere the implementation partner reads, and put the scheduler check on the daily summary itself so a missing email is itself the signal.
+
+---
+
+## 5a. What a deploy actually does to the configuration
+
+**Read this before the first upgrade.** It is here because of something that happened during the build, not as a theoretical risk.
+
+### What happened
+
+The app was installed onto a working system from a directory that was slightly out of date. The approval rules silently went backwards: cost sheet approval returned to a system role, and bill certification returned to the purchase manager. The system still worked. The 23-check harness still passed, because it checked that workflows were *active and complete* and never checked *who they gave authority to*. Nobody would have noticed until an audit — or until the wrong person approved something.
+
+### The mechanism, established by experiment
+
+Installing or upgrading the app re-imports its configuration files and **overwrites what is in the database**. This was tested directly: a workflow role changed in the database was reset to the packaged value by a plain `bench migrate`.
+
+Two consequences:
+
+1. **Deploying from a stale copy reverts the business rules** to whatever that copy contained.
+2. **Anything an administrator changes in the ERPNext screens is reverted at the next upgrade.** A workflow role, a notification recipient, a print format — changed in the interface, gone at the next deploy.
+
+### The rules
+
+- **Business rules live in the package, not in the screens.** If an approval must change, it changes in the repository and is deployed. Never through the interface on production.
+- **Deploy from a tagged release.** If you cannot say which version is running, you cannot say what the approval rules are. Record the tag and the commit hash in a deployment log.
+- **Never copy the application folder onto a server.** That is exactly how the stale install happened.
+
+### The safety net
+
+After every install and every upgrade, the system verifies six control transitions — the five that must sit with a director, plus drawing release — and **repairs any that are wrong**. It repairs rather than aborting, because a half-finished migrate is worse than a wrong approval role. But it never repairs quietly:
+
+```
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+MSCAST: THE DEPLOY CHANGED WHO MAY APPROVE. Repaired, but read this.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  - MSCAST BRM Certification / Certify was Purchase Manager, restored to MSCAST Director
+  - MSCAST PCC Approval / Approve was System Manager, restored to MSCAST Director
+```
+
+**A banner is not "handled".** It means the package you deployed and the configuration MSCAST agreed have diverged. Find out why and reconcile them, or it repeats at every upgrade and one day the repair list will contain something the guard does not cover.
+
+The same assertion runs in the build checks, so a drift is caught twice.
+
+---
+
+## 5. Keeping it patched
+
+ERPNext v16 releases frequently and India Compliance ships GST changes on statutory deadlines. The risk is not the upgrade; it is the 28 custom reports written in raw SQL against tables that can change — and the configuration overwrite described in 5a.
+
+A monthly routine:
+
+1. Restore last night's production backup onto a staging site.
+2. `bench update` there.
+3. Run the build checks. **27 checks, 0 failures**, two expected warnings. They exist precisely for this.
+4. Read the deploy output for an approval-authority banner.
+5. Only then upgrade production, in a window MSCAST agrees to, from a tagged release.
+6. Re-run the checks on production afterwards. Do not announce the system is available until they pass.
+
+Never upgrade production directly. The harness on a staging site is the difference between finding a broken Schedule III report yourself and hearing about it from the auditor.
+
+---
+
+## 6. Cutover day
+
+Pick a date at a month end, ideally a quarter end, so the opening balances line up with something MSCAST already reconciles.
+
+**The week before**
+
+- Masters loaded and checked: customers, suppliers, items, employees (sheets 1–5 of the data collection workbook)
+- Users created, roles assigned, everyone has logged in once and changed their password
+- **The setup-wizard administrator cut back to `System Manager` alone.** In the POC that account had collected **41** roles, including every manager role, on a login nobody had ever used. A fresh install creates the same thing, so this is a step on every deployment, not a one-off
+- **No operational user holds `System Manager`.** It bypasses every control in this document. In the POC an ordinary staff account was found carrying it and nothing had reported it
+- Each person has walked their own process on the system with real-looking data, **holding their role card**
+- The CA has signed off the accounting decisions — WIP method, tax regime, MSME rules, retention posting
+- A director has **received** the morning note, not just had it sent
+
+**Cutover day**
+
+1. Tally is closed for new entries. Announce the exact time.
+2. Strike the trial balance as at the cutover date.
+3. Load opening balances: trial balance, then receivables invoice by invoice, payables bill by bill, then stock.
+4. Load open sales orders and purchase orders so work in progress carries across.
+5. Reconcile: the ERPNext trial balance must equal Tally's to the rupee. Receivable and payable totals must agree invoice by invoice, not just in total.
+6. Run the build checks one final time.
+7. Only when it reconciles, open the system for transactions.
+
+**Rollback**
+
+Tally stays available and unchanged for at least one full month. If the reconciliation does not agree, or something material is wrong in week one, MSCAST goes back to Tally and the cutover is re-planned. Do not delete or archive anything in Tally until a month of parallel running has closed cleanly.
+
+---
+
+## 7. The first month
+
+- **Parallel running.** Critical transactions go into both systems for one month. It is tedious and it is the only way to find the difference between what the system does and what MSCAST does.
+- **Month-end close** performed in ERPNext and compared to Tally, line by line.
+- **The morning note read every day** for the first fortnight, and the exception list cleared. Early on it finds data-entry habits, not defects — and that is exactly when to correct them. An exception appearing six mornings running means a procedure is not being followed, not that a document needs fixing.
+- **A named MSCAST owner** for the system. Not the implementation partner. Someone inside the company who answers "why is this number wrong" first.
+
+---
+
+## 8. What still has to be settled before any of this starts
+
+These are not runbook steps; they are decisions without which the runbook builds the wrong thing.
+
+| Open item | Who answers | Why it blocks |
+|---|---|---|
+| The real PCC, BRM, MDM/DI and MIS formats | MSCAST | Every control and SOP is built on our reading of them |
+| Accounting basis, tax regime, WIP method | The CA | They are in the financial statements already |
+| PF, ESI, gratuity applicability | The CA | Provisions and salary slips assume them |
+| Whether PCC and kick-off self-approval stays | MSCAST directors | Currently a director can prepare and approve both. Accepted and documented — but it is a live choice, not a default (Q20) |
+| **Whether a director may certify a supplier bill they created** | **MSCAST directors** | **A director holds roles that can create a BRM, certify it and mark it paid. One person, the whole route, on the step that releases money to an outside party. Either accept it explicitly or take `Projects Manager` off the director accounts so preparing a BRM requires Purchase (Q21)** |
+| Support arrangement and scope | MSCAST and the implementation partner | The client documents currently name one person as the owner of backups, users, upgrades and alerts, indefinitely and unpriced |
+| Who holds System Manager and database access | MSCAST | The audit trail claim depends on the answer |
+| Whether the biometric attendance pull is enabled | MSCAST | It is switched off. Payroll assumes attendance from somewhere |
+
+---
+
+## 9. Deployment log
+
+Keep this on the server and in the repository. It is two minutes per deploy and it is the first thing anyone asks for when something is wrong.
+
+| Date | Tag | Commit | Who | Checks passed | Approval banner? | Notes |
+|---|---|---|---|---|---|---|
+| | | | | | | |
+
+If the "approval banner" column is ever anything but *no*, the row above it is where to start looking.

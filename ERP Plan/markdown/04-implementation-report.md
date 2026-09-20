@@ -1,7 +1,31 @@
+---
+title: "MSCAST ERP — Overnight Implementation Report"
+---
+
 # MSCAST ERP - overnight implementation report
 
-**19 September 2026** · POC on ERPNext v16 · site `frontend` · http://localhost:8080 ·
-public https://thinkstation.tailf78e82.ts.net
+**19 September 2026** · POC on ERPNext v16 · site `frontend`
+
+---
+
+> ## Read this first — what has changed since 19 September
+>
+> **This is a dated record of one night's work, kept as written.** Its findings and defect list are history and are not edited. But several of its statements about the system are no longer true, and anyone reading it for the *current* state should use these numbers instead:
+>
+> | This report says | As at 20 September, evening |
+> |---|---|
+> | Four active workflows | **Five** — a drawing release workflow was added, so a drawing cannot reach *Released for Manufacture* without customer approval |
+> | 23 automated checks | **27** — four control checks were added, each because something got past the one before |
+> | Five department users | **13 staff logins** (12 named people plus the site administrator), rebuilt with a real approval matrix |
+> | BRM certified by the Purchase Manager | Certified by a **director**. But see the row below — that does not make it three separate people |
+> | — | **A director can create a BRM, certify it and mark it paid, alone.** Both directors hold `Projects Manager` (which can create one), `MSCAST Director` (which certifies) and `Accounts Manager` (which marks it paid). Found on 20 September by a new check, `T6g`; three documents had claimed the opposite. The payment block itself is unaffected — no certified BRM, no payment, for anyone |
+> | PO approved by the Purchase Manager | Approved by a **director**, and sent for approval by `Purchase User`. Nobody holds both, so purchase orders genuinely do take two people |
+> | Biometric attendance "converted automatically" | The device pull is **switched off**. Attendance is entered until it is enabled and proven |
+> | Nothing about deployment | Installing or upgrading the app **overwrites configuration from the package**. See the cutover runbook, section 5a — this is the most important thing learned since |
+> | Gemini automation "needs a Google Cloud project" | The agent is **built and running**: a 16-rule sweep at 06:00 and an AI-written morning note at 08:35, via a local router. No cloud project needed for the POC |
+> | The demo administrator holds fourteen roles | It held **41**, not fourteen, and now holds `System Manager` and nothing else. A second account — ordinary staff — was also found holding `System Manager` and has had it removed |
+>
+> Current authoritative documents: *Client Setup Guide v2.2*, *SOPs and Use Cases v2.1*, *Role Cards v1.2*, *Production Cutover Runbook*, *Requirements Traceability v1.7*. Current release: **`v0.9.0`**.
 
 ---
 
@@ -40,10 +64,16 @@ whoever reviews the books sees the assumption at the point it matters rather tha
 - **Finance scaling report** — order book and pipeline against scheduled collections, committed outflows, cash and the ₹2.5 Cr HDFC limit, with the projected 90-day headroom
 - **Biometric attendance** — a shift with auto-attendance, 72 punches from device `MSCAST-DOOR-01`, converted automatically into Attendance, with an audit report reconciling punches to attendance
 
+  *(Since superseded: the scheduled pull that would keep this current is switched off. The 72 punches and the reconciliation report are real; the automation behind them is not yet running.)*
+
 ### Controls
 
 - **Four active workflows**: PCC approval, purchase order approval, BRM certification, project kick-off. The BRM workflow drives the same `status` field the payment block reads, so certifying through the workflow is what unlocks payment — no parallel truth
+
+  *(Since superseded: five workflows. Drawing release was added, and the approving roles moved to the directors.)*
 - **Five department users** (accounts, purchase, design, stores, HR) on matching roles, so the demo never runs as Administrator
+
+  *(Since superseded: 13 staff logins — 12 named people plus the site administrator — with a documented approval matrix. See Role Cards.)*
 - **Google Chat webhooks** for transactions above ₹5 L — configured, left disabled until you paste the space URL
 
 ---
@@ -71,6 +101,31 @@ no ledger entry without a cost centre; the BRM payment block actually refuses an
 every invoiced item has an HSN; GST head matches place of supply on every invoice; mail works and
 no notification has a dead recipient; payroll and attendance are consistent.
 
+> *(Since extended to **27 checks**, in three steps, and the sequence is worth reading because each
+> step exists only because the one before it missed something.*
+>
+> *First, **T6d**. An app install silently moved cost-sheet approval and bill certification to the
+> wrong roles and this harness still passed, because it checked that workflows were **active and
+> complete** and never checked **who they gave authority to**. T6d asserts the approval matrix
+> outright.*
+>
+> *Then **T6e**, which asks whether any ordinary user can both raise and approve the same document.
+> It excludes System Manager holders, on the reasoning that someone who can do anything is not a
+> meaningful segregation breach.*
+>
+> *That exclusion turned out to be a blind spot, so **T6f** reports it instead of hiding it: who
+> holds System Manager, and what else they hold. It immediately found an operational staff account
+> carrying it, which bypassed every control in the system and which nothing had reported.*
+>
+> *Finally **T6g**, added on 20 September. T6e compares workflow **transition** roles — but creating
+> a document is a permission, not a transition, so "prepare a BRM" was invisible to it. T6g asks the
+> auditor's question: can one person create this document and then approve it? It found that a
+> director can create a BRM, certify it and mark it paid, alone — which three delivered documents
+> had explicitly said was impossible. Those documents are now corrected.*
+>
+> *Current result: **25 pass, 2 warn, 0 fail of 27**. Both warnings are accepted positions put to
+> MSCAST as Q20 and Q21, not defects.)*
+
 Re-run it any time:
 
 ```powershell
@@ -92,7 +147,7 @@ Building against the books surfaced eight real defects. These are the valuable p
 | 5 | **Share capital of ₹1,00,000 was nowhere in the ledger** — the share transfers registered the holding but posted no entry | Opening entry posted; share capital now appears on the balance sheet |
 | 6 | **PPE showed nil** — two assets were created as "existing" with no accounting entry | Opening entry for ₹8,45,000, excluding the test bench whose cost is already in CWIP (that first attempt double-counted it; caught and reversed) |
 | 7 | This chart of accounts had **no plant-and-machinery head**, so everything landed in Software | Head created, ₹6,05,000 reclassified, asset categories repointed |
-| 8 | **Shareholding was allocated to the wrong directors** (70% to Zameer instead of Mustaque), and **the bank guarantees had no expiry date** — so the BG expiry alert could never fire | Both corrected from the knowledge base; the ABG now expires 29 Oct, so the 30-day alert fires on 29 Sep |
+| 8 | **Shareholding was allocated to the wrong directors**, and **the bank guarantees had no expiry date** — so the BG expiry alert could never fire | Both corrected; the ABG now expires 29 Oct, so the 30-day alert fires on 29 Sep. *(Shareholdings were later replaced with unnamed Promoter A/B/C, because attributing invented percentages to real named people is not something a demonstration should do.)* |
 
 Defects 5–8 would have been visible to a client or an auditor. None of them were visible from the
 requirement list.
@@ -110,7 +165,7 @@ requirement list.
 | M-02 | "Finance Scaling Management" was never defined — read as *can the business fund the order book it is chasing* | MSCAST (Q1) |
 | M-03 | No device model given — modelled the standard push pattern; a real ESSL/Matrix/ZKTeco controller posts to the same endpoint and nothing downstream changes | MSCAST (Q6) |
 
-If any answer differs, the change is small and local in every case.
+All six remain open as at 20 September. If any answer differs, the change is small and local in every case.
 
 ---
 
@@ -124,20 +179,33 @@ Nothing on the requirement list. What remains is the gap between a POC and produ
 - **Google Chat webhooks** need the space URL to be enabled
 - **Gemini automation layer** from the phased plan — needs a Google Cloud project (decision D5)
 
+  *(Since built. The exception sweep and the AI morning briefing both run, through a local model router rather than a cloud project. A cloud key is only needed when the system moves to a server that cannot reach that router — a configuration change, not a build.)*
+
+Added since, and not on the original list:
+
+- **The demonstration administrator account holds fourteen roles** including every manager role. Convenient for a demo, a hole in the separation of duties on a live system. Must be cut back before real data
+
+  *(Since closed, and the figure was wrong: it held **41**, not fourteen. It now holds `System Manager` and nothing else. Auditing it turned up a second and worse case — an ordinary staff account also holding `System Manager`, which bypasses every control in the system. Removed. Both are now asserted on every build by T6f, because a fresh install recreates the first one.)*
+- **The Administrator password** set during the POC must be rotated
+
+  *(Still open, deliberately. This is a POC on a laptop; it becomes mandatory the moment the system moves to a server or carries real data.)*
+- **Deployment discipline** — deploy from a tagged release, never a copied folder, and read the post-deploy verification output
+- **The segregation of duties around supplier bills** is weaker than three of these documents claimed, and the decision now sits with MSCAST as Q21 in the traceability matrix
+
+  *(Added 20 September, from T6g.)*
+- **`reset-poc.sh` has not been run end to end** since the four most recent seed scripts joined it. Each was verified individually against the live site, but the claim that the system rebuilds from nothing is currently untested
+
 ---
 
 ## Where things are
 
 | | |
 |---|---|
-| Matrix | `D:\MSCAST\ERP Plan\MSCAST ERP - Requirements Traceability Matrix v1.5.xlsx` |
-| Traceability (markdown) | `D:\MSCAST\ERP Plan\03-MSCAST-ERP-Requirements-Traceability-v1.5.md` and in the project |
-| This report | `D:\MSCAST\ERP Plan\MSCAST-ERP-Overnight-Implementation-Report.md` |
-| Seed scripts | `D:\MSCAST\erpnext-poc\seed\90-105` (this run), `102` is the test harness |
-| POC README | `D:\MSCAST\erpnext-poc\README-v3.md` and in the project |
-
-The stack is running and the 08:30 IST report batch is scheduled, so the daily management summary
-should be in your inbox by the time you read this.
+| Repository | `github.com/cb1-tech/mscast` — release **`v0.9.0`** |
+| Installable app | `mscast_erp/` in that repository |
+| Seed scripts | `erpnext-poc/seed/` — `102` is the test harness |
+| Rebuild from scratch | `erpnext-poc/scripts/reset-poc.sh` |
+| Current documents | *Client Setup Guide v2.2*, *SOPs v2.1*, *Role Cards v1.2*, *Cutover Runbook*, *Traceability v1.7*, *Independent Review* — in the project and in `ERP Plan\` |
 
 ## Suggested first fifteen minutes
 
@@ -145,5 +213,6 @@ should be in your inbox by the time you read this.
 2. Open **MSCAST Notes to Accounts** — note 6 is the MSMED disclosure your auditor will ask for first.
 3. Open **MSCAST Schedule III - Ratios** and see which show `n/a` and why.
 4. Open a **Purchase Order** and watch the approval workflow bar appear.
-5. Try to pay `SMW/CAP/2026/08` and watch the BRM block refuse it.
-6. Run the test harness and watch 23 checks pass.
+5. Try to pay an uncertified supplier bill and watch the BRM block refuse it.
+6. Open a **Drawing** in *Draft* and try to release it for manufacture — the system will not offer it.
+7. Run the test harness and watch 27 checks report **25 pass, 2 expected warnings, 0 failures** — then read what the two warnings say, because they are the honest part.

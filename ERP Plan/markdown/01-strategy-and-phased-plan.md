@@ -1,6 +1,16 @@
 # MSCAST ERP: Options Assessment & Phased Build Plan
 
-**Version:** 1.1 (updated with MSCAST's final requirement document) · **Date:** 16 Sep 2026 · **Prepared for:** Sanjay · **Status:** Recommendation. Decisions D1–D7 in §10 are still open.
+**Version:** 1.1 (updated with MSCAST's final requirement document) · **Date:** 16 Sep 2026 · **Prepared for:** Sanjay · **Status:** Recommendation, **partly superseded by events.** Written 16 September 2026, before the POC was built.
+
+> **Read this first (added 20 September 2026).** Sections 1–4, 8 and 11 — the platform decision, the alternatives assessment, the costing and the risk register — stand as written and are the reason this document exists. **Sections 5, 6, 7, 9 and 10 have been overtaken by the build** and should not be read as a description of what exists. Three differences matter:
+>
+> - **The AI layer was built differently.** This document plans it on Gemini via Vertex AI in `asia-south1`, with a Google Cloud project and a per-token budget (decision **D5**). What was actually built runs on a **local model router**: a 16-rule exception sweep at 06:00 and an AI-written morning note at 08:35, at no per-document cost and with no cloud project. D5 is answered, not open.
+> - **The app, the repository and the fixtures already exist.** Section 6 lists them as P0 work to be done. `mscast_erp` is an installable app carrying every doctype, report, print format, workflow and control, with exported fixtures, at tagged release `v0.9.0`.
+> - **The delivered BRM control is weaker than section 6 intends.** That section assigns BRM certification to Procurement. In the built system a director can create a BRM, certify it and mark it paid alone. Purchase orders do require two people. This is open with MSCAST as **Q21** in the traceability matrix.
+>
+> For the current state of the system, read *Requirements Traceability v1.7* and the *POC README*, not this document.
+
+Decisions D1–D7 in §10 were open when this was written; **D4 and D5 have since been answered by what was built.**
 
 **Inputs:** MSCAST "ERP_Requirement_Final" (PDF, 15 pages, incl. Accounts POV) — mapped line by line in the *Requirements Traceability Matrix* (97 requirements); ERPens "Revised Proposal – Mscast" (PDF); public research on MSCAST (see the *MSCAST Knowledge Base*); GitHub and web research on open-source ERPs, Frappe apps, alternative strategies and Gemini automation (see *Research Appendix*).
 
@@ -294,7 +304,7 @@ Scores are 1–5 (higher is better; for cost, higher = cheaper; for lock-in, hig
   - Decide hosting (**D1**, India-located) and provision production + staging sites. **Enable the India Compliance audit trail at site creation.**
   - Set up `erp.<domain>` DNS and SSL.
   - Configure Google Sign-In and a Shared Drive structure.
-  - Create the private Git repo and scaffold `mscast_erp`.
+  - Create the private Git repo and scaffold `mscast_erp`. *Done — but note where: the repository is `github.com/cb1-tech/mscast`, not MSCAST's own. §3 of this document gives code ownership in MSCAST's repository as a reason for preferring a self-build over the ERPens proposal, so on that test the objective is not yet met. Transferring or mirroring the repository to MSCAST is a decision worth taking deliberately rather than by default.*
   - Define naming conventions (projects, items `<Project>-<Assy>-<DrgNo>-<Rev>`, drawings).
   - Set up user roles.
 - **Master-data templates:** customers, suppliers (capability tags, approved makes), item groups (machines, assemblies, fabricated, bought-outs by category, raw material, spares, services), UOMs (Nos, Set, Kg, m, Manhour, Manday, Lot).
@@ -358,7 +368,7 @@ Scores are 1–5 (higher is better; for cost, higher = cheaper; for lock-in, hig
   - Run one month of invoices in parallel on staging.
   - CA reviews GSTR-1 and the 2B reconciliation outputs.
   - Load the fixed-asset register (Companies Act and Income Tax finance books, CWIP, intangibles, customer-owned asset register) and MSME supplier data for the opening balances.
-  - Configure the Statutory Auditor and Director read-only roles.
+  - Configure the **Auditor** role (read-only, held by the external CA) and the **MSCAST Director** role (approving). *Corrected 20 Sep 2026: an earlier version of this line described MSCAST Director as read-only. It is the opposite — it is the approving role, carrying PCC approval, purchase order approval, BRM certification and kick-off approval.*
 - **Exit (G3):** dispatches and e-way bills from ERPNext; CA signs off the accounts dry-run → go/no-go for 1 Apr 2027.
 
 ### P4: Accounts & GST go-live (from 1 Apr 2027)
@@ -473,7 +483,7 @@ Effort sizes: S ≤2 days · M 3–6 days · L 7–12 days. "No-code" means buil
 | 20 | Additional client claims; Commissioning/PAC/FAC certificates; proforma print | Custom forms + print formats | P3 | S |
 | 21 | Equipment-wise man-hours | Custom field + report | P1 | S |
 | 22 | MSME supplier fields + 45-day dues report | Custom fields + script report | P2/P4 | M |
-| 23 | Statutory Auditor / Director roles; incomplete-data alerts; archival SOP | Config | P0/P4 | S |
+| 23 | Auditor role (read-only) and MSCAST Director role (approving), plus Design User; incomplete-data alerts; archival SOP | Config | P0/P4 | S |
 | 24 | Daily COO/CFO summary (email digest + WhatsApp/Chat or DLT SMS) | Config + small scheduled job | P4 | M |
 | 25 | Project WIP valuation (per D6) | Config or small script | P3/P4 | M |
 | 26 | Customer-owned (Tata Motors) asset register | Custom form | P4 | S |

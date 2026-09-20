@@ -4,20 +4,28 @@ title: "MSCAST ERP — Standard Operating Procedures and Use Cases"
 
 # MSCAST ERP — Standard Operating Procedures and Use Cases
 
-**For:** MSCAST Engineering Pvt Ltd · **Version:** 1.0 · **Date:** 19 September 2026
+**For:** MSCAST Engineering Pvt Ltd · **Version:** 2.1 · **Date:** 20 September 2026
+
+> **What changed in version 2.0.** Version 1.0 was written before the roles were rebuilt around real people and before the approval authority was settled. It described some controls that the software did not actually enforce. Every claim in this version has been checked against the running system, and the ones that were not true have been either corrected or made true. The differences are listed in *Appendix — what changed and why*, at the end.
+
+> **Correction, version 2.1 (20 September).** This document previously claimed a separation of duties that does not exist. It said the person who prepares a BRM cannot certify it, and that a supplier bill passes through three different hands. Neither is true: both directors hold roles that can *create* a BRM, the role that certifies one, and the role that marks it paid, so a director can carry a supplier bill from creation to payment alone. The build checks missed it because the segregation test compared workflow transition roles, and creating a document is a permission rather than a transition. A test that asks the auditor's question — can one person create this and then approve it? — now runs on every build (**T6g**) and reports it. The payment block itself is unaffected and still holds for everyone.
 
 ## How to read this
 
-Part A gives one procedure per business process: what triggers it, who does it, the steps, and — most importantly — the **control**, meaning the thing that stops the process going wrong. Part B walks through eight situations that actually happen at MSCAST, showing how the pieces connect. Part C is who does what. Part D is the recurring calendar.
+Part A gives one procedure per business process: what triggers it, who does it, the steps, and — most importantly — the **control**, meaning the thing that stops the process going wrong. Part B walks through nine situations that actually happen at MSCAST, showing how the pieces connect. Part C is who does what. Part D is the recurring calendar.
 
 These procedures are written for an engineer-to-order machine builder with fewer than ten people, where fabrication is outsourced and one person often covers several roles. They assume the ERPNext configuration described in the setup guide.
 
-Where a procedure says **the system will not allow**, that is a hard control built into the software, not a policy someone can decide to skip.
+Two phrases are used precisely throughout, and the difference matters:
+
+- **The system will not allow** — a hard control built into the software. It cannot be skipped, forgotten or overridden under pressure.
+- **The procedure is** — a way of working that depends on people following it. Valuable, but it is discipline, not enforcement.
+
+Version 1.0 blurred these two. Where this version says a control is enforced, it has been tested.
 
 ## MSCAST's abbreviations
 
-These are MSCAST's own terms, taken from the requirement document. They are used throughout this
-guide and are the names on the forms in the system.
+These are MSCAST's own terms, taken from the requirement document. They are used throughout this guide and are the names on the forms in the system.
 
 | Term | Stands for | What it is |
 |---|---|---|
@@ -43,10 +51,12 @@ guide and are the names on the forms in the system.
 2. Qualify it — machine type, capacity, site, budget, timeline — and convert to an Opportunity.
 3. Raise a **PCC** for anything non-standard. Build it up component by component: bought-outs, fabrication, engineering hours, erection and commissioning, freight, contingency.
 4. Apply the target margin and arrive at the offer price.
-5. Get the PCC approved before the quotation goes out. The approval workflow requires someone other than the preparer.
+5. Send the PCC for approval and have it approved before the quotation goes out. Approval sits with a **director**.
 6. Issue the Quotation referencing the PCC revision it was priced on.
 
 **Control:** No quotation leaves without an approved PCC. Quoting from memory is how an engineer-to-order business loses money on a job it thought was profitable.
+
+**A limit you should know about.** Both directors hold the Projects Manager role as well as the director role, so a director can prepare a PCC and then approve it. This is a deliberate decision for a company of this size, not an oversight — but it means the PCC approval is a *review step*, not a separation of duties. If the same person did both, the only safeguard is that the approval is recorded with their name and time against the revision. Where a PCC matters commercially, have the other director approve it.
 
 **Records:** Lead, Opportunity, PCC with revision, Quotation.
 
@@ -65,27 +75,31 @@ guide and are the names on the forms in the system.
    - BG / PBG requirement identified
    - Advance received
 3. Anything that does not match goes in *deviations* and the record goes to **PO Query Raised** — work does not start.
-4. Once Accounts verify the PO, the record moves to **PO Verified**, then a director approves kick-off.
+4. Accounts verify the PO and the record moves to **PO Verified**. A **director** then approves kick-off.
 5. Create the Project and the Sales Order, linked to the PCC.
 6. Enter the billing and dispatch schedule on the project: each milestone, its planned dispatch date, billing percentage and value.
 7. Hold the kick-off meeting and record attendees, agreed actions and open points.
 
 **Control:** The workflow will not let a kick-off be approved while price, scope, payment terms and GST are unticked. This is the single highest-value control in the system — nearly every loss-making project in this industry traces back to a purchase order accepted without being read against the offer.
 
+**The same limit as SOP-01 applies.** The directors also hold the Accounts Manager role, so a director can verify the customer PO and approve the kick-off. The checklist still has to be worked through and the answers are recorded, but two pairs of eyes are a practice here, not an enforcement. Anita in Accounts verifying the PO, and a director approving, is the stronger arrangement and is what should happen by default.
+
 **Records:** Kick-off record, Project, Sales Order, billing schedule.
 
 ## SOP-03 — Engineering: drawings, revisions and transmittals
 
-**Trigger:** Design release on a live project · **Owner:** Design
+**Trigger:** Design release on a live project · **Owner:** Design, with Projects
 
-1. Register every drawing: number, title, assembly, revision.
-2. Status moves **Draft → For Customer Approval → Approved by Customer → Released for Manufacture**, and **Superseded** when replaced.
-3. Every issue to a customer, vendor or inspection agency goes out on a **Transmittal** listing document numbers, revisions, sheet counts and purpose (approval, construction, information, as-built).
-4. Chase acknowledgement and record it. An unacknowledged transmittal is not proof of issue.
-5. On revision: supersede the old drawing, issue the new one on a fresh transmittal, and tell procurement in writing if material has already been ordered against it.
-6. Release the **MDF** — the material list procurement buys from.
+1. Register every drawing: number, title, assembly, revision. A new drawing starts in **Draft**.
+2. The drawing office issues it to the customer with **Issue for Customer Approval**; the drawing moves to **For Customer Approval**.
+3. When the customer responds, a **Projects Manager** either records the approval (**Record Customer Approval** → *Approved by Customer*) or sends it back (**Return for Rework** → *Draft*).
+4. A **Projects Manager** then uses **Release for Manufacture**. Only from *Approved by Customer*, and only by a Projects Manager.
+5. Every issue to a customer, vendor or inspection agency goes out on a **Transmittal** listing document numbers, revisions, sheet counts and purpose (approval, construction, information, as-built).
+6. Chase acknowledgement and record it. An unacknowledged transmittal is not proof of issue.
+7. On revision: **Supersede** the old drawing, register and issue the new one on a fresh transmittal, and tell procurement in writing if material has already been ordered against it.
+8. Release the **MDF** — the material list procurement buys from.
 
-**Control:** Nothing is manufactured against a drawing that is not *Released for Manufacture*. Drawings awaiting customer approval appear on the daily summary, because they are the most common cause of schedule slip and the delay belongs to the customer, not to MSCAST — provided you can show when it was issued.
+**Control:** *Released for Manufacture* can only be reached from *Approved by Customer*, and only by a Projects Manager. The drawing office can issue a drawing for customer approval but cannot release it for manufacture. A drawing cannot jump from Draft to Released, which is exactly the mistake that puts metal on the floor against a drawing the customer never saw.
 
 **Records:** Drawing register with revision history, Transmittals with acknowledgements, MDF.
 
@@ -98,9 +112,9 @@ guide and are the names on the forms in the system.
 3. Record each Supplier Quotation with the technical score, compliance, deviations and delivery weeks — not only the price. The cheapest offer that does not comply is not the cheapest.
 4. Compare against the **PCC budget** for that scope.
 5. Raise the Purchase Order. If it exceeds the PCC line, record the justification — an alert goes to management.
-6. The PO goes through approval: raised by Purchase, approved by the Purchase Manager. The system will not let one person do both.
+6. The PO goes through approval: raised by Purchase, **approved by a director**. Purchase can reject a PO but cannot approve one.
 
-**Control:** Purchase orders are measured against the PCC, continuously, not at the end of the job. The *PO vs PCC Variance* report is the early warning that a project is drifting, while there is still time to act.
+**Control:** A purchase order commits MSCAST's money to an outside supplier, so it is approved by a director. **The person who raises a purchase order cannot approve it** — this is enforced, and it is checked automatically on every build. Purchase orders are also measured against the PCC continuously, not at the end of the job; the *PO vs PCC Variance* report is the early warning that a project is drifting while there is still time to act.
 
 **Records:** Material Request, RFQ, Supplier Quotations with scoring, Purchase Order.
 
@@ -126,21 +140,23 @@ guide and are the names on the forms in the system.
 3. Deviations are recorded with what was accepted and who accepted it — never as a silent pass.
 4. Rejections go back to the supplier with the observations, and the pre-dispatch inspection is repeated.
 
-**Control:** No dispatch without a cleared pre-dispatch inspection. A deviation accepted verbally and not recorded becomes the customer's warranty claim later, with nothing in writing to point to.
+**Control:** The procedure is that no dispatch happens without a cleared pre-dispatch inspection, and the open inspection stages appear on the daily summary. This one depends on Stores checking before they dispatch — the software does not block the delivery note. A deviation accepted verbally and not recorded becomes the customer's warranty claim later, with nothing in writing to point to.
 
 **Records:** Inspection Plan with result, Inspection Report print.
 
 ## SOP-07 — Supplier bill to payment (the BRM route)
 
-**Trigger:** Supplier invoice received · **Owner:** Purchase certifies, Accounts pays
+**Trigger:** Supplier invoice received · **Owner:** Purchase prepares, a director certifies, Accounts pays
 
 1. Purchase raises a **BRM** against the supplier bill.
 2. Purchase checks and ticks: quantity, rate against the PO, inspection cleared, delivery received.
-3. Status moves **Pending → Certified**. Rejected bills go back to the supplier with the reason.
+3. A **director** certifies it: status moves **Pending → Certified**. Purchase can reject a bill back to the supplier with the reason, but cannot certify one.
 4. Accounts book the Purchase Invoice against the PO and receipt.
-5. Accounts pay only against a **Certified** BRM.
+5. Accounts **Mark Paid** only against a **Certified** BRM.
 
-**Control:** **The system will refuse a payment entry against a supplier bill that has no certified BRM.** It is not a policy that can be forgotten under pressure at month end — the payment is blocked and the reason is displayed. This is the control that separates "we checked it" from "we can prove we checked it".
+**Control:** **The system will refuse a payment entry against a supplier bill that has no certified BRM.** It is not a policy that can be forgotten under pressure at month end — the payment is blocked and the reason is displayed. That block is real and applies to everyone.
+
+**What the block does not do** is guarantee three different people were involved. Certification is restricted to a director — but both directors also hold the roles that can *create* a BRM and the role that marks one paid, so a director can carry a supplier bill from creation to payment alone. Sameer and Nikhil cannot: they prepare and they may reject, but they cannot certify. **So the separation is real for Purchase and absent for the directors**, and the honest instruction is the same as for the PCC: where the amount matters, have the other director certify it.
 
 **Records:** BRM with certification, Purchase Invoice, Payment Entry.
 
@@ -154,7 +170,7 @@ guide and are the names on the forms in the system.
 4. Update the milestone on the project's dispatch schedule.
 5. Send the dispatch documents to the customer the same day.
 
-**Control:** Dispatch follows inspection, and the dispatch schedule on the project is updated as it happens — procurement and accounts both read from it, so a stale schedule misleads two functions at once.
+**Control:** The procedure is that dispatch follows inspection, and that the dispatch schedule on the project is updated as it happens. Procurement and accounts both read from that schedule, so a stale one misleads two functions at once. The overnight checks flag a dispatch made before its commissioning or inspection record exists.
 
 **Records:** MDM, Delivery Instruction with Annexure-I, Delivery Note, e-way bill.
 
@@ -208,14 +224,14 @@ guide and are the names on the forms in the system.
 
 **Trigger:** Monthly, plus events · **Owner:** HR
 
-1. Attendance is captured daily — from the biometric device where fitted. Review exceptions weekly, not at month end when nobody remembers.
+1. Record attendance. Where a biometric device is fitted and connected, punches are pulled automatically and converted to attendance; **this pull is currently switched off**, so until it is enabled and tested, attendance is entered in the system. Review exceptions weekly, not at month end when nobody remembers.
 2. Leave applications are approved in the system before the leave is taken.
 3. Run payroll: PF, ESIC, Professional Tax and TDS on salary computed from the salary structure.
 4. Release salaries, then deposit the statutory dues by their due dates.
 5. Maintain the gratuity provision annually at year end.
 6. On exit, run full and final settlement: notice, leave encashment, gratuity where eligible, recovery of advances.
 
-**Control:** Attendance feeds payroll directly, so the payroll is only as good as the attendance discipline. Fix attendance exceptions weekly and payroll takes an hour instead of a week.
+**Control:** Attendance feeds payroll directly, so the payroll is only as good as the attendance discipline. Duplicate attendance on the same day for the same employee is prevented. Fix attendance exceptions weekly and payroll takes an hour instead of a week.
 
 ## SOP-13 — Master data governance
 
@@ -226,11 +242,27 @@ guide and are the names on the forms in the system.
 3. New item: HSN/SAC and UOM at creation. An item without an HSN cannot be invoiced.
 4. Duplicates are the enemy. Search before creating — "Suvarna Copper" and "Suvarna Copper Moulds Pvt Ltd" as two suppliers means two ledgers, two ageing lines and one wrong MSME position.
 
-**Control:** Masters are created by the function that owns them, not by whoever happens to be entering the transaction at the time.
+**Control:** GSTIN format and the state it implies are validated on entry, and an invoice line without an HSN is refused. The rest is procedure: masters are created by the function that owns them, not by whoever happens to be entering the transaction at the time.
 
-## SOP-14 — Backups, audit trail and archival
+## SOP-14 — The overnight checks and the morning note
 
-**Trigger:** Daily, with an annual review · **Owner:** Sanjay
+**Trigger:** Automatic, every day · **Owner:** Directors read it; nobody has to run it
+
+This is what the system does on its own before anyone logs in.
+
+1. **06:00 — the checks run.** A set of rules compares documents against each other and against the calendar: a supplier bill with no certified BRM, an MSME bill approaching day 45, a bank guarantee approaching expiry, an open project with no time ever booked, a dispatch without its paperwork, and others. Anything found is written to the **MSCAST Exception** list with a severity, the document it concerns and the suggested action. No judgement, no internet, no cost — only rules.
+2. **08:35 — the note is written.** The findings and the morning's management summary are turned into a few sentences that say which one matters most today, and emailed to the directors. Every item links to the document it came from.
+3. **During the day.** Work the exception list. Mark an item **Acknowledged** when someone has picked it up, **Resolved** when the underlying document is fixed. Resolved items stop appearing.
+
+**Control:** The checks are the safety net under every procedure in this document. They do not prevent a mistake; they make sure a mistake does not stay invisible for a month. If the model that writes the note is unreachable, the email still goes out as a plain list — a missing model never means a missing morning email.
+
+**What to do with it:** read it, and act on anything marked High. If the same item appears for the sixth morning running, that is the system telling you a procedure is not being followed.
+
+**Records:** MSCAST Exception list, the morning email.
+
+## SOP-15 — Backups, audit trail and archival
+
+**Trigger:** Daily, with an annual review · **Owner:** the implementation partner
 
 1. Automated daily backup of database and files, with a copy held on a server physically in India.
 2. Monthly archival record of what has been archived and where.
@@ -242,7 +274,7 @@ guide and are the names on the forms in the system.
 
 ## UC-1: An enquiry arrives from IndiaMART
 
-A steel plant asks for a two-strand billet caster. Sales records the Lead with source *IndiaMART* the same day and qualifies it into an Opportunity. Design sizes the machine; Projects builds the **PCC** — copper moulds, hydraulics, drives, fabrication, engineering hours, erection, freight, contingency — and applies the target margin. The PCC goes for approval; the Managing Director approves revision 2. The quotation goes out referencing that revision.
+A steel plant asks for a two-strand billet caster. Sales records the Lead with source *IndiaMART* the same day and qualifies it into an Opportunity. Design sizes the machine; Projects builds the **PCC** — copper moulds, hydraulics, drives, fabrication, engineering hours, erection, freight, contingency — and applies the target margin. The PCC goes for approval; a director approves revision 2. The quotation goes out referencing that revision.
 
 Six weeks later the customer's purchase order arrives, and the story continues in UC-2.
 
@@ -252,21 +284,21 @@ Six weeks later the customer's purchase order arrives, and the story continues i
 
 The purchase order arrives. Projects raises a **Kick-off** record and works the checklist. Price matches, scope matches, GST is right — but the PO says 100% payment against delivery, where the offer said 30% advance, 60% against dispatch and 10% after commissioning.
 
-The checkbox stays unticked, the record moves to **PO Query Raised**, and the workflow will not let kick-off be approved. Design release does not start. Accounts take it up with the customer's purchase head; an amendment arrives four days later and the record moves to *PO Verified*, then *Kick-off Approved*.
+The checkbox stays unticked, the record moves to **PO Query Raised**, and the workflow will not let kick-off be approved. Design release does not start. Accounts take it up with the customer's purchase head; an amendment arrives four days later and the record moves to *PO Verified*, then a director approves kick-off.
 
 *Four days of delay, instead of discovering at dispatch that ₹60 lakh of cash flow assumed in the PCC was never going to arrive.*
 
 ## UC-3: A supplier bill arrives at month end
 
-The fabricator's invoice for spray chamber work lands on the 29th, and the supplier is calling. Accounts cannot pay it: there is no certified BRM. Purchase check the quantity against the PO, the rate, the inspection result and the delivery — the quantity is short by one assembly still at the fabricator. The BRM is not certified; the supplier is told what is missing.
+The fabricator's invoice for spray chamber work lands on the 29th, and the supplier is calling. Accounts cannot pay it: there is no certified BRM. Purchase check the quantity against the PO, the rate, the inspection result and the delivery — the quantity is short by one assembly still at the fabricator. The bill is rejected back to the supplier with the reason.
 
-The balance arrives on the 3rd, the inspection clears, the BRM is certified, and payment is released.
+The balance arrives on the 3rd, the inspection clears, a director certifies the BRM, and Accounts release the payment.
 
 *Without the block, the bill would have been paid on the 29th because the supplier was persistent and it was month end. The short delivery would have surfaced — if at all — when the assembly was needed.*
 
 ## UC-4: A drawing changes after material is ordered
 
-The customer approves the general arrangement, then asks for a different mould tube length. Design supersedes the drawing, issues the revision, and sends a **Transmittal** for construction.
+The customer approves the general arrangement, then asks for a different mould tube length. The Projects Manager **supersedes** the drawing; the drawing office registers the revision and issues it, and it works through customer approval and **Release for Manufacture** again.
 
 But the mould tubes were ordered against the previous revision. The drawing register shows the transmittal and its date; the purchase order references the superseded revision. Purchase go back to the supplier the same day — the tubes have not been cut. The revised requirement replaces them, and the cost difference is recorded as a **Client Claim** because the change came from the customer after approval.
 
@@ -274,7 +306,7 @@ But the mould tubes were ordered against the previous revision. The drawing regi
 
 ## UC-5: An MSME supplier crosses day 40
 
-The daily management summary shows *MSME dues due within the next 15 days: ₹7.80 L*. One supplier, a Small enterprise with a Udyam number, has a bill at day 31.
+The daily management summary shows *MSME dues due within the next 15 days: ₹7.80 L*. One supplier, a Small enterprise with a Udyam number, has a bill at day 31. It is on the morning note as a Medium-severity item, and it has appeared six mornings running.
 
 Accounts check the MSME 45-day report, confirm the appointed date, and schedule the payment for day 42.
 
@@ -292,9 +324,9 @@ The Schedule III balance sheet is produced. It balances. The profit ties to the 
 
 ## UC-7: A new engineer joins
 
-HR creates the Employee record on day one: joining date, department, designation, UAN, ESIC, PAN, bank. The biometric device is enrolled, so attendance begins automatically. The salary structure is assigned.
+HR creates the Employee record on day one: joining date, department, designation, UAN, ESIC, PAN, bank. Attendance recording begins — automatically from the biometric device once that pull is enabled, and by entry until then. The salary structure is assigned.
 
-The engineer gets a login on the Projects role — able to raise drawings, MDF and PCC, unable to approve their own PCC or certify a BRM.
+The engineer gets a login on the Projects role — able to raise drawings, MDF and PCC, unable to approve a PCC, release a drawing for manufacture, approve a purchase order or certify a BRM.
 
 At the first month end, payroll picks up the attendance and computes PF, ESIC, PT and TDS. The gratuity provision includes the new service from the year end.
 
@@ -310,49 +342,113 @@ Retention of ₹1.81 lakh is released against the certificate. The **Project Clo
 
 *The deviation on water pressure is recorded, signed and attributable to the customer's pump. When a performance question arises in month eight, that record is the answer.*
 
+## UC-9: A Tuesday morning
+
+Aiqaz opens the email at 08:40. Four items. The note leads with a supplier bill for ₹2.86 L that has no certified BRM — Accounts cannot release it, and the supplier has been waiting.
+
+Below that, three items flagged repeatedly: an MSME bill at day 31, a bank guarantee expiring in 39 days, and a project with no timesheets ever booked.
+
+He clicks through to the BRM, checks it against the PO and the inspection, certifies it. Two minutes. He forwards the bank guarantee line to Anita. The timesheet item he takes up at the Monday meeting, because it has now appeared twice and that makes it a habit, not an oversight.
+
+*Nothing here was discovered. Everything was already true yesterday. The difference is that it arrived in front of the person who could act on it, ranked, before the day started.*
+
 # Part C — Who does what
 
-| Process | Prepares | Checks / certifies | Approves |
-|---|---|---|---|
-| PCC | Projects | Accounts (cost basis) | Director |
-| Quotation | Sales / Projects | Projects (against PCC) | Director |
-| Kick-off / PO check | Projects | Accounts (commercial terms) | Director |
-| Drawing release | Design | Projects | Customer, where required |
-| Purchase Order | Purchase | Against PCC budget | Purchase Manager |
-| Inspection | Quality | Third party, where specified | Projects |
-| BRM | Purchase | Purchase Manager | — |
-| Supplier payment | Accounts | Certified BRM required | Director above a threshold |
-| Dispatch | Stores | Quality (pre-dispatch) | Projects |
-| Sales Invoice | Accounts | Against the billing schedule | — |
-| Client Claim | Projects | Accounts | Director |
-| Project closure | Projects | Accounts | Director |
-| Payroll | HR | Accounts | Director |
+**Every line below has been checked against the running system.** Where a column says *enforced*, the software refuses the action to anyone else. Where it says *practice*, it is how MSCAST works but the software would permit otherwise.
 
-The rule underneath the table: **the person who prepares a document never approves it.** In a company of ten this takes discipline, but it is the difference between a control environment and a filing system.
+| Process | Prepares | Approves / certifies | Enforced? |
+|---|---|---|---|
+| PCC | Projects | **Director** | Enforced — but see the note below |
+| Quotation | Sales / Projects | Against an approved PCC | Practice |
+| Kick-off / PO check | Projects, verified by Accounts | **Director** | Enforced — but see the note below |
+| Drawing → For Customer Approval | Design (drawing office) | — | Enforced |
+| Drawing → Released for Manufacture | — | **Projects Manager** | Enforced |
+| Purchase Order | Purchase | **Director** | Enforced, and the raiser cannot approve |
+| Inspection | Quality | Third party, where specified | Practice |
+| BRM certification | Purchase prepares | **Director** certifies | Enforced |
+| Supplier payment | Accounts | Certified BRM required | Enforced — payment is blocked without one |
+| Dispatch | Stores | Quality (pre-dispatch) | Practice |
+| Sales Invoice | Accounts | Against the billing schedule | Practice |
+| Client Claim | Projects | Accounts, then Director | Practice |
+| Project closure | Projects | Director | Practice |
+| Payroll | HR | Director | Practice |
+
+## The separation of duties, stated honestly
+
+The principle is that **the person who prepares a document should not be the person who approves it.**
+
+Where this is fully true today:
+
+- **Purchase Orders.** Sending a purchase order for approval requires `Purchase User`; approving it requires `MSCAST Director`. Nobody holds both, so a purchase order cannot reach approval without a second person. (One director does hold `Purchase Manager`, which can *create* a purchase order — but not move it forward, which is what matters here.)
+- **The payment block itself.** No supplier bill can be paid without a certified BRM. That is refused in software, for everyone, and it is the control that actually protects the money.
+- **Drawing release.** The drawing office issues for approval; only a Projects Manager releases for manufacture.
+
+Where it is **not** true, deliberately:
+
+- **PCC approval** and **project kick-off**. Both directors hold the Projects Manager and Accounts Manager roles in addition to the director role, because in a company of this size they have to. A director can therefore prepare a PCC and approve it, or verify a customer PO and approve the kick-off, alone.
+
+This is an accepted position, not an accident. It is written down here so that nobody — an auditor, a customer's procurement team, a new joiner — is told a control exists that does not. The mitigations are that every approval is recorded with a name and a timestamp against the revision, and that the second director can always be the approver when the commitment is significant. **Where a PCC or a kick-off carries real commercial exposure, have the other director approve it.**
+
+## One more thing, for whoever administers the system
+
+Everything above depends on people holding only the roles their job needs. Two accounts were found holding far more than that: the setup-wizard administrator with **41 roles**, and an ordinary staff account that also carried **System Manager** — which bypasses every control in this document. Both have been corrected, and the build checks now report it if it happens again.
+
+This is worth knowing because it recurs. A fresh install creates its own administrator with the same spread of roles, and roles accumulate quietly on long-lived accounts. **A control environment is only as real as the role list behind it.**
 
 # Part D — Recurring calendar
 
 | When | What | Owner |
 |---|---|---|
+| Daily, automatic | Overnight checks run at 06:00; morning note emailed at 08:35 | *the system* |
+| Daily | Read the morning note; act on anything marked High | Directors |
+| Daily | Clear or acknowledge items on the exception list | The named owner |
 | Daily | Read the management summary; act on anything marked ACT | Director |
 | Daily | Enter transactions the day they happen | All |
 | Weekly | Review attendance exceptions | HR |
 | Weekly | Review drawings awaiting customer approval and chase | Design |
 | Weekly | Review purchase orders against the PCC | Purchase |
+| Weekly | Review any exception seen more than twice — it is a process problem, not a document problem | Directors |
 | Monthly | GSTR-1, GSTR-3B, GSTR-2B reconciliation | Accounts |
 | Monthly | TDS deposit and reconciliation | Accounts |
 | Monthly | MSME 45-day review | Accounts |
 | Monthly | Payroll and statutory dues | HR |
 | Monthly | Project WIP update and MIS review | Accounts, Projects |
-| Monthly | Archival record | Sanjay |
+| Monthly | Archival record | Implementation partner |
 | Quarterly | TDS returns; bank guarantee expiry review | Accounts |
 | Annually | Gratuity provision; deferred tax; fixed asset verification | Accounts, CA |
 | Annually | Physical stock count, including material at subcontractors | Stores |
-| Annually | Test a backup restore | Sanjay |
+| Annually | Test a backup restore | Implementation partner |
 | Annually | Financial statements, Schedule III, notes to accounts, audit | Accounts, CA |
+
+# Appendix — what changed in version 2.0, and why
+
+Version 1.0 was written on 19 September, before the user roles were rebuilt around real people and before the approval authority was settled. An audit on 20 September compared every claim in it against the running system. These were wrong, and are now corrected:
+
+| Version 1.0 said | Reality | Resolution |
+|---|---|---|
+| Purchase Orders are approved by the Purchase Manager | Approved by a director | **Doc corrected** |
+| BRMs are certified by the Purchase Manager | Certified by a director | **Doc corrected** |
+| Supplier payment needs Director approval above a threshold | No threshold is configured anywhere | **Claim removed.** The BRM certificate is the control, not a value threshold |
+| Drawing status moves Draft → For Customer Approval → Released for Manufacture, and nothing is manufactured against an unreleased drawing | Status was a plain field. Any value could be set in any order, including Draft straight to Released | **System changed.** A workflow now enforces the sequence and restricts release to a Projects Manager |
+| Attendance begins automatically from the biometric device | The biometric pull is switched off | **Doc corrected** to say attendance is entered until the pull is enabled and tested |
+| "The person who prepares a document never approves it" | True for Purchase Orders and BRMs. Not true for PCC and kick-off — both directors hold the preparing roles as well as the director role | **Position stated openly** in Part C rather than claimed and untrue |
+| — | The 06:00 overnight checks and the 08:35 morning note were not mentioned anywhere, despite being the daily operating rhythm | **SOP-14 added**, plus UC-9 and four calendar lines |
+| — | Two accounts held roles far beyond their job, one of them bypassing every control in this document | **System corrected**, and a note added to Part C |
+
+Added in **version 2.1**, and the most serious of the lot:
+
+| Version 2.0 said | Reality | Resolution |
+|---|---|---|
+| "Purchase prepare, a director certifies, Accounts pay. Three different hands" | A director holds a role that can create a BRM, the role that certifies it, and the role that marks it paid. One person can do all three | **Claim removed**, and the real position stated in SOP-07 and Part C |
+| "The person who prepares a BRM cannot certify it" | A director can | **Corrected** |
+| "Purchase Orders … Nobody holds both roles" | One director holds `Purchase Manager`, which can create a purchase order. He cannot send it for approval — that needs `Purchase User`, which he does not hold — so the control survives, but the sentence was wrong | **Made precise** |
+
+Four of these are now checked automatically on every build, so they cannot drift back silently: that the approval authority sits where the business put it, whether any ordinary user can both raise and approve the same document, and whether anyone outside the administrators holds System Manager.
 
 ## A closing note on discipline
 
-Every control described here can be bypassed by someone determined enough, except the BRM payment block, which the software enforces. The rest depend on people entering documents when things happen rather than reconstructing them later.
+Most of what is described here can be bypassed by someone determined enough. Four things cannot, because the software enforces them: the BRM payment block, the purchase order approval, the drawing release sequence, and the kick-off checklist. Everything else depends on people entering documents when things happen rather than reconstructing them later.
 
 The single habit that makes the difference is same-day entry. A system updated daily tells you the truth about the business; a system updated at month end tells you what somebody remembered.
+
+The overnight checks exist because that habit slips. They will not stop a mistake — they will stop it staying invisible.

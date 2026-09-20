@@ -6,7 +6,7 @@
 
 | Public fact | Source | ERP implication |
 |---|---|---|
-| ≤10 employees, ₹1–5 Cr turnover, but sells machines worth ₹15 L – ₹2 Cr each | [IM2] [IMB] | Few, large, lumpy orders → **project-centric** ERP (Project = Sales Order = cost centre); a single project can be a big share of annual revenue, so project P&L and cash-flow visibility matter more than volume throughput. |
+| ≤10 employees, ₹1–2 Cr turnover self-declared (GST band ₹1.5–5 Cr), but sells machines worth ₹11 L – ₹2 Cr each | [IM2] [IMB] | Few, large, lumpy orders → **project-centric** ERP (Project = Sales Order = cost centre); a single project can be a big share of annual revenue, so project P&L and cash-flow visibility matter more than volume throughput. |
 | Offers design services (layouts, P&IDs, hydraulic circuits) + machines + erection supervision | [IP1] [IM1] | Mixed revenue types in one contract: engineering (services, SAC), supply (goods, HSN), site services. Need **separate line types, tax codes and revenue recognition** per contract. |
 | "Head Design" is the promoter; ERP proposal has high-effort Engineering Management module (drawings, revisions, MDF, bought-out tracking, manhours) | [TI1] [ERP1] | **Engineer-to-Order (ETO)**: design happens *after* order; BOM is born from drawings; engineering hours are a major cost. |
 | No works address public; tiny headcount; proposal includes supplier coordination, free-issue material, inspection planning, delivery instructions, Material Dispatch Memo | [ERP1] [IM2] | Fabrication/machining largely **outsourced (job work)** with MSCAST buying raw material & bought-outs and issuing them to fabricators → subcontracting, job-work GST compliance, third-party inspection, direct dispatch from vendor to site. |

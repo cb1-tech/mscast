@@ -1,15 +1,28 @@
-# MSCAST ERP - POC on ERPNext v16 (WSL / Docker)
+# MSCAST ERP — POC on ERPNext v16 (WSL / Docker)
 
-**Updated:** 19 Sep 2026 (full implementation + test harness) · **Where:** WSL Ubuntu on thinkstation
-**Local URL:** http://localhost:8080 · **Public:** https://mscast.carobar.net
-**Login:** `Administrator` / `admin` ← change this before sharing the public link
-**Demo users created:** `director@mscast.demo` (read-only director), `auditor@mscast.demo` (read-only statutory auditor)
-**Outgoing mail:** live via Purelymail (`uattech@carobar.net`) - SPF, DKIM and DMARC all pass at Gmail
+**Updated:** 20 Sep 2026 · **Release:** `v0.9.0` · **Repository:** `github.com/cb1-tech/mscast`
+**Where:** WSL Ubuntu on thinkstation · **Local:** http://localhost:8080 · **Public:** https://mscast.carobar.net
 
-All company data in this POC is **fictional demo data**. Customer and supplier names end with "(DEMO)".
+All company data in this POC is **fictional demo data**. Customer and supplier names end with "(DEMO)". MSCAST's own identity — name, GSTIN, CIN, branding — is real and deliberate, so the demonstration looks familiar to the client.
 
-**Coverage against MSCAST's requirement document: 97 of 97 requirements live** (53 in v1.3, 86 in v1.4).
-Six rest on stated assumptions - see the overnight implementation report. **23 of 23 automated checks pass.**
+**Build checks: 27, of which 25 pass, 2 are expected warnings, 0 fail.**
+
+---
+
+## 0. Credentials and access — read this before sharing the link
+
+**No password appears in this file, and none should.** An earlier version of this README printed the Administrator password in its header; anyone who had the document had the system.
+
+- The Administrator password was changed during the POC. It has since been typed into a chat transcript, so it **must be rotated before the system carries real data on a server**. On this laptop it is a POC and does not matter.
+- Every person has their own login: **12 named people, plus `admin@mscast.local`** as the site administrator. The old `@mscast.demo` role-shaped logins were retired when users were rebuilt as named people and are disabled.
+- **The demonstration personas use real mailboxes deliberately.** Aiqaz, Mustaque, Sameer, Anita, Ganesh, Rohit and the CA are wired to addresses that actually receive mail, so the 08:30 summary and the 08:35 briefing can be demonstrated arriving. They are not stray accounts.
+
+### Two role findings, both now fixed and both now checked
+
+- **`admin@mscast.local` had collected 41 roles** — every manager role in the system plus a good deal it had no use for, on an account that had never logged in. It now holds `System Manager` and nothing else. **A fresh install will do this again**: the ERPNext setup wizard creates its own administrator the same way, which is why cutting it back is line 15 of the go-live checklist.
+- **An operational staff account also held `System Manager`**, which bypasses every control in the system. Removed. Administration is now `admin@mscast.local` and the built-in `Administrator`, and that is the whole list.
+
+`T6f` reports both on every build.
 
 ---
 
@@ -17,17 +30,17 @@ Six rest on stated assumptions - see the overnight implementation report. **23 o
 
 | Piece | Detail |
 |---|---|
-| Stack | compose project `mscast-poc`, 11 containers, from `~/mscast-poc/compose.yaml` |
+| Stack | compose project `mscast-poc`, 9 containers, from `~/mscast-poc/compose.yaml` |
 | Image | **`mscast/erpnext:v16`** (5.12 GB), built locally from frappe_docker with apps.json |
-| Apps | frappe 16.34.0 · erpnext 16.35.0 · **india_compliance 16.9.1** · **hrms 16.19.0** · **india_payroll 16.0.4** |
+| Apps | frappe 16.34.0 · erpnext 16.35.0 · **india_compliance 16.9.1** · **hrms 16.19.0** · **india_payroll 16.0.4** · **mscast_erp 0.1.0** |
 | Database | MariaDB 11.8 (ERPNext does not support PostgreSQL) |
-| Site | `frontend`, port 8080 · server scripts **enabled** (`server_script_enabled: true`) |
-| Files | scripts and seed data in `D:\MSCAST\erpnext-poc`; compose + build log in `~/mscast-poc` |
-| Memory | WSL capped at 8 GB; the stack idles at about 1.5-2.5 GB |
+| Site | `frontend`, port 8080 · server scripts **enabled** |
+| Files | scripts and seed data in `D:\MSCAST\erpnext-poc`; the app in `D:\MSCAST\mscast_erp` |
+| Memory | WSL capped at 8 GB; the stack idles at about 1.5–2.5 GB |
 
-**WSL note:** WSL shuts its VM down when idle and that stops the containers. `vmIdleTimeout=28800000`
-(8 h) is set in `C:\Users\user\.wslconfig` and applies from the next WSL restart. Keeping any WSL
-terminal open also holds the VM up.
+**The configuration is an installable app.** `mscast_erp` carries every custom document, report, print format, workflow, control and the desk theme. That is what makes this rebuildable on a server rather than only on this laptop. If something has to be clicked in by hand after an install, that is a defect in the app, not a step in a runbook.
+
+**WSL note:** WSL shuts its VM down when idle and that stops the containers. Keeping any WSL terminal open holds the VM up; `demo-up.ps1` does this for you.
 
 ## 2. Day-to-day commands
 
@@ -35,313 +48,214 @@ terminal open also holds the VM up.
 wsl -d Ubuntu -e bash /mnt/d/MSCAST/erpnext-poc/scripts/start-poc.sh    # start
 wsl -d Ubuntu -e bash /mnt/d/MSCAST/erpnext-poc/scripts/status-poc.sh   # status + URL check
 wsl -d Ubuntu -e bash /mnt/d/MSCAST/erpnext-poc/scripts/stop-poc.sh     # stop (data kept)
-wsl -d Ubuntu -e bash /mnt/d/MSCAST/erpnext-poc/scripts/backup-poc.sh   # DB + files backup to D:
+wsl -d Ubuntu -e bash /mnt/d/MSCAST/erpnext-poc/scripts/snapshot.sh <label>   # backup before anything risky
 ```
 
 Re-run any seed step (they are safe to repeat):
 
 ```powershell
-wsl -d Ubuntu -e bash /mnt/d/MSCAST/erpnext-poc/scripts/run-seed.sh 56_batch_c4
+wsl -d Ubuntu -e bash /mnt/d/MSCAST/erpnext-poc/scripts/run-seed.sh 102_test_harness
 ```
 
-Rebuild the custom image (after changing `apps.json`): `scripts/08-build-image.sh`, then `scripts/09-swap-image.sh`.
-`scripts/reset-poc.sh` wipes the database and rebuilds from the seed scripts.
+| Script | What it does |
+|---|---|
+| `run-seed.sh 102_test_harness` | the 27 build checks — **run this after any change** |
+| `run-harness.sh` | the same thing, with the output filtered to the result lines |
+| `run-seed.sh 127_exception_engine` | run the overnight rule sweep by hand |
+| `run-seed.sh 160_omni_test` | prove the AI briefing end to end |
+| `run-seed.sh 177_census` | one authoritative count of everything |
+| `doc-facts.sh` | print what the documents assert — roles, workflows, schedules — straight from the running system |
+| `audit-sod.sh` | the segregation-of-duties audit in full, including create-permission overlaps |
+| `snapshot.sh <label>` | database + files backup, copied out to `backups\` |
+| `reset-poc.sh` | wipe and rebuild from every seed script (~25 min) |
+| `push-app.sh` | copy the app from the repo into the running bench without a rebuild |
+| `pull-fixtures.sh` | copy exported fixtures out of the container into the app |
+| `test-stale-deploy.sh` | reproduce the stale-deploy failure and watch the guard catch it |
+
+**A trap worth knowing.** The container's copy of the app is a *copy*, not a mount. Editing `D:\MSCAST\mscast_erp` changes nothing until `push-app.sh` runs. Installing the app from a stale container copy is how the approval rules silently reverted once — see section 9.
 
 ## 3. Exposing the demo to clients in India
 
-**Public URL: https://mscast.carobar.net** - your own domain, valid certificate, no VPN and no
-client software. Anyone, anywhere, can open it.
+**Public URL: https://mscast.carobar.net** — own domain, valid certificate, no VPN and no client software.
 
 | Piece | Detail |
 |---|---|
-| Route | Cloudflare Tunnel `mscast-demo` (id `0e690596-81d9-4e00-9e00-7e87bd3d7477`) |
-| DNS | CNAME `mscast.carobar.net` created by cloudflared in your Cloudflare zone |
-| Origin | `http://<WSL IP>:8080` - the IP is rewritten each time `demo-up.ps1` runs, because it changes |
-| Binary | `cloudflared` 2026.9.1, installed via winget at `C:\Program Files (x86)\cloudflared` |
-| Credentials | `%USERPROFILE%\.cloudflared\` - cert.pem and the tunnel json. Keep these private |
-
-### Bringing the demo up
+| Route | Cloudflare Tunnel `mscast-demo` |
+| DNS | CNAME `mscast.carobar.net` in the Cloudflare zone |
+| Origin | `http://<WSL IP>:8080` — rewritten each time `demo-up.ps1` runs, because the IP changes |
+| Credentials | `%USERPROFILE%\.cloudflared\` — keep these private |
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File D:\MSCAST\erpnext-poc\scripts\demo-up.ps1
 ```
 
-It starts the stack, pins the WSL VM up, rewrites the tunnel config with the current WSL IP,
-restarts the tunnel and verifies the public URL. A shortcut to it sits in the Startup folder, so a
-reboot brings the demo back by itself.
+It starts the stack, pins the WSL VM up, rewrites the tunnel config with the current WSL IP, restarts the tunnel and verifies the public URL. A Startup shortcut brings the demo back after a reboot.
 
-### Why the keep-alive exists
+**Taking it offline:** `Get-Process cloudflared | Stop-Process`. Remove the Startup shortcut to stop it returning; `cloudflared tunnel delete mscast-demo` revokes it permanently.
 
-WSL 2.7.3 shuts its VM down whenever no session is attached, and it ignores `vmIdleTimeout`. When
-the VM goes, the containers go with it and the public URL returns 502. `demo-up.ps1` holds a
-`wsl -d Ubuntu -e sleep infinity` process open to prevent that. Do not kill it while demoing.
+*Rejected earlier: Tailscale Funnel (503 at the ingress, and every client would need Tailscale) and `networkingMode=mirrored` (broke Docker's embedded DNS).*
 
-**`vmIdleTimeout=0` means shut down immediately, not never.** The value for never is `-1`. The
-setting appears to be ignored by this WSL version either way, which is why the keep-alive is
-needed.
+## 4. MSCAST's own forms
 
-### Things that were tried and rejected
+25 document types in the MSCAST module, 8 of them child tables.
 
-- **Tailscale Funnel** (`thinkstation.tailf78e82.ts.net`) - the ingress returned 503 even with the
-  funnel armed, the node healthy and the app reachable locally. It also required every client to
-  install Tailscale. Superseded by the Cloudflare tunnel; the funnel config is still in place and
-  harmless.
-- **`networkingMode=mirrored` in .wslconfig** - fixed Windows-to-WSL localhost, but broke Docker's
-  embedded DNS (`host not found in upstream "backend:8000"`) and put the frontend and websocket
-  containers into a restart loop. Reverted; backup at `%USERPROFILE%\.wslconfig.backup-20260919`.
-
-### Taking it offline
-
-```powershell
-Get-Process cloudflared | Stop-Process     # stops the public URL immediately
-```
-
-Remove the Startup shortcut to stop it coming back, and delete the tunnel with
-`cloudflared tunnel delete mscast-demo` to revoke it permanently.
-
-## 4. MSCAST forms (custom DocTypes - no app or developer mode needed)
-
-| Form | Purpose (from MSCAST's requirement document) |
+| Form | Purpose |
 |---|---|
 | **MSCAST PCC** + items | Purchase Cost Calculation: component-wise estimate, revision, approval; the baseline for PO control and MIS |
-| **MSCAST Drawing** + revisions | Drawing register: number, title, assembly, revision history, customer-approval status, Drive link |
-| **MSCAST MDF** + items | Material Data File / material list per assembly, released to procurement |
-| **MSCAST BRM** | Billing Routing Memo: procurement certifies qty, rate, inspection and delivery before accounts pay |
+| **MSCAST Drawing** + revisions | Drawing register with revision history — **driven by a workflow**, see below |
+| **MSCAST MDF** + items | Material Data File per assembly, released to procurement |
+| **MSCAST BRM** | Billing Routing Memo: quantity, rate, inspection and delivery certified before accounts pay |
 | **MSCAST MDM** + items | Material Dispatch Memo with free-issue (Annexure-I) flag |
-| **MSCAST Delivery Instruction** | Instruction to the supplier to dispatch direct to site: consignee, transporter, LR, annexure |
+| **MSCAST Delivery Instruction** | Direct-to-site dispatch: consignee, transporter, LR, annexure |
 | **MSCAST Inspection Plan** | In-process / pre-dispatch / third-party / customer inspection with result |
-| **MSCAST Project Certificate** | Commissioning / preliminary / final acceptance, retention release date |
-| **MSCAST Project Kickoff** *(new)* | Customer-PO verification checklist (price, scope, payment terms, LD, GST, BG, advance) + kick-off minutes, driven by a workflow |
-| **MSCAST Transmittal** + items *(new)* | Drawing / document transmittal to customers, vendors and inspection agencies, with acknowledgement |
-| **MSCAST Commissioning Report** + parameters *(new)* | Performance trial: specified vs achieved, punch list, provisional acceptance, guarantee start |
-| **MSCAST Spares Handover** + items *(new)* | Commissioning and 2-year mandatory spares handed over, with part numbers |
-| **MSCAST Client Claim** *(new)* | Claims on the customer: scope variation, idle time, escalation; agreed value and the settling invoice |
-| **MSCAST Customer Asset** *(new)* | Customer-owned tooling and gauges held by MSCAST or its sub-contractors (not capitalised) |
-| **MSCAST Archival Log** *(new)* | Monthly archival run record with the 8-year statutory retention note |
+| **MSCAST Project Certificate** | Commissioning / preliminary / final acceptance, retention release |
+| **MSCAST Project Kickoff** | Customer-PO verification checklist + kick-off minutes, driven by a workflow |
+| **MSCAST Transmittal** + items | Drawing transmittal with acknowledgement |
+| **MSCAST Commissioning Report** + parameters | Specified vs achieved, punch list, guarantee start |
+| **MSCAST Spares Handover** + items | Commissioning and 2-year mandatory spares, with part numbers |
+| **MSCAST Client Claim** | Scope variation, idle time, escalation; agreed value and settling invoice |
+| **MSCAST Customer Asset** | Customer-owned tooling held by MSCAST or its sub-contractors |
+| **MSCAST Installed Machine** | The installed base — 14 machines, 2009–2024 |
+| **MSCAST Bid Outcome** | Won and lost bids with reasons — the basis for a win/loss view |
+| **MSCAST Exception** | What the overnight checks found. Written by the system, cleared by people |
+| **MSCAST Archival Log** | Monthly archival run record with the 8-year retention note |
 
-### Workflow and controls *(new)*
+### Workflows — five, all active
 
-- **MSCAST Project Kick-off** workflow: `Draft → PO Verified → Kick-off Approved`, with a
-  `PO Query Raised` branch. The transition to *PO Verified* is only allowed to Accounts and only when
-  price, scope, payment terms and GST are all ticked. PROJ-0002 is deliberately parked in
-  *PO Query Raised* because the customer's PO changed the payment terms.
-- **BRM payment block** (server script on Payment Entry, Before Submit): a supplier payment is
-  **refused** unless a BRM exists for that supplier bill *and* it is certified. Verified live -
-  a payment against `SMW/CAP/2026/08` is rejected with the reason.
-- **Monthly archival job** (scheduled server script) writing an MSCAST Archival Log entry;
-  12 rolling backups retained.
+| Workflow | On | The control |
+|---|---|---|
+| **MSCAST PCC Approval** | MSCAST PCC | Approve and Send Back are a **director's** |
+| **MSCAST Purchase Order Approval** | Purchase Order | Sent for approval by `Purchase User`, **approved by a director**. Nobody holds both roles |
+| **MSCAST BRM Certification** | MSCAST BRM | Purchase prepares, a **director certifies**, Accounts marks paid |
+| **MSCAST Project Kick-off** | MSCAST Project Kickoff | Accounts verify the customer PO, a **director approves**. Cannot be approved with the checklist unticked |
+| **MSCAST Drawing Release** | MSCAST Drawing | *Released for Manufacture* is reachable **only** from *Approved by Customer*, and only by a Projects Manager |
 
-### Roles *(new)*
+**Read the BRM row with section 9's second warning next to it.** The workflow says three roles. It does not follow that three *people* are involved, because both directors hold roles that can create a BRM as well as the role that certifies one and the role that marks it paid.
 
-- **MSCAST Statutory Auditor** - read / report / print / export only, on 23 doctypes including
-  GL Entry, vouchers, assets, Version history and the MSCAST forms. No write, no submit, no delete.
-- **MSCAST Director** - the same read-only rights over 30 doctypes including projects, payroll and claims.
+### Other controls
 
-## 5. Print formats (MSCAST letterhead, A4)
+- **BRM payment block** — a server script on Payment Entry refuses a supplier payment unless a certified BRM exists for that bill. Verified live in the harness on every run. This one is absolute and applies to everyone.
+- **Overnight exception sweep** — 16 rules at 06:00 comparing documents against each other and the calendar. Writes to MSCAST Exception. No model, no network.
+- **AI morning briefing** — 08:35, turns the findings plus the management summary into a few sentences naming what matters most today, emailed to the directors with every item linked. Falls back to a plain list if the model is unreachable, so a missing model never means a missing email.
+- **Post-deploy verification** — after every install and upgrade, six control transitions are checked and repaired, loudly. Section 9.
+- **Monthly archival job** writing an MSCAST Archival Log entry.
 
-`MSCAST PCC Sheet` · `MSCAST MDF Sheet` · `MSCAST Material Dispatch Memo` ·
-`MSCAST Delivery Instruction Print` (Annexure-I) · `MSCAST Billing Routing Memo` ·
-`MSCAST Inspection Report` · `MSCAST Project Certificate Print` ·
-**`MSCAST Proforma Invoice`** (on Sales Order) · **`MSCAST Project Schedule (Client)`** ·
-**`MSCAST Project Status Report`** · **`MSCAST Transmittal Note`** ·
-**`MSCAST Commissioning Report Print`** · **`MSCAST Spares Handover Note`** ·
-**`MSCAST Client Claim Print`**
+### Roles
 
-The two Project prints are live: the schedule prints the six contractual milestones with the real
-drawing / inspection / dispatch / commissioning counts, the status report prints a progress bar,
-the commercial position (contract, billed, outstanding, bought-out, open claims) and the open
-punch points.
+**Correction to earlier versions of this file:** `MSCAST Director` was described as a *read-only* role. It is the opposite — it is the **approving** role, and it is where PCC approval, purchase order approval, BRM certification and kick-off approval now sit.
 
-## 6. Reports
+Read-only belongs to **Auditor**, held by the external CA: read, report, print, export including version history, and no write anywhere.
 
-Original eight: `MSCAST Project MIS` · `MSCAST PO vs PCC Variance` · `MSCAST Drawing Register` ·
-`MSCAST Free Issue at Vendor` · `MSCAST Dispatch Schedule` · `MSCAST Retention and Certificates` ·
-`MSCAST BRM Register` · `MSCAST Inspection Status`
+Full detail, one page per role, is in *Role Cards*.
 
-Added in batches A-C:
+## 5. Print formats
+
+16 custom formats on MSCAST letterhead, A4. Every one that has a sample document is rendered as part of the build checks — 15 on the current data set — so a format broken by a field change is caught before anyone prints it in front of a customer.
+
+`MSCAST PCC Sheet` · `MSCAST MDF Sheet` · `MSCAST Material Dispatch Memo` · `MSCAST Delivery Instruction Print` (Annexure-I) · `MSCAST Billing Routing Memo` · `MSCAST Inspection Report` · `MSCAST Project Certificate Print` · `MSCAST Proforma Invoice` · `MSCAST Project Schedule (Client)` · `MSCAST Project Status Report` · `MSCAST Transmittal Note` · `MSCAST Commissioning Report Print` · `MSCAST Spares Handover Note` · `MSCAST Client Claim Print`
+
+All client-facing formats carry a demonstration watermark. Remove it for production.
+
+## 6. Reports — 28 custom
+
+The eight originals: `Project MIS` · `PO vs PCC Variance` · `Drawing Register` · `Free Issue at Vendor` · `Dispatch Schedule` · `Retention and Certificates` · `BRM Register` · `Inspection Status`
 
 | Report | What it answers |
 |---|---|
-| **MSCAST MSME 45-Day Dues (s.15 MSMED / s.43B(h))** | Which MSME supplier bills are past 45 days, by how many days, and what is at risk of disallowance / MSME Form I |
-| **MSCAST SO - PO - Invoice Tracker** | Per order: value, billed, collected, PO committed, supplier billed, % delivered, % billed |
-| **MSCAST Project Closure Report** | Contract vs PCC vs actual bought-out, receivable, certificates, open claims, drawings and inspections, with a closure verdict |
-| **MSCAST Balance Sheet (Schedule III grouping)** | Ledger balances mapped to Schedule III heads (shareholders' funds, non-current / current liabilities and assets) |
-| **MSCAST Statement of Profit and Loss (Schedule III grouping)** | Revenue, other income, material, employee benefits, finance costs, depreciation, other expenses |
-| **MSCAST Daily Management Summary** | 15 indicators on one page: cash, receivables, overdue, retention, payables, MSME exposure, order book, drawings, inspections, BRMs, claims |
-| **MSCAST Expense Analysis (vs last year, % of sales)** | Expense growth and margin view |
+| **MSME 45-Day Dues** | Which MSME bills are past 45 days and what is at risk under s.43B(h) |
+| **SO – PO – Invoice Tracker** | Per order: value, billed, collected, PO committed, % delivered, % billed |
+| **Project Closure Report** | Contract vs PCC vs actual, receivable, certificates, open claims — with a verdict |
+| **Balance Sheet (Schedule III)** | Ledger balances mapped to the statutory vertical format |
+| **Statement of P&L (Schedule III)** | Revenue through to tax and EPS |
+| **Daily Management Summary** | 20 indicators with an OK / WATCH / ACT column and the reason spelled out |
+| **Expense Analysis** | Growth and margin against last year |
+| **Installed Base** and **Bid Outcomes** | The machines in the field, and why bids were won or lost |
 
-`MSCAST Daily Management Summary`, `MSCAST Dispatch Schedule` and `MSCAST Project MIS` are set up as
-scheduled email reports (they will send once an SMTP account is configured).
+## 7. Accounting depth
 
-## 7. Accounting depth added in batch A
+Schedule III statements that balance to the rupee and tie to the ledger; 25 notes to accounts including the MSMED s.22 disclosure, related party, contingent liabilities from live bank guarantees, and the 2021 negative disclosures; the eleven prescribed ratios, guarded so an immaterial denominator shows `n/a` rather than a nonsense percentage; current and deferred tax; project WIP; landed cost, credit and debit notes, TDS 194C, dunning, retention reclassification, gratuity provision, four assets including CWIP and an intangible.
 
-- **COA heads:** Reserves and Surplus, Borrowings - HDFC Term Loan, Lease Liabilities, Prior Period
-  Expenses, Fines and Penalties under Law, Retention Receivable, Petty Cash + Cash mode of payment
-- **6 journal vouchers:** electricity, petty cash imprest, petty cash spend, foreign travel
-  (customer visit), marine + erection insurance, cargo agency (ODC movement)
-- **Landed cost voucher** MAT-LCV-2026-00001 (₹45,000 freight) apportioned onto a receipt
-- **Credit note** SINV-26-00003 (sales rejection) and **debit note** PINV-26-00002 (rate difference)
-- **TDS 194C** category at 2% with thresholds; PINV-26-00003 ₹5,98,560 with ₹10,320 TDS deducted
-- **Dunning** DUNN-09-26-00001 on an overdue invoice and **payment request** ACC-PRQ-2026-00001 (advance)
-- **Retention** JV ACC-JV-2026-00007: ₹1,81,248 reclassified out of trade receivables
-- **Supplementary invoice** SINV-26-00004 against the agreed client claim
-- **Gratuity:** Gratuity Rule (15/26 days per completed year) + provision JV ACC-JV-2026-00008
-  ₹9,91,414 for 6 employees, with the per-employee working in the narration
-- **Assets:** 4 submitted - CAD workstation, welding/testing equipment, **ERP software licence
-  (intangible, 36-month amortisation)** and **hydraulic test bench (CWIP**, ₹7.80 L sitting in
-  1790 - CWIP Account from PINV-26-00004, available for use in 3 months)
-- **Share capital:** 3 shareholders with folio numbers, 10,000 equity shares of ₹10 (paid-up ₹1,00,000)
+## 8. GST, HR and mail
 
-## 8. GST (India Compliance)
+- **GST** — company and all parties carry GSTIN, state and category; every invoiced item has an HSN; intra-state and inter-state invoices both present; MCA audit trail on and non-disableable; four suppliers tagged Micro/Small with Udyam numbers feeding the MSME report. GSTIN check digits and pincode-to-state are validated on entry.
+- **HR** — 6 employees, holiday list, 150 attendance records, leave, expense claim, salary structure and submitted salary slips; Gratuity Rule and provision. **The biometric pull is switched off** — 72 punches and the reconciliation report are real, the automation behind them is not running.
+- **Mail** — live via Purelymail on `uattech@carobar.net`; SPF, DKIM and DMARC all pass at Gmail. The daily summary goes at **08:30** and the AI briefing at **08:35**, both Asia/Kolkata, driven by a cron server script rather than Frappe's midnight job.
 
-- Company and all 15 parties carry GSTIN, state and GST category; addresses created for each
-- 48 items carry HSN/SAC codes and an 18% GST item tax template
-- **SINV-26-00001** intra-state CGST+SGST · **SINV-26-00002** inter-state IGST · **PINV-26-00001**
-  input IGST linked to the purchase receipt and BRM
-- **MCA audit trail on** (India Compliance: once enabled it cannot be turned off)
-- e-way bill enabled; e-invoice off (needs API credentials)
-- 4 suppliers tagged **Micro / Small with Udyam numbers**, feeding the MSME 45-day report
+**Indian dates.** MariaDB runs UTC inside the container while the site runs Asia/Kolkata, so every raw-SQL `curdate()` was comparing against the previous day for 5.5 hours out of 24. All custom reports use `date(convert_tz(utc_timestamp(),'+00:00','+05:30'))`, and the harness fails if any new report does not. Not cosmetic: the MSMED 45-day clock hangs off it.
 
-## 9. HR and payroll
+## 9. Deploying, and the trap in it
 
-Unchanged from v2: 6 employees, holiday list with per-employee assignment, 73 attendance records,
-leave, site-travel expense claim, salary structure (Basic 50%, HRA 40% of basic, conveyance, special
-allowance; PF 12%, ESIC 0.75%, Professional Tax MH, TDS) and 6 submitted salary slips for August 2026.
-Batch C adds the **Gratuity Rule** and the **gratuity provision**.
+**Read this before installing or upgrading anything.**
 
-**Note:** india_payroll's own statutory engine (EPF/ESIC/PT auto-calculation, ECR file, Form 16, 24Q)
-needs company-level statutory configuration that is still out of scope; the demo structure computes
-the same deductions with explicit formulas.
+Installing or upgrading the app **re-imports its configuration and overwrites the database**. Proved by experiment: a workflow role changed in the database was reset to the packaged value by a plain `bench migrate`.
 
-## 10. What is still not live (9 of 97 requirements)
+Two consequences:
 
-| ID | Item | Why |
-|---|---|---|
-| AC-05 (part) | Management summary pushed to a chat channel as well as email | channel decision D7 (SMS vs WhatsApp vs Google Chat) |
-| A-14 | Schedule III statements in statutory format | built as grouped query reports; the statutory template needs the CA's sign-off |
-| AC-11 | Deferred tax and income-tax provision entries | gratuity provision is done; these need the CA's numbers |
-| PC-02 | Billing / dispatch schedule child table on the project | small build, not yet done |
-| A-09 | Receipt print to the customer | small config |
-| AC-17 | Project WIP valuation | decision D6 with the CA |
-| M-03 | Biometric attendance connector | needs the device make / model |
-| M-02, AC-18 | "Finance Scaling Management", "GST on closing inventory" | need MSCAST / CA clarification |
-| AC-07 | AS vs Ind AS and notes to accounts | CA decision, outside the ERP |
+1. **Deploying from a stale copy reverts business rules** to whatever that copy contained. This happened: an install from a stale container copy moved PCC approval back to System Manager and BRM certification back to Purchase Manager. Everything still worked, all 23 checks still passed, and nothing said a word.
+2. **Anything changed through the ERPNext screens is reverted at the next upgrade.** Business rules live in git.
 
-Also outstanding before this becomes production: real users and passwords, HTTPS on a VPS, daily
-India-hosted backups (Companies (Accounts) Rules r.3(5)), Tally opening-balance migration, and the
-Gemini automation layer from the phased plan.
+**The guard.** After every install and migrate, six control transitions are verified and repaired, with a banner and an Error Log entry naming each one. A banner means the package and the agreed configuration have diverged — reconcile them, do not just note it. `test-stale-deploy.sh` reproduces the whole thing.
 
-## 10a. Email (live since 19 Sep 2026)
+### The two expected warnings
 
-| Setting | Value |
-|---|---|
-| Outgoing account | `mscast-test` - uattech@carobar.net |
-| SMTP | smtp.purelymail.com:465, SSL, Basic auth, set as default outgoing |
-| Incoming | imap.purelymail.com:993 configured but **disabled** (enable it to file customer replies against documents) |
-| Site URL for links | `https://mscast.carobar.net` (set as `host_name`) |
-| Footer | MSCAST footer; the standard "Sent via ERPNext" line is disabled |
-| Scheduled mail | daily digest + daily management summary + dispatch schedule + project MIS, all to autoelectron.jp@gmail.com |
+`T6d` asserts the approval matrix. Two further checks ask whether the separation of duties is real, from two different angles, and **both warn on purpose**. Neither is a defect to chase; both are positions somebody has taken.
 
-First send verified at Gmail with `spf=pass`, `dkim=pass` (carobar.net, s=purelymail2) and
-`dmarc=pass` - carobar.net's DNS already carries Purelymail's records, so mail lands in the inbox.
-The daily management summary itself was delivered on 19 Sep 2026 (Email Queue `7s5k1g8ifm`, Sent).
+- **`T6e` — can an ordinary user both raise and approve the same document?** Yes, for the PCC and the kick-off: both directors hold the preparing roles as well as the director role, so either can prepare and approve alone. Accepted for a company this size, and documented in the SOPs.
+- **`T6f` — does anyone outside the administrators hold `System Manager`?** Currently no. It warns if that changes.
+- **`T6g` — can one person *create* a document and then approve it?** Yes, and this is the one worth understanding. `T6e` compares workflow *transition* roles, but creating a document is a permission, not a transition. Both directors hold `Projects Manager`, which can create a BRM; `MSCAST Director`, which certifies one; and `Accounts Manager`, which marks it paid. **A director can therefore take a supplier bill from creation to paid alone.** `T6e` never saw it, because "prepare a BRM" is not a workflow transition at all.
 
-**Scheduled report settings**
+`T6g` was added on 20 September after three delivered documents were found claiming a separation that does not exist. The documents have been corrected. **The payment block itself is unaffected** — no certified BRM, no payment, for anyone, including a director.
 
-| Report | Format | Sends when |
-|---|---|---|
-| MSCAST Daily Management Summary | HTML in the body | every day, even when nothing moved - a quiet day is information |
-| MSCAST Dispatch Schedule | XLSX attachment (500 rows) | only when there are rows, so it does not become noise |
-| MSCAST Project MIS | XLSX attachment (500 rows) | only when there are rows |
+## 10. What is not production yet
 
-**Send time.** Frappe fires daily auto email reports inside its 00:00 site-time job, which put the
-summary in the inbox at midnight IST - yesterday's closing position wearing today's date. Frappe's
-built-in `send_daily` job is therefore stopped (Scheduled Job Type `6ptvg6vnto`, `stopped=1`,
-reversible) and a cron server script **MSCAST morning report batch** (`30 8 * * *`) drives the same
-logic at **08:30 Asia/Kolkata** - next execution confirmed as `2026-09-19 08:30:00` site time, which
-is midday in Japan. The script loops over every enabled Daily auto email report, so new ones are
-picked up without touching it.
+- Demo data throughout; the watermark on client-facing prints
+- The Administrator password must be rotated before real data goes on a server
+- Previous-year comparatives are blank until Tally opening balances are migrated
+- Biometric attendance pull switched off
+- Hosting: VPS in India, HTTPS, daily India-resident backups (Companies (Accounts) Rules r.3(5))
+- The AI briefing points at a model router on this laptop; a server needs a hosted endpoint — three config lines, no code change
+- **`reset-poc.sh` has not been run end to end since scripts 172, 179, 181 and 182 were added to it.** Each was verified against the live site individually, but the claim "this rebuilds from nothing" is currently untested
 
-Note: `Auto Email Report.send()` refuses to run on a disabled report, so the reports stay enabled and
-the *trigger* is what moved - not the reports.
-
-**Daily summary, version 2 (19 Sep 2026).** The first version was reviewed against the data and two
-indicators were wrong: "drawings awaiting customer approval" counted every drawing whose status was not
-literally `Approved` (the real option is `Approved by Customer`, so it returned all 9 instead of 2), and
-"inspections not accepted" counted `Accepted with deviation` as not accepted. Both fixed. The report now
-has 20 indicators, money in Rs lakh / crore, and an **Attention** column (OK / WATCH / ACT) with the
-reason spelled out - "ACT - pay or lose the deduction", "WATCH - retention locked", "ACT - supplier
-cannot be paid".
-
-**Indian dates.** MariaDB runs on UTC inside the container while the site runs on Asia/Kolkata, so every
-raw-SQL `curdate()` was comparing against the previous day for 5.5 hours out of 24. All custom reports
-now use `date(convert_tz(utc_timestamp(),'+00:00','+05:30'))` instead - 22 date references across the
-daily summary, the MSME 45-day report and the dispatch schedule. This is not cosmetic: the MSMED 45-day
-clock, "billed this month" and the overdue tests all hang off it. The fix immediately changed one line -
-MSME dues falling due within 15 days went from Rs 0 to Rs 7.80 L, because a bill had just crossed day 30
-in Indian time.
-
-**Bounce protection.** `mscast.demo`, `mscast.local` and `example.com` do not resolve, so every system
-mail addressed to the demo users, the setup-wizard admin or Administrator would hard-bounce and damage
-carobar.net's sending reputation. Those users are marked **unsubscribed** - they still log in, they
-just receive no mail. All role-based notifications (BG expiry, PO over PCC, drawing awaiting approval)
-now resolve to a single live mailbox, and the demo roles were added to that user so no notification
-ends up with no recipient.
-
-**If the funnel is switched off**, document links inside emails stop resolving until it is back on;
-change `host_name` in `sites/frontend/site_config.json` and restart the backend to point elsewhere.
+Six accounting and scope assumptions are still awaiting MSCAST and the CA. They are listed in the implementation report and written into the narration of the affected vouchers, so whoever reviews the books meets the assumption where it matters.
 
 ## 11. Suggested 15-minute walkthrough
 
-1. **Workspace** `/app/mscast` - KPIs and charts on one screen.
-2. **MSCAST Project Kickoff** for PROJ-0002 - the customer-PO checklist and the workflow parking it
-   in *PO Query Raised*.
-3. **Project MIS** - contract value vs PCC estimate vs PO committed vs billed vs hours.
-4. **PCC-2026-00001** - the cost sheet; print it.
-5. **PO vs PCC Variance** - what is committed against the estimate.
-6. **Drawing register + Transmittal** - revision history and what was issued to whom, acknowledged.
-7. **Free Issue at Vendor** - plate and sections lying with the fabricator.
-8. **BRM** - certification checklist; then try a **Payment Entry against an uncertified bill** and
-   watch it get refused.
-9. **MDM → Delivery Instruction** - print shows the dispatch list and Annexure-I.
-10. **Commissioning report and spares handover** - print both.
-11. **Project Status Report / Project Schedule (Client)** - the two client-facing prints.
-12. **SINV-26-00002** IGST breakup → GSTR-1 → Purchase Reconciliation Tool.
-13. **MSME 45-Day Dues** and **Daily Management Summary** - the two reports a director opens daily.
-14. **Schedule III balance sheet and P&L**, then **Project Closure Report**.
-15. **Salary slip** with PF, PT and TDS; the gratuity provision voucher.
+1. **Workspace** `/app/mscast` — KPIs and charts on one screen
+2. **MSCAST Exception** — what the overnight checks found this morning
+3. **MSCAST Project Kickoff** for PROJ-0002 — the checklist, parked in *PO Query Raised*
+4. **Project MIS** — contract vs PCC vs committed vs billed
+5. **PCC-2026-00001** — the cost sheet; print it
+6. **PO vs PCC Variance** — what is committed against the estimate
+7. **A Drawing in Draft** — try to release it for manufacture; the system will not offer it
+8. **Drawing register + Transmittal** — revision history and what was issued, acknowledged
+9. **Free Issue at Vendor** — material lying with the fabricator
+10. **BRM** — then try a Payment Entry against an uncertified bill and watch it refused
+11. **MDM → Delivery Instruction** — print shows the dispatch list and Annexure-I
+12. **Commissioning report and spares handover** — print both
+13. **MSME 45-Day Dues** and **Daily Management Summary**
+14. **Schedule III balance sheet and P&L**, then **Project Closure Report**
+15. **Run the harness** — 27 checks, 25 pass, 2 expected warnings
 
 ## 12. Files
 
 ```
-D:\MSCAST\
-  ERP Plan\                      the documents - one current version of each, no version suffixes
-    MSCAST ERP - Requirements Traceability Matrix.xlsx
-    MSCAST ERP - Strategy and Phased Plan.docx
-    MSCAST ERP - Research Appendix.docx
-    MSCAST ERP - Implementation Report.md
-    MSCAST Knowledge Base.docx
-    markdown\                    the same documents as markdown, plus kb\ (7 knowledge-base files)
+D:\MSCAST\                       git repository, remote github.com/cb1-tech/mscast
+  mscast_erp\                    THE INSTALLABLE APP - this is what deploys
+    mscast_erp\
+      mscast\doctype\            25 document definitions
+      fixtures\                  16 configuration files, exported from a working site
+      agents\briefing.py         the 08:35 judgement half
+      install.py                 post-install / post-migrate, incl. the control verification
+      hooks.py                   fixtures list, scheduler events, CSS
   erpnext-poc\
-    README.md                    this file
-    REBUILD.md                   the full rebuild order, stage by stage
-    scripts\                     start / stop / status / backup / reset / run-seed / build / swap
-      _archive\                  one-off dev diagnostics, kept for reference
-    seed\                        73 scripts that build the POC, numbered in run order
-      _archive\                  32 read-only diagnostics and superseded iterations
-    backups\                     dated database + files backups
+    seed\                        114 scripts that build the POC, numbered in run order
+      _archive\                  32 diagnostics and superseded iterations
+    scripts\                     start/stop/status/backup/reset/run-seed/push/pull/deploy tests
+    backups\                     dated backups (git-ignored)
+  ERP Plan\                      the documents, .docx plus markdown under markdown\
 ~/mscast-poc\                    compose.yaml, apps.json, frappe_docker checkout (inside WSL)
 ```
 
-Everything in `_archive\` can be deleted without affecting the POC or a rebuild; it is kept only
-because the diagnostics are handy when something misbehaves.
+Everything in `_archive\` can be deleted without affecting the POC or a rebuild.
 
-The scripts worth knowing:
-
-| Command | What it does |
-|---|---|
-| `run-seed.sh 102_test_harness` | the 23 automated checks - run this after any change |
-| `run-seed.sh 59_verify` | full inventory of what exists in the site |
-| `start-poc.sh` / `stop-poc.sh` / `status-poc.sh` | day to day |
-| `backup-poc.sh` | database + files to `backups\` |
-| `reset-poc.sh` | wipe and rebuild from every seed script (~25 min) |
+**Current documents.** `ERP Plan\` holds the .docx and markdown; the ERP-MSCAST project on claude.ai holds the same content. *Client Setup Guide v2.2* · *SOPs and Use Cases v2.1* · *Role Cards v1.2* · *Production Cutover Runbook* · *Independent Review* · *Requirements Traceability* · *Implementation Report* · *Data Request Covering Note*.
