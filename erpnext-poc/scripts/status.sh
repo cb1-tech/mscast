@@ -9,7 +9,8 @@ echo "=== bench processes running in the backend ==="
 docker exec "$C" bash -c "ps -eo args | grep '[b]ench' | head -5" 2>/dev/null || echo "  none"
 echo
 echo "=== live site ==="
-printf '  localhost/login  %s\n' "$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 http://localhost:8080/login)"
+printf '  localhost/login   %s\n' "$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 http://localhost:8080/login)"
+printf '  public /login     %s\n' "$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 https://mscast.carobar.net/login)"
 echo
 echo "=== containers ==="
 docker ps --format '{{.Names}}\t{{.Status}}' | grep mscast
