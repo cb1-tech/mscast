@@ -16,6 +16,11 @@
  },
  {
   "doctype": "Workflow Action Master",
+  "name": "Issue for Customer Approval",
+  "workflow_action_name": "Issue for Customer Approval"
+ },
+ {
+  "doctype": "Workflow Action Master",
   "name": "Mark Paid",
   "workflow_action_name": "Mark Paid"
  },
@@ -26,13 +31,28 @@
  },
  {
   "doctype": "Workflow Action Master",
+  "name": "Record Customer Approval",
+  "workflow_action_name": "Record Customer Approval"
+ },
+ {
+  "doctype": "Workflow Action Master",
   "name": "Reject",
   "workflow_action_name": "Reject"
  },
  {
   "doctype": "Workflow Action Master",
+  "name": "Release for Manufacture",
+  "workflow_action_name": "Release for Manufacture"
+ },
+ {
+  "doctype": "Workflow Action Master",
   "name": "Reopen",
   "workflow_action_name": "Reopen"
+ },
+ {
+  "doctype": "Workflow Action Master",
+  "name": "Return for Rework",
+  "workflow_action_name": "Return for Rework"
  },
  {
   "doctype": "Workflow Action Master",
@@ -48,6 +68,11 @@
   "doctype": "Workflow Action Master",
   "name": "Send for Approval",
   "workflow_action_name": "Send for Approval"
+ },
+ {
+  "doctype": "Workflow Action Master",
+  "name": "Supersede",
+  "workflow_action_name": "Supersede"
  },
  {
   "doctype": "Workflow Action Master",

@@ -9,6 +9,13 @@
  {
   "doctype": "Workflow State",
   "icon": "",
+  "name": "Approved by Customer",
+  "style": "Info",
+  "workflow_state_name": "Approved by Customer"
+ },
+ {
+  "doctype": "Workflow State",
+  "icon": "",
   "name": "Certified",
   "style": "Success",
   "workflow_state_name": "Certified"
@@ -19,6 +26,13 @@
   "name": "Draft",
   "style": "",
   "workflow_state_name": "Draft"
+ },
+ {
+  "doctype": "Workflow State",
+  "icon": "",
+  "name": "For Customer Approval",
+  "style": "Warning",
+  "workflow_state_name": "For Customer Approval"
  },
  {
   "doctype": "Workflow State",
@@ -72,8 +86,22 @@
  {
   "doctype": "Workflow State",
   "icon": "",
+  "name": "Released for Manufacture",
+  "style": "Success",
+  "workflow_state_name": "Released for Manufacture"
+ },
+ {
+  "doctype": "Workflow State",
+  "icon": "",
   "name": "Revision Required",
   "style": "Danger",
   "workflow_state_name": "Revision Required"
+ },
+ {
+  "doctype": "Workflow State",
+  "icon": "",
+  "name": "Superseded",
+  "style": "Danger",
+  "workflow_state_name": "Superseded"
  }
 ]
