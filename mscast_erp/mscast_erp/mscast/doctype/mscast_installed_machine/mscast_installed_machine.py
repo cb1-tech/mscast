@@ -4,5 +4,5 @@
 from frappe.model.document import Document
 
 
-class MscastInstalledMachine(Document):
+class MSCASTInstalledMachine(Document):
 	pass

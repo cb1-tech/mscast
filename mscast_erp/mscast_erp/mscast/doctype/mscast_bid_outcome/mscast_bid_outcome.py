@@ -4,5 +4,5 @@
 from frappe.model.document import Document
 
 
-class MscastBidOutcome(Document):
+class MSCASTBidOutcome(Document):
 	pass

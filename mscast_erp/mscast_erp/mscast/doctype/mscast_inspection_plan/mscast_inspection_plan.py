@@ -4,5 +4,5 @@
 from frappe.model.document import Document
 
 
-class MscastInspectionPlan(Document):
+class MSCASTInspectionPlan(Document):
 	pass

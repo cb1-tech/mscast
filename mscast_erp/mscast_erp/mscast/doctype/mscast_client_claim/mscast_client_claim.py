@@ -4,5 +4,5 @@
 from frappe.model.document import Document
 
 
-class MscastClientClaim(Document):
+class MSCASTClientClaim(Document):
 	pass

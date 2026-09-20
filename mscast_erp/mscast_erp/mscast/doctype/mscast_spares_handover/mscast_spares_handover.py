@@ -4,5 +4,5 @@
 from frappe.model.document import Document
 
 
-class MscastSparesHandover(Document):
+class MSCASTSparesHandover(Document):
 	pass

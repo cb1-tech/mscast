@@ -4,5 +4,5 @@
 from frappe.model.document import Document
 
 
-class MscastArchivalLog(Document):
+class MSCASTArchivalLog(Document):
 	pass

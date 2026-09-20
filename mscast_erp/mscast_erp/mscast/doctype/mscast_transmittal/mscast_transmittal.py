@@ -4,5 +4,5 @@
 from frappe.model.document import Document
 
 
-class MscastTransmittal(Document):
+class MSCASTTransmittal(Document):
 	pass

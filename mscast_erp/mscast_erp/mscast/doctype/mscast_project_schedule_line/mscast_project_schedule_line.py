@@ -4,5 +4,5 @@
 from frappe.model.document import Document
 
 
-class MscastProjectScheduleLine(Document):
+class MSCASTProjectScheduleLine(Document):
 	pass

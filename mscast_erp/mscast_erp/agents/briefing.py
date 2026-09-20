@@ -240,8 +240,20 @@ def plain(data):
 
 def send(body, data, model_used):
     recipients = frappe.conf.get("mscast_briefing_to")
+    # "bench set-config x '[...]'" stores the argument as a STRING unless it is
+    # given --parse, and the mistake is silent: the whole '["a","b"]' ends up as
+    # one recipient and the send dies with "Invalid email address" in the Error
+    # Log, where nobody is looking. Accept either shape.
     if isinstance(recipients, str):
-        recipients = [recipients]
+        text = recipients.strip()
+        if text.startswith("["):
+            try:
+                recipients = json.loads(text)
+            except ValueError:
+                recipients = []
+        else:
+            recipients = [part.strip() for part in text.split(",")]
+    recipients = [r for r in (recipients or []) if r and "@" in r]
     if not recipients:
         recipients = [
             u.email

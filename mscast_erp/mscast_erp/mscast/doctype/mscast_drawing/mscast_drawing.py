@@ -4,5 +4,5 @@
 from frappe.model.document import Document
 
 
-class MscastDrawing(Document):
+class MSCASTDrawing(Document):
 	pass

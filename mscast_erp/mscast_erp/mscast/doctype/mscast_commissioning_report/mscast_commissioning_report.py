@@ -4,5 +4,5 @@
 from frappe.model.document import Document
 
 
-class MscastCommissioningReport(Document):
+class MSCASTCommissioningReport(Document):
 	pass

@@ -4,5 +4,5 @@
 from frappe.model.document import Document
 
 
-class MscastMdf(Document):
+class MSCASTMDF(Document):
 	pass

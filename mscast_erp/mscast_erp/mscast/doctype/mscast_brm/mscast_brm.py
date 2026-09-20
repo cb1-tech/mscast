@@ -4,5 +4,5 @@
 from frappe.model.document import Document
 
 
-class MscastBrm(Document):
+class MSCASTBRM(Document):
 	pass

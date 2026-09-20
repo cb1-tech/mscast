@@ -4,5 +4,5 @@
 from frappe.model.document import Document
 
 
-class MscastProjectCertificate(Document):
+class MSCASTProjectCertificate(Document):
 	pass

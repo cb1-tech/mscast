@@ -4,5 +4,5 @@
 from frappe.model.document import Document
 
 
-class MscastProjectKickoff(Document):
+class MSCASTProjectKickoff(Document):
 	pass
