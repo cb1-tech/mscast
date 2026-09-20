@@ -6,6 +6,18 @@ cd "$HOME/mscast-poc"
 read -r -p "Wipe the MSCAST POC and rebuild? [y/N] " a
 [ "$a" = "y" ] || exit 1
 
+# The stack runs mscast/erpnext:v16-app - the base image with mscast_erp baked in.
+# It has to exist before the containers start, because `apps/` comes from the
+# image and only `sites` and `logs` are volumes. When the app was missing from
+# the image, the scheduler and the queue workers could not import it at all and
+# four of the five MSCAST scheduled jobs silently never ran.
+IMG=$(grep -m1 -oE 'mscast/erpnext:[A-Za-z0-9._-]+' compose.yaml)
+if ! docker image inspect "$IMG" >/dev/null 2>&1; then
+  echo "image $IMG is missing - building it first"
+  bash /mnt/d/MSCAST/erpnext-poc/scripts/build-mscast-image.sh "$IMG"
+fi
+echo "using image: $IMG"
+
 docker compose -p mscast-poc -f compose.yaml down -v --remove-orphans
 docker compose -p mscast-poc -f compose.yaml up -d
 

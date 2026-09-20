@@ -482,6 +482,41 @@ def t9_automation():
         "%d users would bounce" % bounce)
 
 
+    # T9f - do the MSCAST scheduled jobs actually RUN?
+    #
+    # This check exists because four of them never had. The scheduler and the two
+    # queue containers are built from the image, and mscast_erp was never in the
+    # image - it had been copied into the backend container by hand. So the
+    # backend could import it and nothing else could. Every script, every bench
+    # execute and every demonstration ran in the backend and worked perfectly;
+    # the 06:00 exception sweep and the 08:35 briefing were never once executed
+    # by the scheduler, and last_execution sat at NULL for the life of the POC.
+    #
+    # Nothing reported it, because every other check asks "is this configured?"
+    # and none asked "has it ever run?".
+    stale, never = [], []
+    for j in frappe.get_all("Scheduled Job Type",
+                            fields=["name", "method", "stopped", "last_execution"]):
+        if "mscast" not in (j.method or "").lower() or j.stopped:
+            continue
+        if not j.last_execution:
+            never.append(j.method)
+        else:
+            age = frappe.utils.time_diff_in_hours(frappe.utils.now(), j.last_execution)
+            # Monthly jobs get a long leash; the daily ones should be recent.
+            limit = 24 * 40 if "monthly" in (j.method or "").lower() else 48
+            if age > limit:
+                stale.append("%s (%.0fh ago)" % (j.method, age))
+    detail = []
+    if never:
+        detail.append("NEVER RUN: " + ", ".join(never))
+    if stale:
+        detail.append("stale: " + ", ".join(stale))
+    rec("T9f", "email", "enabled MSCAST scheduled jobs have actually run", not (never or stale),
+        " :: ".join(detail) if detail
+        else "all enabled MSCAST jobs have a recent last_execution")
+
+
 # ---------------------------------------------------------------- T10 hr
 def t10_hr():
     slips = frappe.db.count("Salary Slip", {"docstatus": 1})

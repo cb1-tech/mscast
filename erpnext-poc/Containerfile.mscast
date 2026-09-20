@@ -1,0 +1,44 @@
+# Bake mscast_erp into the image.
+#
+# Why this file exists
+# --------------------
+# The base image mscast/erpnext:v16 is built from apps.json, which lists erpnext,
+# hrms, india_compliance and india_payroll. mscast_erp was never in it - it was
+# copied into the running backend container by hand instead.
+#
+# Only `sites` and `logs` are volumes in compose.yaml. `apps/` comes from the
+# image. So copying the app into one container gave it to that container and
+# nothing else: the scheduler and the two queue workers had no mscast_erp at all
+# and could not import it. Four of the five MSCAST scheduled jobs therefore never
+# ran - the 06:00 exception sweep and the 08:35 briefing among them - while
+# running them by hand in the backend container worked perfectly, which is how
+# they were built, tested and demonstrated.
+#
+# mscast_erp is not in apps.json because it lives in a subdirectory of a private
+# repository, and `bench get-app` clones a repo expecting the app at its root.
+# Layering it on top of the base image is the honest fix for that shape: the app
+# is in the image, every container gets the same one, and it is reproducible from
+# the repository rather than from whatever was last copied into a container.
+#
+# Build with scripts/build-mscast-image.sh - do not run this by hand, because the
+# build context has to be the repo root for the COPY below to resolve.
+
+FROM mscast/erpnext:v16
+
+USER frappe
+WORKDIR /home/frappe/frappe-bench
+
+# The app, straight from the repository. Build context is the repo root.
+COPY --chown=frappe:frappe mscast_erp /home/frappe/frappe-bench/apps/mscast_erp
+
+# Install it into the bench's virtualenv, exactly as `bench get-app` would, so
+# `import mscast_erp` works in every process in every container - gunicorn, the
+# scheduler and the queue workers included, not just a fresh `bench console`.
+RUN ./env/bin/pip install --no-cache-dir --editable apps/mscast_erp \
+    && ./env/bin/python -c "import mscast_erp; print('baked in:', mscast_erp.__file__)"
+
+# apps.txt in the image. At runtime the sites volume supplies its own copy, so
+# this is belt and braces for a fresh site built from this image.
+RUN grep -qx mscast_erp sites/apps.txt || echo mscast_erp >> sites/apps.txt
+
+USER frappe
