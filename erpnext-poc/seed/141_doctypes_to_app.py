@@ -14,7 +14,10 @@ MODULE = "MSCAST"
 os.makedirs(OUT, exist_ok=True)
 os.system("rm -rf %s/*" % OUT)
 
-STRIP_TOP = {"modified", "modified_by", "creation", "owner", "idx", "docstatus",
+# "modified" MUST stay: frappe.modules.import_file compares it against the row in
+# the database to decide whether to import a doctype JSON. Strip it and the
+# framework silently skips the file, which is exactly what happened the first time.
+STRIP_TOP = {"modified_by", "owner", "idx", "docstatus",
              "_user_tags", "_comments", "_assign", "_liked_by", "_user_edits"}
 STRIP_ROW = STRIP_TOP | {"parent", "parentfield", "parenttype", "name"}
 

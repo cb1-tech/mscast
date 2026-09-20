@@ -30,6 +30,21 @@ bench --site <site> install-app mscast_erp
 bench --site <site> migrate
 ```
 
+The `migrate` is not optional. Installing the app creates the MSCAST documents
+from the JSON definitions under `mscast/doctype/`, and `migrate` is what creates
+their tables and then imports the fixtures that depend on them - custom fields,
+workflows and notifications that hang off those documents. Run it once and check
+the counts; a fixture file that mentions a document type which did not exist yet
+is skipped as a whole file, not row by row.
+
+Two things to know if something does not appear:
+
+- Every doctype JSON carries a `modified` timestamp. The framework compares it
+  against the database to decide whether to import the file. Strip it and the
+  file is silently skipped.
+- Fixtures are imported in filename order, which is why the documents ship as
+  app doctypes rather than as a `DocType` fixture.
+
 `after_install` hides the stock workspaces MSCAST does not use and points the
 site root at the MSCAST home workspace. Neither step deletes anything: every
 hidden workspace's forms and reports still open from search.
