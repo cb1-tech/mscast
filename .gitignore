@@ -20,3 +20,4 @@ Thumbs.db
 # working scratch, not part of the deliverable
 Claude outputs/
 staging-build.log
+erpnext-poc/backups/
