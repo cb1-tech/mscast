@@ -135,7 +135,7 @@
     "cc": null,
     "condition": null,
     "doctype": "Notification Recipient",
-    "name": "fj3kdneqht",
+    "name": "a0c6s9760q",
     "parent": "MSCAST BG expiry alert",
     "parentfield": "recipients",
     "parenttype": "Notification",
@@ -186,12 +186,12 @@
     "cc": null,
     "condition": null,
     "doctype": "Notification Recipient",
-    "name": "fj4rve399i",
+    "name": "a09j4bg7af",
     "parent": "MSCAST drawing awaiting customer approval",
     "parentfield": "recipients",
     "parenttype": "Notification",
     "receiver_by_document_field": null,
-    "receiver_by_role": "Projects Manager"
+    "receiver_by_role": "Projects User"
    }
   ],
   "send_system_notification": 0,
@@ -237,7 +237,7 @@
     "cc": null,
     "condition": null,
     "doctype": "Notification Recipient",
-    "name": "fj44hrh98j",
+    "name": "a0b439vfli",
     "parent": "MSCAST PO over PCC",
     "parentfield": "recipients",
     "parenttype": "Notification",

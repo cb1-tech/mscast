@@ -52,6 +52,8 @@ bash $R 127_exception_engine 128_demo_safeguards 129_shareholder_names
 bash $R 150_masters_expand 151_installed_and_bids 155_project_three
 bash $R 153_real_users 154_fix_approvals
 bash $R 156_repair_after_expand 158_notif_roles 159_mail_reachable
+# --- segregation of duties: preparers prepare, the two directors approve ---
+bash $R 161_approval_authority
 bash $R 127_exception_engine
 bash $R 10_test_reports 102_test_harness
 
