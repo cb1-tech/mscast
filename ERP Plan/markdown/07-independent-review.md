@@ -93,7 +93,7 @@ Every MSCAST-specific form is an inference from a 15-page requirement PDF. The t
 
 The Strategy document records decision **D4 — decline the fixed-bid ERPens proposal**, replaces its 12–14 weeks with a 10-month self-build, and prices it at "₹0 cash (Sanjay's time)". Against the ERPens proposal as written, the second reviewer scored roughly **60% of base scope, 70% of custom scope, and none of the commercial deliverables** — no UAT, no migration, no training, no production hosting.
 
-That gap only matters if MSCAST believes the ERPens proposal describes what it is getting. **There is no signed scope, fee, milestone or acceptance criterion between Sanjay and MSCAST in any document in this project.** That is the single largest commercial exposure, and it is fixable with one page.
+That gap only matters if MSCAST believes the ERPens proposal describes what it is getting. **There is no signed scope, fee, milestone or acceptance criterion between Sanjay and MSCAST in any document in this project.** ~~That is the single largest commercial exposure, and it is fixable with one page.~~ **The reviewers were reasoning from the documents alone and inferred a commercial relationship that does not exist. See Section G.**
 
 Specific gaps against that proposal, if it is the reference: no ERPNext BOM (the MDF substitutes), no ECR/ECN, no drawing *workflow* (status field plus notification only), no techno-commercial comparison report (fields only, no output), no supplier performance report, no asset movement or maintenance, no batch/serial tracking, no bank reconciliation.
 
@@ -140,8 +140,8 @@ Stated plainly, because the list above is long:
 
 **Before any invoice or sign-off**
 
-5. One page of signed scope: deliverables, milestones, fee, acceptance test *(C2)*
-6. A support arrangement, or strike Sanjay's name from the client-facing owner columns *(C5)*
+5. ~~One page of signed scope: deliverables, milestones, fee, acceptance test~~ *(C2 — superseded; see Section G)*
+6. ~~A support arrangement, or~~ strike Sanjay's name from the client-facing owner columns *(C5 — partly superseded; see Section G)*
 7. The discovery workshop that was skipped — the four real formats, and Q1–Q19 answered in writing *(C1)*
 
 **Before go-live**
@@ -215,7 +215,8 @@ Each item below was re-checked against the running system rather than re-read. T
 - **B6 — answered in part.** MSCAST confirms **PF, ESI and gratuity all apply**, so the payroll and the provision are built correctly. One line remains for the CA: EPF is mandatory only at 20+ employees, so at MSCAST's headcount it applies either by voluntary registration under s.1(4) or by continuing coverage from a period above the threshold. Which one should be recorded. The s.115BAA election and the Ind AS 116 "Lease Liabilities" head are separate and still open.
 - **B8 — FIXED on 21 September.** The reviewer was right and the amount was material. Two opening-stock Stock Entries had credited ₹24,74,400 to `5119 Stock Adjustment`, an **expense** account, inflating reported profit by that much. Reposted against `1910 Temporary Opening`, which now carries ₹24,74,400 and Stock Adjustment carries nil. Because that moved the bottom line, the tax provision was **recomputed rather than left stale**: `Provision for Income Tax` now stands at ₹15,32,737 on a profit before tax of ₹60,90,022, which is 25.168% — the s.115BAA rate, whose election is a separate open question for the CA. Trial balance still nets to zero.
 - **A5 — FIXED on 21 September.** The reviewer was right about the symptom and the diagnosis was the contract, not the ledger. `ACC-JV-2026-00007` had reclassified ₹1,81,248 to Retention Receivable against **Konark Alloys**, a spares customer with no project and no retention clause. It is reversed by `ACC-JV-2026-00020`. Retention is now posted where a contract actually calls for it: `ACC-JV-2026-00021`, ₹4,52,530 against **Ambika Steel Rolling Mills** — exactly 10% of `SINV-26-00005` (₹45,25,300), and `SAL-ORD-2026-00003` carries `retention_percent = 10`. The ledger and the *Retention and Certificates* report now agree on whose money is being held. The operating rule that prevents the recurrence is A2 in the *Operating Recommendations*.
-- **C1, C2, C3, C5, C6** — every structural finding stands untouched. The four real formats and the CA answers are exactly what the Data Request Covering Note asks MSCAST for; **C2, the absence of a signed scope, remains the largest commercial exposure and is still fixable with one page.**
+- **C1, C3, C6** — stand untouched. The four real formats and the CA answers are exactly what the Data Request Covering Note asks MSCAST for.
+- **C2, C5** — *the commercial half of both findings is withdrawn; the delivery half of C5 stands. See Section G.*
 
 ## What this review got right
 
@@ -265,3 +266,22 @@ Each blocked case also asserts *which* rule blocked it, so a payment refused by 
 ## The pattern, for the third time
 
 Every route above was found by attempting a payment and watching what happened. Reading the script would have shown a control that looked correct; it sat on the right doctype, at the right event, and refused the case anyone would think to try. The gap was in the cases nobody tried. **Findings that become tests do not come back** — that is now true of six more of them.
+
+## C2 and C5 — the commercial findings were based on a relationship that does not exist
+
+Both reviewers worked from the documents alone. From those, the arrangement looks like a consultant delivering an ERP against a proposal, with no signed scope and no fee agreed — which would indeed be a serious exposure. The actual arrangement, stated by Sanjay and recorded here because the finding cannot be assessed without it:
+
+- **There is no fee, and there will be no invoice.** MSCAST is a family friend. The work is unpaid, and the purpose is to save MSCAST the cost of a commercial implementation.
+- **It is not competing with the ERPens proposal.** It is a demonstration of what is achievable with an AI-assisted build. Measuring it against a declined fixed-bid proposal answers a question nobody asked.
+- **The codebase is Sanjay's, and stays at `github.com/cb1-tech/mscast`.** Ownership is settled, not outstanding.
+
+**What that withdraws.** C2 in its stated form — "the single largest commercial exposure", "fixable with one page of signed scope" — is withdrawn. There is no fee to dispute, no milestone to miss, no acceptance criterion to fail against, and no invoice that a scope document would protect. Recommendation 5 in Section E goes with it. Likewise the *support-agreement* half of C5: there is no commercial obligation to formalise, because there is no commercial relationship.
+
+**What survives, and is the real risk.** Two things, neither of them commercial:
+
+1. **Expectation, not contract.** If MSCAST reads "97 of 97 requirements implemented" as a finished system rather than *a reading of their requirement document, offered for correction*, the first "that isn't how we do it" costs more credibility than any of the defects in this review. That was the useful part of C1 and C2, and it stands — but the fix is how the work is **presented in the room**, not a document anyone signs.
+2. **Dependence on one person.** MSCAST would be relying, indefinitely and informally, on one individual in another country for users, print formats, mail, backups and upgrades — with no obligation on either side, which cuts both ways. Goodwill is not an operating model, and it ends the day the individual is unavailable. The *delivery* half of C5 therefore stands and is the finding that matters most in this section.
+
+   What reduces it is not paperwork but the things that make the system maintainable by someone else: the installable `mscast_erp` app rather than database-resident configuration, the fixtures, the 31 build checks, the reproducible rebuild, and documentation written for a reader who was not there. Those exist. What remains is naming someone at MSCAST who can run the monthly and annual jobs the SOPs describe, and proving the rebuild and the restore actually work rather than asserting they do.
+
+**Why this is recorded rather than edited away.** The reviewers were not careless; they had no way to know. Their reasoning from the available evidence was sound, and the finding it produced was wrong. That is worth keeping visible, because it is the same failure mode as B2 — a confident conclusion from documents rather than from the system — and it argues for the same correction: ask, then conclude.

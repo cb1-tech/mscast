@@ -4,7 +4,10 @@
 set -uo pipefail
 C=mscast-poc-backend-1
 SRC=/mnt/d/MSCAST/erpnext-poc/seed
-SITE=frontend
+# The site is overridable so the harness can be pointed at a restored or a
+# scratch site. It defaults to the live one, which is what every existing
+# caller expects.
+SITE=${SITE:-frontend}
 
 docker exec "$C" bash -c "rm -rf /home/frappe/frappe-bench/seed && mkdir -p /home/frappe/frappe-bench/seed"
 docker cp "$SRC/." "$C":/home/frappe/frappe-bench/seed >/dev/null
