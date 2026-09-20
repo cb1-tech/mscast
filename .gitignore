@@ -21,3 +21,5 @@ Thumbs.db
 Claude outputs/
 staging-build.log
 erpnext-poc/backups/
+__pycache__/
+*.pyc

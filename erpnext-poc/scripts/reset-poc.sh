@@ -54,7 +54,7 @@ bash $R 153_real_users 154_fix_approvals
 bash $R 156_repair_after_expand 158_notif_roles 159_mail_reachable
 # --- segregation of duties: preparers prepare, the two directors approve ---
 bash $R 161_approval_authority 172_drawing_workflow
-bash $R 127_exception_engine
+bash $R 127_exception_engine 179_exception_doctype_align
 bash $R 10_test_reports 102_test_harness
 
 cat <<'NOTE'
