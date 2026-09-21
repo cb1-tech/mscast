@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # WARNING: destroys the POC database and rebuilds it from every seed script (~25 min).
-# The order below is documented in D:\MSCAST\erpnext-poc\REBUILD.md
+# Replays the seed scripts in order. Does NOT reproduce the demo data (see REBUILD.md); use a backup for that.
 set -euo pipefail
 cd "$HOME/mscast-poc"
 read -r -p "Wipe the MSCAST POC and rebuild? [y/N] " a

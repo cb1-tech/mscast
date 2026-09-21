@@ -44,12 +44,17 @@ Rows 1–3 are legal requirements.
 6. Install from a **tagged release**, never a copied folder (see section 5):
 
 ```bash
-git clone git@github.com:cb1-tech/mscast.git
-cd mscast
-git checkout v1.0.0            # the release being deployed. Write it down.
-git rev-parse --short HEAD     # record this in the deployment log
+git clone git@github.com:cb1-tech/mscast.git /opt/mscast
+git -C /opt/mscast checkout v1.0.0          # the release being deployed. Write it down.
+git -C /opt/mscast rev-parse --short HEAD   # record this in the deployment log
 
-bench get-app ./mscast_erp
+# from the frappe-bench folder. The app is in a subfolder of the repo, so
+# `bench get-app` cannot fetch it (it expects the app at the repo root);
+# install it the way the image does (erpnext-poc/Containerfile.mscast):
+cp -r /opt/mscast/mscast_erp apps/mscast_erp
+./env/bin/pip install --editable apps/mscast_erp
+grep -qx mscast_erp sites/apps.txt || echo mscast_erp >> sites/apps.txt
+ln -sfn "$PWD/apps/mscast_erp/mscast_erp/public" assets/mscast_erp
 bench new-site erp.mscast.co.in --install-app erpnext
 bench --site erp.mscast.co.in install-app india_compliance hrms india_payroll
 bench --site erp.mscast.co.in install-app mscast_erp
@@ -83,7 +88,7 @@ mscast_erp: approval authority verified, 6 transitions correct
    - A row of exclamation marks and *"THE DEPLOY CHANGED WHO MAY APPROVE"*: stop and read section 5.
    - `Deleting entity Workspace MSCAST ...` during migrate is expected; `after_migrate` recreates the workspaces. Not a failure.
 
-8. **Prove every container can import the app.** `apps/` comes from the image; only `sites` and `logs` are volumes. An app present in one container only gives HTTP 500 on the web and silent non-running scheduled jobs, while `bench console`/`bench execute` (fresh python each time) and the build checks still pass. Install with `bench get-app` as above, or deploy an image that carries the app, then:
+8. **Prove every container can import the app.** `apps/` comes from the image; only `sites` and `logs` are volumes. An app present in one container only gives HTTP 500 on the web and silent non-running scheduled jobs, while `bench console`/`bench execute` (fresh python each time) and the build checks still pass. Install as above, or deploy an image that carries the app (`scripts/build-mscast-image.sh`), then:
 
 ```bash
 # every container, not just the one you happen to be in
