@@ -74,5 +74,7 @@ doc_events = {
 scheduler_events = {
     "cron": {
         "35 8 * * *": ["mscast_erp.agents.briefing.daily_briefing"],
+        # Did last night's backup and build checks run, and pass? See controls/watchdog.py.
+        "0 9 * * *": ["mscast_erp.controls.watchdog.daily_check"],
     }
 }

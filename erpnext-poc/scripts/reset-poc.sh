@@ -113,14 +113,14 @@ bash $R 156_repair_after_expand 158_notif_roles 159_mail_reachable
 # --- segregation of duties: preparers prepare, the two directors approve ---
 bash $R 161_approval_authority 172_drawing_workflow
 bash $R 127_exception_engine 179_exception_doctype_align 181_admin_cutback 182_no_operational_admins
-bash $R 183_permissions_and_kickoff 184_demo_coherence 185_pf_b8_a5 186_demo_watermark 187_brm_control 188_demo_naming
+bash $R 183_permissions_and_kickoff 184_demo_coherence 185_pf_b8_a5 186_demo_watermark 187_brm_control 188_demo_naming 189_exception_into_app
 bash $R 10_test_reports 102_test_harness
 
 cat <<'NOTE'
 
 Rebuild finished. Manual steps that remain:
   1. Enter the mail password at http://localhost:8080/app/email-account/mscast-test
-  2. Re-check the harness above - it should read 34 PASS, 2 WARN, 0 FAIL of 36 for the checks that measure the system (the demo data does not fully replay - see README section 10).
+  2. Re-check the harness above - it should read 35 PASS, 2 WARN, 0 FAIL of 37 for the checks that measure the system (the demo data does not fully replay - see README section 10).
      Both warnings are known positions, not defects:
        T6e both directors can prepare and approve a PCC and a kick-off.
        T6g a director can create a supplier-bill certificate, certify it and

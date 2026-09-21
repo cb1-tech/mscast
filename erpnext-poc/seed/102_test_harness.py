@@ -680,6 +680,19 @@ def t6_controls():
     unshipped = [n for dt in ("Custom Field", "Property Setter")
                  for n in frappe.get_all(dt, filters={"module": "MSCAST"}, pluck="name")
                  if n not in shipped]
+    # ... and every document the app defines is owned by the app on this site. A
+    # database-defined copy of the same name is never replaced by the app's, so
+    # changes in the package silently stop reaching the site (MSCAST Exception,
+    # found 21 Sep 2026).
+    dt_dir = frappe.get_app_path("mscast_erp", "mscast", "doctype")
+    for folder in sorted(_os.listdir(dt_dir)):
+        jp = _os.path.join(dt_dir, folder, folder + ".json")
+        if not _os.path.isfile(jp):
+            continue
+        dname = _json.load(open(jp)).get("name")
+        row = frappe.db.get_value("DocType", dname, ["module", "custom"], as_dict=True)
+        if row and (row.module != "MSCAST" or row.custom):
+            foreign.append("%s is a database copy (module %s), not the app's" % (dname, row.module))
     rec("T6m", "controls", "the app ships all of MSCAST's configuration and none of anyone else's",
         not (foreign or unshipped),
         ("foreign: " + ", ".join(foreign[:3]) + " " if foreign else "")
@@ -689,15 +702,27 @@ def t6_controls():
 
 # ---------------------------------------------------------------- T7 data
 def t7_data():
-    empty = []
-    for d in frappe.get_all("DocType", filters={"custom": 1, "istable": 0}, pluck="name"):
-        if not frappe.db.count(d):
-            empty.append(d)
-    rec("T7a", "data", "every MSCAST form has demo records", not empty,
-        "empty: %s" % (", ".join(empty) if empty else "none"))
+    # Both checks here selected doctypes with custom = 1. When the MSCAST
+    # documents moved into the app they became app doctypes (custom = 0), so
+    # from then on both examined NOTHING and passed - T7a even passed on an empty
+    # site. They now select by module, and a check that finds nothing to examine
+    # fails rather than passing: "0 problems in 0 things" is not a result.
+    ours = frappe.get_all("DocType", filters={"module": "MSCAST"}, fields=["name", "istable"])
+    if not ours:
+        rec("T7a", "data", "every MSCAST form has demo records", False,
+            "no MSCAST doctypes found - the check has nothing to examine")
+        rec("T7b", "data", "stored Select values are all valid options", False,
+            "no MSCAST doctypes found - the check has nothing to examine")
+        return
 
-    bad = []
-    for d in frappe.get_all("DocType", filters={"custom": 1}, pluck="name"):
+    forms = [d.name for d in ours if not d.istable]
+    empty = [d for d in forms if not frappe.db.count(d)]
+    rec("T7a", "data", "every MSCAST form has demo records", not empty,
+        ("empty: %s" % ", ".join(empty[:6]) + (" (+%d more)" % (len(empty) - 6) if len(empty) > 6 else ""))
+        if empty else "%d forms, all with records" % len(forms))
+
+    bad, fields_checked = [], 0
+    for d in [x.name for x in ours]:
         meta = frappe.get_meta(d)
         for fl in meta.fields:
             if fl.fieldtype != "Select" or not fl.options or not fl.fieldname:
@@ -705,6 +730,7 @@ def t7_data():
             opts = [x.strip() for x in fl.options.split("\n") if x.strip()]
             if not opts:
                 continue
+            fields_checked += 1
             try:
                 rows = frappe.db.sql("select distinct `%s` from `tab%s` where ifnull(`%s`,'') != ''"
                                      % (fl.fieldname, d, fl.fieldname))
@@ -713,8 +739,9 @@ def t7_data():
             for (v,) in rows:
                 if v not in opts:
                     bad.append("%s.%s = '%s' not in options" % (d, fl.fieldname, v))
-    rec("T7b", "data", "stored Select values are all valid options", not bad,
-        "%d violations%s" % (len(bad), (" :: " + "; ".join(bad[:6])) if bad else ""))
+    rec("T7b", "data", "stored Select values are all valid options", not bad and fields_checked > 0,
+        "%d Select fields on %d doctypes, %d violations%s" % (
+            fields_checked, len(ours), len(bad), (" :: " + "; ".join(bad[:6])) if bad else ""))
 
     nogst = frappe.db.sql("""select count(distinct sii.item_code) from `tabSales Invoice Item` sii
         inner join `tabSales Invoice` si on si.name = sii.parent
@@ -859,6 +886,21 @@ def t9g_secrets():
         if bad else "%d secret(s), all readable" % n)
 
 
+def t9h_safety_net():
+    # T9h - the nightly safety net ran recently, and its backup succeeded.
+    # Recorded in site config by nightly.sh; the in-site watchdog reads the same.
+    import time
+    last = frappe.conf.get("mscast_last_backup") or {}
+    if not last.get("at"):
+        rec("T9h", "automation", "nightly backup ran in the last 26 hours and succeeded", False,
+            "no nightly backup has ever been recorded on this site")
+        return
+    age = (time.time() - float(last["at"])) / 3600
+    ok = age <= 26 and last.get("ok") is not False
+    rec("T9h", "automation", "nightly backup ran in the last 26 hours and succeeded", ok,
+        "set %s, %.1fh ago, %s" % (last.get("set"), age, "ok" if last.get("ok") else "FAILED: %s" % last.get("detail")))
+
+
 def t10_hr():
     slips = frappe.db.count("Salary Slip", {"docstatus": 1})
     att = frappe.db.count("Attendance", {"docstatus": 1})
@@ -877,7 +919,7 @@ def t10_hr():
 
 def run():
     for fn in (t1_literals, t2_execute, t3_dates, t4_prints, t4b_watermark, t5_ledger, t6_controls,
-               t7_data, t8_gst, t9_automation, t9g_secrets, t10_hr):
+               t7_data, t8_gst, t9_automation, t9g_secrets, t9h_safety_net, t10_hr):
         try:
             fn()
         except Exception as e:

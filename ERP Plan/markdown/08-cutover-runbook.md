@@ -10,7 +10,7 @@ This is the sequence from "the POC works on a laptop in Japan" to "MSCAST runs i
 
 > **What changed in version 2.0.** An install during the build silently reverted the approval rules and nothing noticed. Section 2 now deploys from a tagged release, section 5a is new and covers what a deploy actually does to configuration, and the monitoring and upgrade sections check that the controls survived. This is the most important change in the document.
 >
-> **What changed in version 2.3.** Every step below was run for real on 21 September against a copy of the system, and four of them were wrong or missing. **The encryption key is part of the backup**: a restore without it left the mail password unreadable and mail silently stopped. **A new site starts with its scheduler off**, so no scheduled job would ever have run. **A restored staging copy sends real email** unless it is muted. And **installing the app did not install the permission matrix** - roles, the auditor's read-only access and the kick-off checklist lived in a setup script that a real install never runs; they now ship in the app. The install is scripted and self-checking (`new-mscast-site.sh`), and the build checks are now 36.
+> **What changed in version 2.3.** Every step below was run for real on 21 September against a copy of the system, and four of them were wrong or missing. **The encryption key is part of the backup**: a restore without it left the mail password unreadable and mail silently stopped. **A new site starts with its scheduler off**, so no scheduled job would ever have run. **A restored staging copy sends real email** unless it is muted. And **installing the app did not install the permission matrix** - roles, the auditor's read-only access and the kick-off checklist lived in a setup script that a real install never runs; they now ship in the app. The install is scripted and self-checking (`new-mscast-site.sh`), and the build checks are now 37.
 >
 > **What changed in version 2.2.** The POC's own app was never in its image. `apps/` comes from the image and only `sites` and `logs` are volumes, so an app copied into one container existed in that container alone. The web workers could not import it — the site served HTTP 500 on every request while every build check passed — and neither could the scheduler or the queue workers, so **four of the five scheduled jobs had never run once**. Section 2 now builds the image with the app baked in, section 4 monitors whether jobs actually execute, and a new check, `T9f`, asks whether each one has a real `last_execution`. The build checks are now 28.
 >
@@ -92,7 +92,7 @@ A migrate also prints `Deleting entity Workspace MSCAST ...` partway through and
 
 6. HTTPS: Let's Encrypt via the reverse proxy, with renewal on a timer and an alert if renewal fails. A certificate that silently expires takes the business offline on a Sunday.
 
-7. Run the build checks before telling anyone the site exists. Expect **36 checks, 0 failures**. Two warnings are expected and documented (see the SOPs, Part C, and Q20/Q21 in the traceability matrix). Anything else is a stop.
+7. Run the build checks before telling anyone the site exists. Expect **37 checks, 0 failures**. Two warnings are expected and documented (see the SOPs, Part C, and Q20/Q21 in the traceability matrix). Anything else is a stop.
 
 **A note on the image, learned the hard way.** In the POC the application was not in the image at all — it had been copied into the running backend container by hand. Because `apps/` comes from the image and only `sites` and `logs` are volumes, that gave the app to exactly one container. The web workers could not import it, so the site returned HTTP 500 on every request while every script and every build check passed, because `bench console` and `bench execute` spawn a fresh python each time. Worse, the scheduler and both queue workers could not import it either, so the 06:00 exception sweep, the 08:35 briefing and the monthly archival **had never executed once**. They worked perfectly when run by hand, which is how they were built and demonstrated.
 
@@ -118,6 +118,7 @@ The part most likely to be skipped and most likely to matter.
 - **Monthly copies kept for eight years** (s.128(5)). Dailies can rotate at 30 days; monthlies cannot.
 - **Encrypted at rest**, because they contain employee salary data and customer commercials.
 - **The site's `encryption_key` travels with every backup, and is protected like a password.** It lives in `site_config.json`, outside the database. Frappe encrypts every stored secret with it - mail passwords, API keys. `bench restore` brings back the database and keeps whatever key the target site has, so a restore without the original key produces a system whose mail silently stops. This happened in testing on 21 September. `restore-key.sh` puts the key back; build check `T9g` fails if any stored secret cannot be decrypted.
+- **A failed backup must reach a person.** In the POC the nightly job backs up, runs every build check, and emails a named address if either fails; a watchdog inside the ERP emails the same address if the nightly job has not run for 26 hours. Before this, a failed backup wrote a line to a log nobody read. Set `mscast_alerts_to` in production, and send a test alert (`SIMULATE_FAIL=1`) to prove it arrives.
 - **A backup that the site cannot itself read is not a backup.** The nightly job refuses to bless a set if the site cannot decrypt its own secrets - an archive can be intact and still wrong.
 - **Restore tested** before go-live, and then annually. Write down the actual time it took to get a working system from a backup — that number is what MSCAST is really buying. An untested backup is a belief, not a control.
 - **Before every install or upgrade**, take one. Not as a formality — restore it if the checks fail.
@@ -190,7 +191,7 @@ A monthly routine:
 
 1. Restore last night's production backup onto a staging site - **with its encryption key, and with email muted and the scheduler off.** A restored copy carries the live mail account and an enabled scheduler, and left alone it sends the morning report to real people.
 2. `bench update` there.
-3. Run the build checks. **36 checks, 0 failures**, two expected warnings. They exist precisely for this. `upgrade-test.sh` does steps 1-3 on a fully separate stack and tears it down afterwards.
+3. Run the build checks. **37 checks, 0 failures**, two expected warnings. They exist precisely for this. `upgrade-test.sh` does steps 1-3 on a fully separate stack and tears it down afterwards.
 4. Read the deploy output for an approval-authority banner.
 5. Only then upgrade production, in a window MSCAST agrees to, from a tagged release.
 6. Re-run the checks on production afterwards. Do not announce the system is available until they pass.

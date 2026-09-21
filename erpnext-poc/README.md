@@ -5,7 +5,7 @@
 
 All company data in this POC is **fictional demo data**. Customer and supplier names end with "(DEMO)". MSCAST's own identity — name, GSTIN, CIN, branding — is real and deliberate, so the demonstration looks familiar to the client.
 
-**Build checks: 36, of which 34 pass, 2 are expected warnings, 0 fail.**
+**Build checks: 37, of which 35 pass, 2 are expected warnings, 0 fail.**
 
 ---
 
@@ -76,7 +76,8 @@ wsl -d Ubuntu -e bash /mnt/d/MSCAST/erpnext-poc/scripts/run-seed.sh 102_test_har
 | `verify-site.sh` | count what is in a site |
 | `status.sh` | sites, bench processes, local and public HTTP status, containers, age of the last backup |
 | `new-mscast-site.sh` | **the production install path**: a fresh site with the six apps and MSCAST's configuration, no demo data; refuses to report success unless the 13 system checks pass |
-| `backup-nightly.sh` | backup, copy off the volume onto `D:`, verify, prune (14 newest + monthly for a year). Refuses if the site cannot decrypt its own secrets. Scheduled as Windows task *MSCAST nightly backup*, 02:30 |
+| `nightly.sh` | **what the Windows task runs (02:30 JST)**: `backup-nightly.sh`, then all the build checks, records both outcomes in site config, and emails `mscast_alerts_to` if either failed. `SIMULATE_FAIL=1` sends a test alert. An in-site watchdog (`mscast_erp.controls.watchdog`, 09:00 IST) emails if the nightly job has not run in 26 hours - the case it cannot report on itself |
+| `backup-nightly.sh` | backup, copy off the volume onto `D:`, verify, prune (14 newest + monthly for a year). Refuses if the site cannot decrypt its own secrets. Called by `nightly.sh` |
 | `restore-key.sh` | put a backup's `encryption_key` back on a site - without it every stored password is unreadable after a restore |
 | `build-base-image.sh` | build the base image (Frappe + erpnext, hrms, india_compliance, india_payroll) from `apps.json` via frappe_docker |
 | `app-versions.sh` | print every app's version in an image |
@@ -271,7 +272,7 @@ Six accounting and scope assumptions are still awaiting MSCAST and the CA. They 
 12. **Commissioning report and spares handover** — print both
 13. **MSME 45-Day Dues** and **Daily Management Summary**
 14. **Schedule III balance sheet and P&L**, then **Project Closure Report**
-15. **Run the harness** — 36 checks, 34 pass, 2 expected warnings
+15. **Run the harness** — 37 checks, 35 pass, 2 expected warnings
 
 ## 12. Files
 

@@ -4,7 +4,7 @@ title: "MSCAST ERP — Role Cards"
 
 # MSCAST ERP — Role Cards
 
-**For:** MSCAST Engineering Pvt Ltd · **Version:** 1.3 · **Date:** 20 September 2026
+**For:** MSCAST Engineering Pvt Ltd · **Version:** 1.4 · **Date:** 21 September 2026
 
 One page per role. Print it, or keep it open for the first fortnight.
 
@@ -13,6 +13,8 @@ Each card answers four questions: **what you open**, **what you do**, **what you
 > **Corrected in version 1.2.** The Director card previously said the directors hold two extra roles and that purchase orders and BRMs were fully separated. Both were wrong — see that card. A build check (**T6g**) now reports this rather than leaving it to be discovered.
 
 > **Corrected in version 1.3.** An audit on 20 September found that four of the people named below could not do the work their card describes. `Design User` held no permissions anywhere in the system, so the drawing office could not open a drawing, and *Issue for Customer Approval* was executable by nobody at all; Stores, Quality and the Purchase Executive were in the same position on their own documents. The system has been corrected to match these cards rather than the cards softened to match the system, and `T6i` now checks it on every build. If a card says you can raise something and the system refuses, that is a defect — report it.
+
+> **Corrected in version 1.4.** The fix in 1.3 introduced a worse fault. Granting the missing roles replaced the standard permissions on five document types, and checked with the real logins, **the managing director could not open a single Project Kick-off - the document his card says he approves**. Aiqaz Chandankeri could not open a Purchase Order, and no director could open a Transmittal. The cards were right; the system did not match them. Permissions now ship in the package with a rule that whoever approves a document can open it, and a build check asks the question per person (**T6k**). Separately, a fresh install had no *Design User* role and gave the statutory auditor no access to the books; both now ship in the package.
 
 Cards are written **per role**, not per person, because roles outlive people. The *Who holds this today* line names the accounts set up in the demo system; when MSCAST's real staff are loaded, only those names change.
 

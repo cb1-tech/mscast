@@ -1047,9 +1047,9 @@
   {
    "amend": 0,
    "cancel": 0,
-   "create": 1,
+   "create": 0,
    "creation": "2026-09-20 08:03:24.850529",
-   "delete": 1,
+   "delete": 0,
    "doctype": "DocPerm",
    "email": 1,
    "export": 1,
@@ -1066,7 +1066,7 @@
    "select": 0,
    "share": 1,
    "submit": 0,
-   "write": 1
+   "write": 0
   }
  ],
  "protect_attached_files": 0,

@@ -101,7 +101,7 @@ no ledger entry without a cost centre; the BRM payment block actually refuses an
 every invoiced item has an HSN; GST head matches place of supply on every invoice; mail works and
 no notification has a dead recipient; payroll and attendance are consistent.
 
-> *(Since extended to **31 checks**, in four steps, and the sequence is worth reading because each
+> *(Since extended to **37 checks**, in several steps, and the sequence is worth reading because each
 > step exists only because the one before it missed something.*
 >
 > *First, **T6d**. An app install silently moved cost-sheet approval and bill certification to the
@@ -123,7 +123,7 @@ no notification has a dead recipient; payroll and attendance are consistent.
 > director can create a BRM, certify it and mark it paid, alone — which three delivered documents
 > had explicitly said was impossible. Those documents are now corrected.*
 >
-> *Current result: **25 pass, 2 warn, 0 fail of 27**. Both warnings are accepted positions put to
+> *Current result: **35 pass, 2 warn, 0 fail of 37**. Both warnings are accepted positions put to
 > MSCAST as Q20 and Q21, not defects.)*
 
 Re-run it any time:
@@ -215,4 +215,4 @@ Added since, and not on the original list:
 4. Open a **Purchase Order** and watch the approval workflow bar appear.
 5. Try to pay an uncertified supplier bill and watch the BRM block refuse it.
 6. Open a **Drawing** in *Draft* and try to release it for manufacture — the system will not offer it.
-7. Run the test harness and watch 31 checks report **29 pass, 2 expected warnings, 0 failures** — then read what the two warnings say, because they are the honest part.
+7. Run the test harness and watch 37 checks report **35 pass, 2 expected warnings, 0 failures** — then read what the two warnings say, because they are the honest part.

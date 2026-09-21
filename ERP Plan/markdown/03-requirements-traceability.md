@@ -1,9 +1,11 @@
-# MSCAST ERP - Requirements Traceability (v1.8)
+# MSCAST ERP - Requirements Traceability (v1.9)
 
-**Version 1.7 · 20 Sep 2026** · every requirement implemented; verified by a 27-check automated harness.
+**Version 1.9 · 21 Sep 2026** · every requirement implemented; verified by a 37-check automated harness.
 
 Source of requirements: MSCAST `ERP_Requirement_Final.pdf`. Solution: ERPNext v16.35 + India Compliance 16.9.1 + Frappe HR 16.19 + India Payroll 16.0.4 + `mscast_erp` 0.1.0 (release **`v0.9.0`**).
 
+> **What changed in v1.9.** No requirement changed status. The evidence behind several changed, because a fresh install of the package and an upgrade of a copy of the live system were both tested for the first time. **The directors could not open some of the documents they approve** - the managing director could not open a Project Kick-off, Aiqaz could not open a Purchase Order - because a permission change had dropped every standard role from five document types. **A fresh install lacked the drawing office's role and the auditor's read access to the books.** **An upgrade would have stripped the demonstration watermark** and would have overwritten other applications' configuration, including India Compliance's GST fields. All fixed in the package, and each now has a build check: the harness is 37 checks. Two further checks (T7a, T7b) turned out to have been examining nothing since the documents moved into the package; they now fail if they find nothing to examine.
+>
 > **What changed in v1.8.** No requirement changed status. **A-05 changed its evidence, and its mechanism.** The BRM payment block was a Server Script on Payment Entry, and on 21 September it was tested at every other door rather than only the one it guarded. Three ways round it were open: a Journal Entry debiting Creditors paid an uncertified bill straight through; an advance Payment Entry with no invoice reference passed silently; and the certified *amount* was never read, so a memo certified for nine units paid for ten. It was also too wide in the other direction — an electricity bill, which can have no BRM at all, was refused with no way out. The control now lives in the application package (`mscast_erp.controls.brm_payment`) on both Payment Entry and Journal Entry, the Server Script is deleted, and a per-supplier *Exempt from BRM certification* flag covers utilities, rent and statutory bills. `T6a` went from one route to six; `T6c` now fails if the retired script reappears. The harness stands at 31 checks.
 >
 > **What changed in v1.7.** No requirement changed status. One piece of **evidence was found to be wrong**, and it is the kind worth naming rather than quietly fixing. P-08 and PC-06 said a supplier bill passes through three separate hands — Purchase prepares, a director certifies, Accounts pays. It does not have to. Both directors hold a role that can *create* a BRM, the role that certifies one and the role that marks it paid, so a director can carry a supplier bill from creation to payment alone. The harness had not caught it because the segregation check compared workflow *transition* roles, and creating a document is a permission rather than a transition. A new check, **T6g**, asks the question the way an auditor would and now reports it. The payment block itself is unaffected: no certified BRM, no payment, for anyone. The administrator-account item under *What still stands* is closed, and the harness is now 27 checks.
@@ -42,6 +44,7 @@ Source of requirements: MSCAST `ERP_Requirement_Final.pdf`. Solution: ERPNext v1
 | T2 | reports | 28 custom reports execute - 0 failures |
 | T3 | reports | no report uses the container's UTC date |
 | T4 | prints | 15 custom print formats render - 0 problems |
+| T4b | prints | demonstration site: every print watermarked; any other site: none |
 | T5a | ledger | trial balance nets to zero |
 | T5b | ledger | Schedule III balance sheet balances to the rupee |
 | T5c | ledger | P&L profit ties to the ledger surplus |
@@ -53,14 +56,23 @@ Source of requirements: MSCAST `ERP_Requirement_Final.pdf`. Solution: ERPNext v1
 | **T6e** | controls | **nobody can both raise and approve the same document** - *warns*, see below |
 | **T6f** | controls | **only administrators hold System Manager** - 2 holders, both expected |
 | **T6g** | controls | **no one person can create and then approve the same document** - *warns*, see below |
-| T7a | data | every MSCAST form has demo records |
-| T7b | data | every stored Select value is a valid option |
+| T6h | controls | the auditor's login cannot change anything - effective rights, not stored rows |
+| T6i | controls | every role can raise the documents its role card describes |
+| T6j | controls | a guarded workflow state is guarded on every route into it |
+| **T6k** | controls | **everyone who can approve a document can open it** - asked per real user |
+| **T6l** | controls | **no role silently lost access** to a customised document type |
+| **T6m** | controls | **the package ships all of MSCAST's configuration and none of anyone else's** |
+| T7a | data | every MSCAST form has records - fails if it finds no forms to check |
+| T7b | data | every stored Select value is a valid option - 45 fields on 25 document types |
 | T7c | data | every invoiced item carries an HSN code |
 | T8 | gst | GST head matches the place of supply on every invoice |
-| T9a-e | email | outgoing account live, 11 sent 0 errored, morning batch scheduled, no dead notification recipient, no bounce-prone user |
+| T9a-e | email | outgoing account live, mail sent without error, morning batch scheduled, no dead notification recipient, no bounce-prone user |
+| T9f | automation | every enabled MSCAST scheduled job has actually run |
+| T9g | automation | every stored secret decrypts with this site's key |
+| T9h | automation | the nightly backup ran in the last 26 hours and succeeded |
 | T10a-c | hr | payroll and attendance loaded, no duplicates, biometric punches converted |
 
-**25 pass, 2 warn, 0 fail, of 27.**
+**35 pass, 2 warn, 0 fail, of 37.**
 
 ### The two warnings, and why they are warnings
 
