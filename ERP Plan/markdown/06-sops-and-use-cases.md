@@ -4,7 +4,7 @@ title: "MSCAST ERP — Standard Operating Procedures and Use Cases"
 
 # MSCAST ERP — Standard Operating Procedures and Use Cases
 
-**For:** MSCAST Engineering Pvt Ltd · **Version:** 3.0 · **Date:** 21 September 2026
+**For:** MSCAST Engineering Pvt Ltd · **Version:** 3.1 · **Date:** 21 September 2026
 
 ## How to read this
 
@@ -12,6 +12,7 @@ title: "MSCAST ERP — Standard Operating Procedures and Use Cases"
 - **Part B** — nine MSCAST situations showing how the pieces connect.
 - **Part C** — who prepares and who approves; where separation of duties holds and where it does not.
 - **Part D** — recurring calendar.
+- **Screenshots:** each SOP ends with the screens it uses, taken on the demonstration system (demo data, names ending in "(DEMO)"), logged in as the person who does that step. *Where* says how to open the screen: the search bar (Ctrl+K) finds any form or report by name.
 - Written for an engineer-to-order machine builder with fewer than ten people, fabrication outsourced, one person often covering several roles.
 - Assumes the configuration in doc 05 (Client Setup Guide).
 - Two phrases are used precisely:
@@ -53,6 +54,16 @@ MSCAST's own terms, from the requirement document; they are the form names in th
 
 **Records:** Lead, Opportunity, PCC with revision, Quotation.
 
+**On screen**
+
+![A quotation, priced from the approved PCC](demo-screens/m01-quotation.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Quotation* and open it.
+
+![The PCC behind it: components, revision, approval](demo-screens/02-cost-sheet.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *PCC* and open it.
+
 ## SOP-02 — Order booking and project kick-off
 
 **Trigger:** Customer purchase order received · **Owner:** Projects, with Accounts
@@ -77,6 +88,16 @@ MSCAST's own terms, from the requirement document; they are the form names in th
 
 **Records:** Kick-off record, Project, Sales Order, billing schedule.
 
+**On screen**
+
+![A kick-off held at *PO Query Raised*: the PO's payment terms differ from the offer](demo-screens/04-kickoff-held.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Project Kickoff* and open it.
+
+![The project, where the billing and dispatch schedule is entered](demo-screens/m02-project-schedule.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Project* and open it.
+
 ## SOP-03 — Engineering: drawings, revisions and transmittals
 
 **Trigger:** Design release on a live project · **Owner:** Design, with Projects
@@ -94,6 +115,24 @@ MSCAST's own terms, from the requirement document; they are the form names in th
 
 **Records:** Drawing register with revision history, Transmittals with acknowledgements, MDF.
 
+**On screen**
+
+![The drawing register: every drawing, its revision and status](demo-screens/05-drawing-register.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Drawing Register* and open it.
+
+![A drawing waiting for the customer's approval](demo-screens/06-drawing-with-customer.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Drawing* and open it.
+
+![A transmittal: what was issued, to whom, and the acknowledgement](demo-screens/m03-transmittal.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Transmittal* and open it.
+
+![The MDF released to Procurement](demo-screens/m04-mdf.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *MDF* and open it.
+
 ## SOP-04 — Procurement: requisition to purchase order
 
 **Trigger:** MDF released, or a stock item at its reorder level · **Owner:** Purchase
@@ -109,6 +148,24 @@ MSCAST's own terms, from the requirement document; they are the form names in th
 
 **Records:** Material Request, RFQ, Supplier Quotations with scoring, Purchase Order.
 
+**On screen**
+
+![Material Request raised from the MDF](demo-screens/m05-material-request.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Material Request* and open it.
+
+![A supplier's quotation, recorded for comparison](demo-screens/m06-supplier-quotation.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Supplier Quotation* and open it.
+
+![An approved purchase order](demo-screens/07-purchase-order.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Purchase Order* and open it.
+
+![PO vs PCC Variance: purchases against the cost sheet, per project](demo-screens/m07-po-vs-pcc.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *PO vs PCC Variance* and open it.
+
 ## SOP-05 — Free issue to subcontractors
 
 **Trigger:** Material issued to a fabricator against a job · **Owner:** Stores
@@ -122,6 +179,16 @@ MSCAST's own terms, from the requirement document; they are the form names in th
 
 **Records:** Stock transfer, Annexure-I, ITC-04 data.
 
+**On screen**
+
+![Free issue: material transferred to the fabricator's warehouse (Annexure-I)](demo-screens/m08-free-issue-transfer.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Stock Entry* and open it.
+
+![Free Issue at Vendor: what is where, and its value](demo-screens/m09-free-issue-report.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Free Issue at Vendor* and open it.
+
 ## SOP-06 — Inspection and quality
 
 **Trigger:** Manufacturing stage reached at a supplier or in-house · **Owner:** Quality / Projects
@@ -134,6 +201,16 @@ MSCAST's own terms, from the requirement document; they are the form names in th
 **Control:** The procedure is: no dispatch without a cleared pre-dispatch inspection. The software does not block the Delivery Note; Stores must check. Open inspection stages appear on the daily summary.
 
 **Records:** Inspection Plan with result, Inspection Report print.
+
+**On screen**
+
+![An inspection stage with its result](demo-screens/m10-inspection-plan.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Inspection Plan* and open it.
+
+![Inspection Status: every stage across projects](demo-screens/m11-inspection-status.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Inspection Status* and open it.
 
 ## SOP-07 — Supplier bill to payment (the BRM route)
 
@@ -157,6 +234,20 @@ MSCAST's own terms, from the requirement document; they are the form names in th
 
 **Records:** BRM with certification, Purchase Invoice, Payment Entry.
 
+**On screen**
+
+![A certified BRM: all four checks ticked, certifier and date recorded](demo-screens/08-brm-certified.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *BRM* and open it.
+
+![What Accounts sees when paying a bill with no certified BRM](demo-screens/09-payment-refused.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Payment Entry* and open it.
+
+![The BRM Register](demo-screens/10-brm-register.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *BRM Register* and open it.
+
 ## SOP-08 — Dispatch
 
 **Trigger:** Material ready and inspection cleared · **Owner:** Stores
@@ -170,6 +261,20 @@ MSCAST's own terms, from the requirement document; they are the form names in th
 **Control:** The procedure is: dispatch follows inspection, and the dispatch schedule is updated as it happens (Purchase and Accounts both read it). The overnight checks flag a dispatch made before its commissioning or inspection record exists.
 
 **Records:** MDM, DI with Annexure-I, Delivery Note, e-way bill.
+
+**On screen**
+
+![Material Dispatch Memo for a lot, with free-issue items flagged](demo-screens/m12-mdm.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *MDM* and open it.
+
+![Delivery Instruction to the supplier, with Annexure-I](demo-screens/m13-delivery-instruction.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Delivery Instruction* and open it.
+
+![The Delivery Note](demo-screens/11-dispatch.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Delivery Note* and open it.
 
 ## SOP-09 — Billing, retention and claims
 
@@ -185,6 +290,24 @@ MSCAST's own terms, from the requirement document; they are the form names in th
 
 **Records:** Sales Invoice, retention journal, Client Claim, supplementary invoice.
 
+**On screen**
+
+![A milestone sales invoice](demo-screens/m14-sales-invoice.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Sales Invoice* and open it.
+
+![Retention and Certificates: retention held per contract and its release trigger](demo-screens/m15-retention.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Retention and Certificates* and open it.
+
+![A client claim, agreed and settled by supplementary invoice](demo-screens/m16-client-claim.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Client Claim* and open it.
+
+![Proforma invoice for an advance](demo-screens/12-proforma-print.png){width=6.2in}
+
+*Where:* Open the Sales Order → printer icon → *MSCAST Proforma Invoice*.
+
 ## SOP-10 — Commissioning to project closure
 
 **Trigger:** Machine erected at site · **Owner:** Site engineer, then Projects
@@ -199,6 +322,20 @@ MSCAST's own terms, from the requirement document; they are the form names in th
 **Control:** Closure is on evidence. Closing with an open claim abandons the claim.
 
 **Records:** Commissioning Report, Spares Handover, Project Certificate, Closure Report.
+
+**On screen**
+
+![Commissioning report: each parameter, specified vs achieved](demo-screens/m17-commissioning.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Commissioning Report* and open it.
+
+![Project certificate received from the customer](demo-screens/m18-project-certificate.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Project Certificate* and open it.
+
+![Project Closure Report](demo-screens/m19-closure-report.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Project Closure Report* and open it.
 
 ## SOP-11 — Month-end close
 
@@ -217,6 +354,24 @@ MSCAST's own terms, from the requirement document; they are the form names in th
 
 **Control:** Same sequence every month; Schedule III statements produced monthly, not once a year.
 
+**On screen**
+
+![MSME 45-Day Dues: each bill's deadline](demo-screens/14-msme-45-day.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *MSME 45-Day Dues* and open it.
+
+![Balance sheet in Schedule III format](demo-screens/15-balance-sheet.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Balance Sheet (Schedule III)* and open it.
+
+![Statement of profit and loss in Schedule III format](demo-screens/m20-profit-loss.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Statement of Profit and Loss (Schedule III)* and open it.
+
+![Project MIS: contract vs PCC vs committed vs billed](demo-screens/13-project-mis.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Project MIS* and open it.
+
 ## SOP-12 — HR and payroll
 
 **Trigger:** Monthly, plus events · **Owner:** HR
@@ -230,6 +385,16 @@ MSCAST's own terms, from the requirement document; they are the form names in th
 
 **Control:** Attendance feeds payroll directly. The system will not allow duplicate attendance for the same employee on the same day.
 
+**On screen**
+
+![Attendance list](demo-screens/m22-attendance.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Attendance* and open it.
+
+![A salary slip](demo-screens/m21-salary-slip.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Salary Slip* and open it.
+
 ## SOP-13 — Master data governance
 
 **Trigger:** Any new customer, supplier or item · **Owner:** The function that owns the master
@@ -240,6 +405,12 @@ MSCAST's own terms, from the requirement document; they are the form names in th
 4. Search before creating. "Suvarna Copper" and "Suvarna Copper Moulds Pvt Ltd" as two suppliers means two ledgers, two ageing lines and one wrong MSME position.
 
 **Control:** The system validates GSTIN format and the state it implies, and refuses an invoice line without an HSN. The procedure is that masters are created only by the function that owns them.
+
+**On screen**
+
+![A supplier master (GSTIN, MSME class and Udyam number sit on its tabs)](demo-screens/m23-supplier-master.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K) → type *Supplier* and open it.
 
 ## SOP-14 — The overnight checks and the morning mails
 
@@ -256,6 +427,16 @@ MSCAST's own terms, from the requirement document; they are the form names in th
 
 **Records:** MSCAST Exception list, the morning emails.
 
+**On screen**
+
+![The home page: today's position and what needs attention](demo-screens/01-md-home.png){width=6.2in}
+
+*Where:* Sidebar **Home**.
+
+![The exception list: open findings with severity and owner](demo-screens/m24-exception-list.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K): *MSCAST Exception*.
+
 ## SOP-15 — Backups, audit trail and archival
 
 **Trigger:** Daily, with an annual review · **Owner:** The implementer
@@ -267,6 +448,12 @@ MSCAST's own terms, from the requirement document; they are the form names in th
 5. The audit trail stays on. It cannot be disabled, by anyone.
 
 # Part B — Use cases
+
+**On screen**
+
+![The monthly archival log](demo-screens/m25-archival-log.png){width=6.2in}
+
+*Where:* Search bar (Ctrl+K): *MSCAST Archival Log*.
 
 ## UC-1: An enquiry arrives from IndiaMART
 

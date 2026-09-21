@@ -61,6 +61,47 @@ GRANT = {
     "Purchase Manager": ["MSCAST BRM"],
 }
 
+# role -> reports its card says it uses. Each listed role is added to the report
+# and given read + report on the report's document type, because the report runner
+# needs both, per user. Found 21 Sep 2026 building the screenshot manual: Stores
+# could not open "Free Issue at Vendor" (its card's monthly job) and Accounts could
+# not open "Retention and Certificates" - neither was on the report, or had the
+# report right on its document. The Drawing Register had the same fault earlier.
+REPORT_USERS = {
+    "MSCAST Free Issue at Vendor": ["Stock User", "Purchase User"],
+    "MSCAST Dispatch Schedule": ["Stock User"],
+    "MSCAST Retention and Certificates": ["Accounts User"],
+    "MSCAST MSME 45-Day Dues (MSMED s.15, s.43B(h))": ["Accounts User"],
+    "MSCAST BRM Register": ["Accounts User", "Purchase User"],
+    "MSCAST PO vs PCC Variance": ["Purchase Manager"],
+    "MSCAST Inspection Status": ["Quality Manager"],
+    "MSCAST Drawing Register": ["Design User"],
+}
+
+# role -> settings documents its forms read when they open. Without read access
+# the form opens with a "No permission for ..." message: Stores opening a Stock
+# Entry got "No permission for Stock Settings" (standard ERPNext gives Stock
+# Settings to Stock Manager and Sales User only).
+FORM_NEEDS = {
+    "Stock User": ["Stock Settings"],
+}
+
+
+def _report_needs():
+    """doctype -> {role: flags} derived from REPORT_USERS."""
+    out = {}
+    for rep, roles in REPORT_USERS.items():
+        ref = frappe.db.get_value("Report", rep, "ref_doctype")
+        if not ref:
+            continue
+        for role in roles:
+            out.setdefault(ref, {}).setdefault(role, set()).update({"read", "report"})
+    for role, dts in FORM_NEEDS.items():
+        for dt in dts:
+            out.setdefault(dt, {}).setdefault(role, set()).add("read")
+    return out
+
+
 # The oversight roles' rights, exactly: what the directors and the statutory
 # auditor can see and do on every document. Kept as data (oversight.json) because
 # it is a specification, not logic - read it as a table.
@@ -158,6 +199,12 @@ def _intended(doctype):
             for f in per_doctype[doctype]:
                 p[f] = 1
 
+    for role, flags in _report_needs().get(doctype, {}).items():
+        if frappe.db.exists("Role", role):
+            p = rows.setdefault((role, 0, 0), {f: 0 for f in FLAGS})
+            for f in flags:
+                p[f] = 1
+
     for role, flags in _approver_rights().get(doctype, {}).items():
         if frappe.db.exists("Role", role):
             p = rows.setdefault((role, 0, 0), {f: 0 for f in FLAGS})
@@ -209,6 +256,7 @@ def _scope():
     for per_doctype in OVERSIGHT.values():
         dts.update(per_doctype)
     dts.update(_approver_rights().keys())
+    dts.update(_report_needs().keys())
     # every doctype on which an auditor role holds any write-type right
     for table in ("DocPerm", "Custom DocPerm"):
         for r in frappe.get_all(table, filters={"role": ["in", AUDIT_READONLY]},
@@ -263,12 +311,14 @@ def enforce_report_roles():
     """
     changed = []
     for r in frappe.get_all("Report", filters={"is_standard": "No"}, fields=["name", "ref_doctype"]):
-        if not r.ref_doctype or frappe.db.get_value("DocType", r.ref_doctype, "module") != "MSCAST":
+        can = set(REPORT_USERS.get(r.name, []))
+        if r.ref_doctype and frappe.db.get_value("DocType", r.ref_doctype, "module") == "MSCAST":
+            can |= {p.role for p in frappe.get_meta(r.ref_doctype).permissions
+                    if p.report and not p.permlevel} - {"All", "Guest", "Desk User"}
+        if not can:
             continue
-        can = {p.role for p in frappe.get_meta(r.ref_doctype).permissions
-               if p.report and not p.permlevel} - {"All", "Guest", "Desk User"}
         doc = frappe.get_doc("Report", r.name)
-        add = sorted(can - {x.role for x in doc.roles})
+        add = sorted(c for c in can - {x.role for x in doc.roles} if frappe.db.exists("Role", c))
         if add:
             for role in add:
                 doc.append("roles", {"role": role})

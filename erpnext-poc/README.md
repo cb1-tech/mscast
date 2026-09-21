@@ -326,7 +326,7 @@ Fully separate copy for demos, screenshots and development, so MSCAST's users wo
 | Compose project | `mscast-poc` (~/mscast-poc) | `mscast-dev` (~/mscast-dev) |
 | Local port | 8080 | 8081 |
 | Database / Redis / volumes | own | own — nothing shared |
-| Image | mscast/erpnext:v16-app | same image |
+| Image | mscast/erpnext:v16-app | mscast/erpnext:v16-app-next: app changes are tested here before they go live (since 21 Sep 2026: report and settings access for Stores and Accounts) |
 | Marker | DEMONSTRATION on prints | + orange "DEV INSTANCE" desk banner, tab title "MSCAST ERP - DEV" |
 | Mail, scheduler | on | on (by decision; DEV mails go to the same addresses) |
 | Backup alerts | on (`mscast_alerts_to`) | off: no `mscast_alerts_to`; `mscast_dev_copy` makes T9h read "not applicable" |

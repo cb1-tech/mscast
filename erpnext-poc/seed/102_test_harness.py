@@ -150,6 +150,25 @@ def t2b_reports_as_users():
             have = {x.role for x in frappe.get_doc("Report", r.name).roles}
             if can - have:
                 problems.append("%s closed to %s" % (r.name[:40], ", ".join(sorted(can - have))))
+    # The reports each role's card says it uses: the role must be on the report
+    # AND have the report right on its document, or the runner refuses it. Stores
+    # (Free Issue at Vendor) and Accounts (Retention and Certificates) were refused
+    # until 21 Sep 2026; the earlier half of this check only looked at MSCAST's own
+    # document types, and neither report is about one.
+    try:
+        from mscast_erp.controls.permissions import REPORT_USERS
+    except ImportError:      # site runs an app older than this harness
+        REPORT_USERS = {}
+    for rep, need in REPORT_USERS.items():
+        if not frappe.db.exists("Report", rep):
+            problems.append("missing report: %s" % rep)
+            continue
+        d = frappe.get_doc("Report", rep)
+        listed = {x.role for x in d.roles}
+        can = {p.role for p in frappe.get_meta(d.ref_doctype).permissions if p.report and not p.permlevel}
+        for role in need:
+            if frappe.db.exists("Role", role) and not (role in listed and role in can):
+                problems.append("%s refused to %s" % (rep[:40], role))
     users = frappe.get_all("User", filters={"enabled": 1, "user_type": "System User",
                                             "name": ["!=", "Administrator"]}, pluck="name")
     runs = 0
@@ -677,9 +696,21 @@ def t6_controls():
                                  fields=["create"]))
         if not any(r.create for r in rows):
             cannot.append("%s cannot create %s" % (role, dt))
+    # ...and can open the forms without a "No permission for <settings>" message.
+    # Stores opening a Stock Entry got "No permission for Stock Settings" (found
+    # 21 Sep 2026 building the screenshot manual). Effective rights, via the meta.
+    try:
+        from mscast_erp.controls.permissions import FORM_NEEDS
+    except ImportError:      # site runs an app older than this harness
+        FORM_NEEDS = {}
+    for role, dts in FORM_NEEDS.items():
+        for dt in dts:
+            if frappe.db.exists("Role", role) and not any(
+                    p.read for p in frappe.get_meta(dt).permissions if p.role == role and not p.permlevel):
+                cannot.append("%s cannot read %s" % (role, dt))
     rec("T6i", "controls", "every role can raise the documents its card describes",
         not cannot, " :: ".join(cannot) if cannot
-        else "checked %d role/document pairs" % len(MUST_CREATE))
+        else "checked %d role/document pairs and %d settings reads" % (len(MUST_CREATE), sum(len(v) for v in FORM_NEEDS.values())))
 
     # T6j - a guarded workflow state is guarded on EVERY route into it.
     #
