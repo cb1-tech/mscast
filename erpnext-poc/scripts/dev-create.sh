@@ -42,7 +42,15 @@ docker exec $C bash -c "cd $BENCH && bench set-config -g server_script_enabled t
 docker exec $C bash -c "cd $BENCH && bench --site frontend set-config host_name https://mscastdev.carobar.net"
 docker exec $C bash -c "cd $BENCH && bench --site frontend migrate" 2>&1 | grep -v -E 'Updating DocTypes|\] +[0-9]+%' | tail -12
 
-say "6/7 DEV marker + scheduler on"
+say "6/7 DEV marker + scheduler on + no backup alerts"
+# Dev is not backed up (it is rebuilt from its seed), so the 09:00 watchdog would
+# email "backup overdue" daily and look like a live problem. The watchdog sends
+# nothing when mscast_alerts_to is unset - by design, for scratch copies.
+docker exec $C bash -c "cd $BENCH/sites && python3 -c \"
+import json; p='frontend/site_config.json'; c=json.load(open(p))
+for k in ('mscast_alerts_to', 'mscast_last_backup', 'mscast_last_checks'): c.pop(k, None)
+c['mscast_dev_copy'] = 1
+json.dump(c, open(p, 'w'), indent=1)\""
 docker exec $C bash -c "cd $BENCH && bench --site frontend enable-scheduler"
 C=$C TAIL=40 bash /mnt/d/MSCAST/erpnext-poc/scripts/run-seed.sh 193_dev_marker
 docker restart $P-backend-1 $P-frontend-1 $P-websocket-1 >/dev/null

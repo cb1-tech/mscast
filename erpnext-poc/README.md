@@ -310,7 +310,7 @@ A second, fully separate copy for testing, screenshots and development, so users
 | Database / Redis / volumes | own | own - nothing shared |
 | Image | mscast/erpnext:v16-app | same image |
 | Marker | DEMONSTRATION on prints | + orange "DEV INSTANCE" desk banner, tab title "MSCAST ERP - DEV" |
-| Mail, scheduler | on | on (by decision - dev mails go to the same addresses) |
+| Mail, scheduler | on | on (by decision - dev mails go to the same addresses), except the backup watchdog: no `mscast_alerts_to`, and `mscast_dev_copy` makes T9h read "not applicable" |
 | Nightly backup | yes | no - rebuildable from its seed |
 
 - **Seed data:** `D:\MSCAST\backups-dev-seed\20260921_125913` (live at 12:59 IST, 21 Sep - kept outside the pruned backup folder).

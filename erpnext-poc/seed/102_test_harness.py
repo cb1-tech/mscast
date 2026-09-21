@@ -1022,6 +1022,12 @@ def t9h_safety_net():
     # Recorded in site config by nightly.sh; the in-site watchdog reads the same.
     import time
     last = frappe.conf.get("mscast_last_backup") or {}
+    if frappe.conf.get("mscast_dev_copy"):
+        # The DEV copy is not backed up by design - it is rebuilt from its seed
+        # (dev-create.sh). Said out loud in the result rather than silently passed.
+        rec("T9h", "automation", "nightly backup ran in the last 26 hours and succeeded", True,
+            "not applicable - DEV copy (mscast_dev_copy), rebuilt from its seed, never backed up")
+        return
     if not last.get("at"):
         rec("T9h", "automation", "nightly backup ran in the last 26 hours and succeeded", False,
             "no nightly backup has ever been recorded on this site")
