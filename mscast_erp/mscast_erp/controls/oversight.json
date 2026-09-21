@@ -1,0 +1,379 @@
+{
+ "MSCAST Director": {
+  "Account": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Activity Log": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Asset": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Company": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Cost Center": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Customer": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Delivery Note": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Employee": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Fiscal Year": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "GL Entry": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Item": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Journal Entry": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "MSCAST BRM": [
+   "read",
+   "write",
+   "submit",
+   "report",
+   "export",
+   "print"
+  ],
+  "MSCAST Bid Outcome": [
+   "read",
+   "write",
+   "create",
+   "delete",
+   "report",
+   "export",
+   "share",
+   "print",
+   "email"
+  ],
+  "MSCAST Client Claim": [
+   "read",
+   "write",
+   "submit",
+   "report",
+   "export",
+   "print"
+  ],
+  "MSCAST Drawing": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "MSCAST Exception": [
+   "read",
+   "write",
+   "create",
+   "delete",
+   "report",
+   "export",
+   "share",
+   "print",
+   "email"
+  ],
+  "MSCAST Inspection Plan": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "MSCAST Installed Machine": [
+   "read",
+   "write",
+   "create",
+   "delete",
+   "report",
+   "export",
+   "share",
+   "print",
+   "email"
+  ],
+  "MSCAST MDM": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "MSCAST PCC": [
+   "read",
+   "write",
+   "submit",
+   "report",
+   "export",
+   "print"
+  ],
+  "MSCAST Project Certificate": [
+   "read",
+   "write",
+   "submit",
+   "report",
+   "export",
+   "print"
+  ],
+  "MSCAST Project Kickoff": [
+   "read",
+   "write"
+  ],
+  "Payment Entry": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Project": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Purchase Invoice": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Purchase Order": [
+   "read",
+   "write",
+   "submit",
+   "report",
+   "export",
+   "print"
+  ],
+  "Purchase Receipt": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Salary Slip": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Sales Invoice": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Sales Order": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Stock Ledger Entry": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Supplier": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Version": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ]
+ },
+ "MSCAST Statutory Auditor": {
+  "Account": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Activity Log": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Asset": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Company": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Cost Center": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Customer": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Delivery Note": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Fiscal Year": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "GL Entry": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Item": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Journal Entry": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "MSCAST BRM": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "MSCAST Exception": [
+   "read",
+   "report",
+   "export",
+   "share",
+   "print",
+   "email"
+  ],
+  "MSCAST PCC": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "MSCAST Project Certificate": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Payment Entry": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Purchase Invoice": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Purchase Order": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Purchase Receipt": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Sales Invoice": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Sales Order": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Stock Ledger Entry": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Supplier": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ],
+  "Version": [
+   "read",
+   "report",
+   "export",
+   "print"
+  ]
+ }
+}

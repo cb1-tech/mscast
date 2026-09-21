@@ -1,11 +1,6 @@
 [
  {
   "doctype": "Workflow Action Master",
-  "name": "Approve",
-  "workflow_action_name": "Approve"
- },
- {
-  "doctype": "Workflow Action Master",
   "name": "Approve Kick-off",
   "workflow_action_name": "Approve Kick-off"
  },
@@ -36,11 +31,6 @@
  },
  {
   "doctype": "Workflow Action Master",
-  "name": "Reject",
-  "workflow_action_name": "Reject"
- },
- {
-  "doctype": "Workflow Action Master",
   "name": "Release for Manufacture",
   "workflow_action_name": "Release for Manufacture"
  },
@@ -53,11 +43,6 @@
   "doctype": "Workflow Action Master",
   "name": "Return for Rework",
   "workflow_action_name": "Return for Rework"
- },
- {
-  "doctype": "Workflow Action Master",
-  "name": "Review",
-  "workflow_action_name": "Review"
  },
  {
   "doctype": "Workflow Action Master",

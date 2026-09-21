@@ -1,13 +1,6 @@
 [
  {
   "doctype": "Workflow State",
-  "icon": "ok-sign",
-  "name": "Approved",
-  "style": "Success",
-  "workflow_state_name": "Approved"
- },
- {
-  "doctype": "Workflow State",
   "icon": "",
   "name": "Approved by Customer",
   "style": "Info",
@@ -50,13 +43,6 @@
  },
  {
   "doctype": "Workflow State",
-  "icon": "question-sign",
-  "name": "Pending",
-  "style": "",
-  "workflow_state_name": "Pending"
- },
- {
-  "doctype": "Workflow State",
   "icon": "",
   "name": "Pending Approval",
   "style": "Warning",
@@ -75,13 +61,6 @@
   "name": "PO Verified",
   "style": "Warning",
   "workflow_state_name": "PO Verified"
- },
- {
-  "doctype": "Workflow State",
-  "icon": "remove",
-  "name": "Rejected",
-  "style": "Danger",
-  "workflow_state_name": "Rejected"
  },
  {
   "doctype": "Workflow State",

@@ -10,7 +10,7 @@ This is the sequence from "the POC works on a laptop in Japan" to "MSCAST runs i
 
 > **What changed in version 2.0.** An install during the build silently reverted the approval rules and nothing noticed. Section 2 now deploys from a tagged release, section 5a is new and covers what a deploy actually does to configuration, and the monitoring and upgrade sections check that the controls survived. This is the most important change in the document.
 >
-> **What changed in version 2.3.** Every step below was run for real on 21 September against a copy of the system, and four of them were wrong or missing. **The encryption key is part of the backup**: a restore without it left the mail password unreadable and mail silently stopped. **A new site starts with its scheduler off**, so no scheduled job would ever have run. **A restored staging copy sends real email** unless it is muted. And **installing the app did not install the permission matrix** - roles, the auditor's read-only access and the kick-off checklist lived in a setup script that a real install never runs; they now ship in the app. The install is scripted and self-checking (`new-mscast-site.sh`), and the build checks are now 34.
+> **What changed in version 2.3.** Every step below was run for real on 21 September against a copy of the system, and four of them were wrong or missing. **The encryption key is part of the backup**: a restore without it left the mail password unreadable and mail silently stopped. **A new site starts with its scheduler off**, so no scheduled job would ever have run. **A restored staging copy sends real email** unless it is muted. And **installing the app did not install the permission matrix** - roles, the auditor's read-only access and the kick-off checklist lived in a setup script that a real install never runs; they now ship in the app. The install is scripted and self-checking (`new-mscast-site.sh`), and the build checks are now 36.
 >
 > **What changed in version 2.2.** The POC's own app was never in its image. `apps/` comes from the image and only `sites` and `logs` are volumes, so an app copied into one container existed in that container alone. The web workers could not import it — the site served HTTP 500 on every request while every build check passed — and neither could the scheduler or the queue workers, so **four of the five scheduled jobs had never run once**. Section 2 now builds the image with the app baked in, section 4 monitors whether jobs actually execute, and a new check, `T9f`, asks whether each one has a real `last_execution`. The build checks are now 28.
 >
@@ -70,6 +70,8 @@ bench --site erp.mscast.co.in enable-scheduler     # new sites start with it OFF
 bench --site erp.mscast.co.in migrate
 ```
 
+**Never set `mscast_demo` on a production site.** It is the switch that stamps DEMONSTRATION on every print; on any other site the app actively removes the mark, and check `T4b` fails if a production print carries it.
+
 The order of the four `install-app` steps is a dependency order, not a preference: `india_payroll` extends `hrms`, and `mscast_erp` carries `india_compliance`'s custom fields. `erpnext-poc/scripts/new-mscast-site.sh` does all of this and then runs the build checks that measure the system itself; it refuses to report success unless all thirteen pass. Tested 21 September on an empty site.
 
 **Read the output of the last two commands.** They should end with:
@@ -90,7 +92,7 @@ A migrate also prints `Deleting entity Workspace MSCAST ...` partway through and
 
 6. HTTPS: Let's Encrypt via the reverse proxy, with renewal on a timer and an alert if renewal fails. A certificate that silently expires takes the business offline on a Sunday.
 
-7. Run the build checks before telling anyone the site exists. Expect **34 checks, 0 failures**. Two warnings are expected and documented (see the SOPs, Part C, and Q20/Q21 in the traceability matrix). Anything else is a stop.
+7. Run the build checks before telling anyone the site exists. Expect **36 checks, 0 failures**. Two warnings are expected and documented (see the SOPs, Part C, and Q20/Q21 in the traceability matrix). Anything else is a stop.
 
 **A note on the image, learned the hard way.** In the POC the application was not in the image at all — it had been copied into the running backend container by hand. Because `apps/` comes from the image and only `sites` and `logs` are volumes, that gave the app to exactly one container. The web workers could not import it, so the site returned HTTP 500 on every request while every script and every build check passed, because `bench console` and `bench execute` spawn a fresh python each time. Worse, the scheduler and both queue workers could not import it either, so the 06:00 exception sweep, the 08:35 briefing and the monthly archival **had never executed once**. They worked perfectly when run by hand, which is how they were built and demonstrated.
 
@@ -188,10 +190,12 @@ A monthly routine:
 
 1. Restore last night's production backup onto a staging site - **with its encryption key, and with email muted and the scheduler off.** A restored copy carries the live mail account and an enabled scheduler, and left alone it sends the morning report to real people.
 2. `bench update` there.
-3. Run the build checks. **34 checks, 0 failures**, two expected warnings. They exist precisely for this. `upgrade-test.sh` does steps 1-3 on a fully separate stack and tears it down afterwards.
+3. Run the build checks. **36 checks, 0 failures**, two expected warnings. They exist precisely for this. `upgrade-test.sh` does steps 1-3 on a fully separate stack and tears it down afterwards.
 4. Read the deploy output for an approval-authority banner.
 5. Only then upgrade production, in a window MSCAST agrees to, from a tagged release.
 6. Re-run the checks on production afterwards. Do not announce the system is available until they pass.
+
+**What an upgrade overwrites, and why that is now safe.** `bench migrate` re-imports every fixture and overwrites the live rows. Until 21 September the app's fixtures included 663 custom fields, 344 property setters and 7 email templates that belong to India Compliance, ERPNext and HRMS, and because `mscast_erp` migrates last, our frozen copies would have reverted their updates - including GST changes India Compliance ships on statutory deadlines. One had already gone stale. The fixtures now carry only MSCAST's own records, measured against a site built without the app, and check `T6m` fails if a foreign record creeps back in or an MSCAST one is left out.
 
 Never upgrade production directly. The harness on a staging site is the difference between finding a broken Schedule III report yourself and hearing about it from the auditor.
 

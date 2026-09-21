@@ -13,24 +13,42 @@ app_include_css = "/assets/mscast_erp/css/mscast.css"
 after_install = "mscast_erp.install.after_install"
 after_migrate = "mscast_erp.install.after_migrate"
 
-# Every customisation ships as a fixture. Nothing is configured by hand on a
-# production site; if it is not in this list it does not survive a rebuild.
+# Every customisation that is MSCAST's ships as a fixture - and ONLY what is
+# MSCAST's. Fixtures are re-imported on every `bench migrate` and overwrite the
+# live rows, and mscast_erp migrates last. So a fixture that captures another
+# app's record freezes it: when that app ships a change, our stale copy puts the
+# old one back. Until 21 Sep 2026 these filters were catch-alls and the app
+# shipped 663 of India Compliance's, ERPNext's and HRMS's custom fields, 344 of
+# their property setters, and 7 of their email templates. One had already gone
+# stale - India Compliance had reordered the GST rate list on Company since the
+# export. Measured against a site built WITHOUT this app; see
+# erpnext-poc/evidence/baseline-without-mscast.json.
+#
+# Ownership is recorded in the `module` field (MSCAST) for custom fields and
+# property setters, and in the name for everything else. Anything created for
+# MSCAST must follow that, or it will not be exported - which is the safe
+# failure: a missing record shows up in the build checks, a captured one does not.
+_OURS = [["module", "=", "MSCAST"]]
+_STANDARD_STATES = ["Approved", "Pending", "Rejected"]
+_STANDARD_ACTIONS = ["Approve", "Reject", "Review"]
+
 fixtures = [
-    # The custom documents are no longer fixtures - they are app doctypes under
-    # mscast/doctype/, so migrate creates their tables and upgrades keep them.
-    {"dt": "Custom Field"},
-    {"dt": "Property Setter"},
-    {"dt": "Role", "filters": [["name", "like", "MSCAST%"]]},
-    {"dt": "Workflow State"},
-    {"dt": "Workflow Action Master"},
+    # The custom documents are app doctypes under mscast/doctype/, not fixtures.
+    {"dt": "Custom Field", "filters": _OURS},
+    {"dt": "Property Setter", "filters": _OURS},
+    # Design User is ours but not MSCAST-prefixed: it was left out of the package
+    # and a fresh install had no drawing office (found 21 Sep 2026).
+    {"dt": "Role", "or_filters": [["name", "like", "MSCAST%"], ["name", "=", "Design User"]]},
+    {"dt": "Workflow State", "filters": [["name", "not in", _STANDARD_STATES]]},
+    {"dt": "Workflow Action Master", "filters": [["name", "not in", _STANDARD_ACTIONS]]},
     {"dt": "Workflow"},
     {"dt": "Report", "filters": [["is_standard", "=", "No"]]},
     {"dt": "Print Format", "filters": [["standard", "=", "No"]]},
     {"dt": "Letter Head", "filters": [["name", "like", "MSCAST%"]]},
     {"dt": "Server Script"},
     {"dt": "Client Script"},
-    {"dt": "Notification", "filters": [["is_standard", "=", 0]]},
-    {"dt": "Email Template"},
+    {"dt": "Notification", "filters": [["name", "like", "MSCAST%"]]},
+    {"dt": "Email Template", "filters": [["name", "like", "MSCAST%"]]},
     {"dt": "Custom HTML Block"},
     {"dt": "Dashboard Chart", "filters": [["is_standard", "=", 0]]},
     {"dt": "Workspace", "filters": [["name", "like", "MSCAST%"]]},

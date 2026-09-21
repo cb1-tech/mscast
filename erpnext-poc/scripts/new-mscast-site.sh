@@ -72,8 +72,9 @@ echo "=== 5/5  prove it: the checks that measure the SYSTEM must all pass ==="
 # The harness also checks demo data (invoices to render, payments to block,
 # payroll loaded). A fresh system has none, so those are reported but not
 # required. These are the ones that say the system itself is right.
-SYSTEM="T1 T2 T3 T6b T6c T6d T6f T6h T6i T6j T6k T6l T7b"
+SYSTEM="T1 T2 T3 T4b T6b T6c T6d T6f T6h T6i T6j T6k T6l T6m T7b"
 OUT=$(bash "$SCRIPTS/run-harness.sh" "$SITE")
+echo "$OUT" | grep -iE "crash|Traceback" | sed "s/^/  /" || true   # no match is the good case
 echo "$OUT" | grep -E '^\[T\] T[0-9]'
 fail=0
 echo

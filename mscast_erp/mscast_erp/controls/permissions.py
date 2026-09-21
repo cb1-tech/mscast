@@ -61,6 +61,19 @@ GRANT = {
     "Purchase Manager": ["MSCAST BRM"],
 }
 
+# The oversight roles' rights, exactly: what the directors and the statutory
+# auditor can see and do on every document. Kept as data (oversight.json) because
+# it is a specification, not logic - read it as a table.
+#
+# Most of it was granted on live by setup scripts and never packaged, so a fresh
+# install gave the CA a login that could not open a ledger and the directors no
+# view of the books. Found 21 Sep 2026 by comparing a fresh install with live,
+# row by row. The auditor rule below still strips any write-type right from the
+# statutory auditor, whatever this file says.
+import json as _json
+import os as _os
+OVERSIGHT = _json.load(open(_os.path.join(_os.path.dirname(__file__), "oversight.json")))
+
 # Accounts enters invoices, prepares payments and journals. It does not
 # originate engineering, stores or purchase documents.
 REVOKE_CREATE = {
@@ -133,6 +146,12 @@ def _intended(doctype):
                       "print", "email", "share"):
                 p[f] = 1
 
+    for role, per_doctype in OVERSIGHT.items():
+        if doctype in per_doctype and frappe.db.exists("Role", role):
+            p = rows.setdefault((role, 0, 0), {f: 0 for f in FLAGS})
+            for f in per_doctype[doctype]:
+                p[f] = 1
+
     for role, flags in _approver_rights().get(doctype, {}).items():
         if frappe.db.exists("Role", role):
             p = rows.setdefault((role, 0, 0), {f: 0 for f in FLAGS})
@@ -181,6 +200,8 @@ def _scope():
     for group in (GRANT, REVOKE_CREATE, REVOKE_SUBMIT):
         for v in group.values():
             dts.update(v)
+    for per_doctype in OVERSIGHT.values():
+        dts.update(per_doctype)
     dts.update(_approver_rights().keys())
     # every doctype on which an auditor role holds any write-type right
     for table in ("DocPerm", "Custom DocPerm"):

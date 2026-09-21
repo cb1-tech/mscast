@@ -5,7 +5,7 @@
 
 All company data in this POC is **fictional demo data**. Customer and supplier names end with "(DEMO)". MSCAST's own identity — name, GSTIN, CIN, branding — is real and deliberate, so the demonstration looks familiar to the client.
 
-**Build checks: 34, of which 32 pass, 2 are expected warnings, 0 fail.**
+**Build checks: 36, of which 34 pass, 2 are expected warnings, 0 fail.**
 
 ---
 
@@ -80,6 +80,7 @@ wsl -d Ubuntu -e bash /mnt/d/MSCAST/erpnext-poc/scripts/run-seed.sh 102_test_har
 | `restore-key.sh` | put a backup's `encryption_key` back on a site - without it every stored password is unreadable after a restore |
 | `build-base-image.sh` | build the base image (Frappe + erpnext, hrms, india_compliance, india_payroll) from `apps.json` via frappe_docker |
 | `app-versions.sh` | print every app's version in an image |
+| `completeness-test.sh` | build a fresh site and compare it with live, record by record and permission row by permission row. Anything live has that a fresh install does not is configuration that exists only in the database |
 | `upgrade-test.sh` | restore a backup into a **separate** stack on :8090 running a candidate image, `bench migrate`, run all checks, tear down. Mail muted, scheduler off |
 | `build-mscast-image.sh` | rebuild `mscast/erpnext:v16-app` with the current app baked in — **the real way to ship a code change** |
 | `push-app.sh` | copy the app into the running containers and restart them, for fast iteration only. The image is the source of truth; a container recreation discards anything pushed this way |
@@ -246,6 +247,9 @@ Two consequences:
   **Use the right mechanism for each.** A fresh MSCAST system: create the site, install the six apps, let the fixtures configure it. *This* system with its data: restore a backup — tested the same day, restored into a separate site and passed all 31 checks identically, and put the live demo back in under three minutes when the rebuild broke it.
 
 - **The permission matrix now ships in the app** (`mscast_erp.controls.permissions`, run on every install and migrate). Before 21 September it lived in seed 183, so a real install never got it, and 183 itself was wrong: inserting one custom permission row replaces *all* of a doctype's standard rows, and on five doctypes every other role lost access - the managing director, named as kick-off approver, could not open a kick-off. Checks `T6k` (whoever can approve can open) and `T6l` (no role silently dropped) now guard it.
+- **The app ships only MSCAST's configuration.** Its fixtures had captured 663 custom fields, 344 property setters and 7 email templates belonging to India Compliance, ERPNext and HRMS, and since fixtures overwrite live rows on every migrate and `mscast_erp` migrates last, each would have reverted its owner's next release. Measured against a site built without the app (`evidence/baseline-without-mscast.json`); now 39 / 38 / 3. Check `T6m`. New MSCAST customisations must carry module **MSCAST** or they will not be exported.
+- **A fresh install now reproduces all of live's configuration.** Compared record by record and permission row by permission row (`completeness-test.sh`), a fresh install first lacked the drawing office's role (*Design User*), a drawing notification, and the directors' and statutory auditor's access to the books and to MSCAST's own documents - all set on live by setup scripts and never packaged. A fresh production install would have given the CA a login that could not open a ledger. The oversight roles' rights are now declared exactly, as data, in `mscast_erp/controls/oversight.json`.
+- **The demonstration watermark is app code, switched by `bench --site <site> set-config mscast_demo 1`.** As a seed script it was stripped by the first migrate. Never set it in production; check `T4b` fails either way round.
 - **Restores carry the encryption key.** A restore on 21 September brought the data back under a different key; mail stopped and nothing said so. `restore-key.sh`, and check `T9g`.
 - **Backups are now tested, not asserted.** `backup-out.sh` copies a set out of the Docker volume onto `D:` — which matters, because `reset-poc.sh` runs `docker compose down -v` and the backups live *in* that volume. `restore-test.sh` then restores into a separate site and the harness is run against it. Two defects in the restore path were found only by doing it: the db root password is in `compose.yaml` as `MYSQL_ROOT_PASSWORD`, not in `common_site_config.json`, and `--no-mariadb-socket` is deprecated in favour of `--mariadb-user-host-login-scope`
 
@@ -267,7 +271,7 @@ Six accounting and scope assumptions are still awaiting MSCAST and the CA. They 
 12. **Commissioning report and spares handover** — print both
 13. **MSME 45-Day Dues** and **Daily Management Summary**
 14. **Schedule III balance sheet and P&L**, then **Project Closure Report**
-15. **Run the harness** — 34 checks, 32 pass, 2 expected warnings
+15. **Run the harness** — 36 checks, 34 pass, 2 expected warnings
 
 ## 12. Files
 

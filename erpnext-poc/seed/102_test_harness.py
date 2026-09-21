@@ -125,6 +125,28 @@ def t4_prints():
 
 
 # ---------------------------------------------------------------- T5 ledger
+def t4b_watermark():
+    # T4b - demonstration prints say so; production prints never do.
+    #
+    # The watermark was once a seed script, and an upgrade test on 21 Sep 2026
+    # showed `bench migrate` stripping it from all 15 formats - which on the public
+    # demo would have put the real GSTIN on unmarked invoices, with every other
+    # check passing. It now lives in the app, switched by site config mscast_demo.
+    MARK = "mscast-demo-watermark"
+    demo = bool(frappe.conf.get("mscast_demo"))
+    pf = [p for p in frappe.get_all("Print Format", filters={"custom_format": 1, "disabled": 0},
+                                    fields=["name", "html"])
+          if p.name.startswith("MSCAST") and (p.html or "").strip()]
+    marked = [p.name for p in pf if MARK in (p.html or "")]
+    if demo:
+        bad = sorted(set(p.name for p in pf) - set(marked))
+        rec("T4b", "prints", "demonstration site: every MSCAST print is watermarked", not bad,
+            ("unmarked: " + ", ".join(bad[:4])) if bad else "%d of %d marked" % (len(marked), len(pf)))
+    else:
+        rec("T4b", "prints", "not a demonstration site: no print says DEMONSTRATION", not marked,
+            ("marked: " + ", ".join(marked[:4])) if marked else "%d formats, none marked" % len(pf))
+
+
 def t5_ledger():
     tb = flt(frappe.db.sql("""select round(sum(debit - credit), 2) from `tabGL Entry`
                               where is_cancelled = 0 and company = %s""", COMPANY)[0][0])
@@ -636,6 +658,34 @@ def t6_controls():
         else "%d customised doctypes, every standard role still present"
              % len(set(frappe.get_all("Custom DocPerm", pluck="parent"))))
 
+    # T6m - the app ships all of MSCAST's configuration, and none of anyone else's.
+    #
+    # Fixtures overwrite live rows on every migrate, and mscast_erp migrates last.
+    # Until 21 Sep 2026 the app shipped 663 custom fields, 344 property setters
+    # and 7 email templates belonging to India Compliance, ERPNext and HRMS - so
+    # their next release would have been silently reverted by ours. One already
+    # had been overtaken. Ownership is the module field (MSCAST) or the name.
+    import json as _json, os as _os
+    fx = frappe.get_app_path("mscast_erp", "fixtures")
+    def _load(f):
+        p = _os.path.join(fx, f)
+        return _json.load(open(p)) if _os.path.isfile(p) else []
+    foreign = []
+    for f in ("custom_field.json", "property_setter.json"):
+        foreign += ["%s (%s)" % (r["name"], r.get("module")) for r in _load(f)
+                    if r.get("module") != "MSCAST"]
+    for f in ("email_template.json", "notification.json"):
+        foreign += [r["name"] for r in _load(f) if not r["name"].startswith("MSCAST")]
+    shipped = {r["name"] for f in ("custom_field.json", "property_setter.json") for r in _load(f)}
+    unshipped = [n for dt in ("Custom Field", "Property Setter")
+                 for n in frappe.get_all(dt, filters={"module": "MSCAST"}, pluck="name")
+                 if n not in shipped]
+    rec("T6m", "controls", "the app ships all of MSCAST's configuration and none of anyone else's",
+        not (foreign or unshipped),
+        ("foreign: " + ", ".join(foreign[:3]) + " " if foreign else "")
+        + ("not in the package: " + ", ".join(unshipped[:3]) if unshipped else "")
+        if (foreign or unshipped) else "%d custom fields and property setters, all MSCAST's" % len(shipped))
+
 
 # ---------------------------------------------------------------- T7 data
 def t7_data():
@@ -826,7 +876,7 @@ def t10_hr():
 
 
 def run():
-    for fn in (t1_literals, t2_execute, t3_dates, t4_prints, t5_ledger, t6_controls,
+    for fn in (t1_literals, t2_execute, t3_dates, t4_prints, t4b_watermark, t5_ledger, t6_controls,
                t7_data, t8_gst, t9_automation, t9g_secrets, t10_hr):
         try:
             fn()

@@ -170,6 +170,8 @@ It has already happened once: an install from a slightly out-of-date directory s
 
 **If an approval must change, it changes in the repository and is deployed.** After every install and upgrade the system verifies six control transitions and repairs them loudly. **A repair banner is not "handled"** — it means what you deployed and what MSCAST agreed have diverged.
 
+**And only MSCAST's.** The package re-applies what it carries on every upgrade, so it must never carry another application's configuration - or it will quietly undo that application's next release. A customisation made for MSCAST is marked with the module *MSCAST*; anything else is left to the application that owns it.
+
 ## C2. Roles are a control, and they drift
 
 Two accounts were found holding far more than their job required: the setup-wizard administrator with **41 roles**, and an ordinary staff account that also held `System Manager`, which bypasses every control in the system. Neither had been noticed, and nothing reported them.

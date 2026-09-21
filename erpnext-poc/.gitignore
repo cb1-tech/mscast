@@ -4,3 +4,5 @@ fresh-run.log
 base-build.log
 deploy.log
 fixkey.log
+evidence/completeness-fresh-install.log
+*.log

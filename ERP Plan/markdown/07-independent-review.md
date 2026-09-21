@@ -330,7 +330,7 @@ Moving that configuration into the app exposed something worse about how it had 
 
 No check had asked. `T6d` asserts that the approving *role* is right; `T6i` that the granted roles got in. Nothing asked whether the person holding the approval could open the document, or whether a role had silently lost access. Two checks now do - **`T6k`**, asked per real user, and **`T6l`** - and both were run against the live system *before* the fix and failed, so they are known to work.
 
-The permission matrix now lives in the app (`mscast_erp.controls.permissions`) and is written as a whole set rather than row by row. It adds a rule the old script never had: **whoever a workflow names as an approver can open, edit and - where their step does so - submit what they approve**, derived from the live workflows so a new one is covered automatically. It runs on every install and migrate, after the fixtures, and a second run reports "no change". Live system: 32 PASS, 2 WARN, 0 FAIL of 34.
+The permission matrix now lives in the app (`mscast_erp.controls.permissions`) and is written as a whole set rather than row by row. It adds a rule the old script never had: **whoever a workflow names as an approver can open, edit and - where their step does so - submit what they approve**, derived from the live workflows so a new one is covered automatically. It runs on every install and migrate, after the fixtures, and a second run reports "no change". Live system after these changes: 34 PASS, 2 WARN, 0 FAIL of 36.
 
 ## A restore brought the data back under the wrong key
 
@@ -345,3 +345,23 @@ Eight customers, not one, lacked the "(DEMO)" suffix - the earlier check only li
 ## The pattern, a fourth time
 
 Every item in this section was found by running the thing - installing, restoring, logging in as the person - and not one by reading configuration. Three of the fixes were to *checks* that had passed while asking an easier question than the one that mattered: whether a role was configured rather than whether a person could act, whether a password was set rather than readable, whether a permission row existed rather than whether Frappe applied it.
+
+## The upgrade test: nothing newer to upgrade to, and two hazards found anyway
+
+The live system already runs the latest `version-16` release of all five applications (checked upstream, not assumed), so there was no version to jump to. The test was still run, because the risk in an upgrade is not the version number: it is `bench migrate`, which re-imports every fixture over the live configuration. That had never been run against a copy of the live data. It found two things no check had reported.
+
+**The watermark did not survive.** All 15 print formats lost the DEMONSTRATION mark, because it had been added by a setup script and migrate put the fixtures' unmarked versions back. On the public demo that means the real GSTIN on unmarked tax invoices, with every other check passing. The watermark now lives in the app, switched on by a site setting, reapplied after every migrate, and actively removed on any site that is not a demonstration. Check `T4b` holds both directions.
+
+**The app was freezing other applications' configuration.** Measured against a site built with the other four applications and not this one: of the 702 custom fields the app shipped, 663 belonged to India Compliance, ERPNext and HRMS; likewise 344 of 382 property setters and 7 of 10 email templates. `mscast_erp` migrates last, so each of those would have overwritten its owner's next release - including the GST changes India Compliance ships on statutory deadlines. One already had: India Compliance's GST-rate list on Company had changed since the export, and the next migrate would have put the old one back. The fixtures now carry only MSCAST's records (39 custom fields, 38 property setters, 3 email templates), ownership is recorded in the record, and check `T6m` guards it.
+
+## A fresh install did not reproduce the live configuration
+
+The last test compared a fresh install with the live site, record by record and permission row by permission row. Everything that ships as a record matched after the fixture work above, except three things that had only ever existed in the live database, set there by setup scripts and never packaged:
+
+- the **Design User** role: a fresh install had no drawing office;
+- the notification that tells a project manager a drawing is **awaiting the customer's approval**;
+- the **directors' and the statutory auditor's access to the books**: read, report and print on the ledgers, invoices, stock and assets, and the directors' approval rights on BRM, PCC, Purchase Order and Project Certificate. **A fresh production install would have given the CA a login that could not open a ledger.**
+
+The role and the notification are now in the package. The two oversight roles' rights are declared exactly, as data (`oversight.json`), so they read as a specification rather than being inferred from code. `completeness-test.sh` repeats the comparison and names anything that exists only in the database.
+
+This is the same finding as C4, at a finer grain. The rebuild test showed that the *demo data* does not replay; this one showed that some *configuration* did not either. The only way to know what a package reproduces is to install it somewhere empty and compare.

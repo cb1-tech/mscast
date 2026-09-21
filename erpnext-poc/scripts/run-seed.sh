@@ -22,6 +22,6 @@ frappe.connect()
 frappe.set_user('Administrator')
 exec(open('../seed/$f.py').read())
 frappe.db.commit()
-\"" 2>&1 | tr -d '\r' | grep -v -E 'Updating DocTypes|\] +[0-9]+%' | tail -60
+\"" 2>&1 | tr -d '\r' | grep -v -E 'Updating DocTypes|\] +[0-9]+%' | tail -n "${TAIL:-60}"
 done
 echo "ALL DONE"

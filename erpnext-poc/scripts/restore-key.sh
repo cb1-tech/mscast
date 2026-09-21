@@ -19,3 +19,16 @@ KEY=$(python3 -c "import json,sys;print(json.load(open(sys.argv[1])).get('encryp
 [ -n "$KEY" ] || { echo "no encryption_key in $CFG" >&2; exit 1; }
 docker exec "$C" bash -c "cd /home/frappe/frappe-bench && bench --site $SITE set-config encryption_key '$KEY'" >/dev/null
 echo "  encryption key restored on '$SITE' from $(basename "$CFG") (${KEY:0:6}...)"
+
+# MSCAST's own site settings (mscast_demo, mscast_briefing_to, ...) live in the
+# same file and are lost the same way. mscast_demo decides whether prints carry
+# the DEMONSTRATION watermark, so losing it on a restored demo removes the mark.
+python3 - "$CFG" <<'PY2' | while IFS=$'\t' read -r k v; do
+import json, sys
+for k, v in json.load(open(sys.argv[1])).items():
+    if k.startswith("mscast_"):
+        print("%s\t%s" % (k, json.dumps(v)))
+PY2
+  docker exec "$C" bash -c "cd /home/frappe/frappe-bench && bench --site $SITE set-config --parse $k '$v'" >/dev/null
+  echo "  restored $k"
+done

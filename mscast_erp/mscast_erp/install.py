@@ -64,6 +64,9 @@ def configure():
     # would otherwise overwrite the permission matrix and the workflow guards.
     from mscast_erp.controls.permissions import enforce
     enforce()
+    # Also after the fixtures, which carry the print formats without it.
+    from mscast_erp import demo
+    demo.apply()
     hide_stock_workspaces()
     set_landing_page()
     frappe.db.commit()
