@@ -309,12 +309,12 @@ D:\MSCAST\                       git repository, remote github.com/cb1-tech/msca
       _archive\                  32 diagnostics and superseded iterations
     scripts\                     start/stop/status/backup/reset/run-seed/push/pull/deploy tests
     backups\                     dated backups (git-ignored)
-  ERP Plan\                      the documents, .docx plus markdown under markdown\
+  ERP Plan\                      the documents: For MSCAST\, Internal\, markdown\ (source)
 ~/mscast-poc\                    compose.yaml, apps.json, frappe_docker checkout (inside WSL)
 ```
 
 - Everything in `_archive\` can be deleted without affecting the POC or a rebuild.
-- **Documents:** `ERP Plan\` holds docs 01–13 as .docx and markdown; the ERP-MSCAST project on claude.ai holds the same content.
+- **Documents:** `ERP Plan\` holds the documents (`For MSCAST\`, `Internal\`, and markdown sources; see `ERP Plan\README.md`); the ERP-MSCAST project on claude.ai holds the same content.
 
 ## DEV instance — https://mscastdev.carobar.net
 

@@ -2,7 +2,7 @@
 
 ERP for **MSCAST Engineering Pvt Ltd** (Pune, continuous-casting machines), built on **ERPNext v16** (Frappe v16) with India Compliance, Frappe HR and India Payroll, plus MSCAST's own app `mscast_erp`.
 
-- MSCAST's requirement document lists 97 requirements; all 97 are built. 23 further additions (safeguards, backups, automation) make it a working system. Both lists are in `ERP Plan/MSCAST ERP - Requirements Traceability Matrix.xlsx`.
+- MSCAST's requirement document lists 97 requirements; all 97 are built. 23 further additions (safeguards, backups, automation) make it a working system. Both lists are in `ERP Plan/For MSCAST/MSCAST ERP - Requirements Traceability Matrix.xlsx`.
 - 42 automated build checks run every night against the running system.
 
 ## What is in this repository
@@ -11,7 +11,7 @@ ERP for **MSCAST Engineering Pvt Ltd** (Pune, continuous-casting machines), buil
 |---|---|
 | `mscast_erp/` | The Frappe app: MSCAST's forms (25 doctypes), 28 reports, 15 print formats, workflows, the payment and approval controls, permissions, scheduled jobs. Every setting ships here as fixtures or code; nothing lives only in a database |
 | `erpnext-poc/` | How the system is built and run in Docker: `apps.json` (the base image's apps), `Containerfile.mscast` (bakes `mscast_erp` into the image), `compose.yaml`, `scripts/` (build, install, backup, restore, checks) and `seed/` (demonstration data and the build checks, `seed/102_test_harness.py`). Technical manual: `erpnext-poc/README.md` |
-| `ERP Plan/` | The project documents (Word). `ERP Plan/markdown/` holds the same documents as markdown, the editable source |
+| `ERP Plan/` | The project documents: `For MSCAST/` (safe to hand over), `Internal/` (for the implementer), `markdown/` (the editable source of every document). `ERP Plan/README.md` says which is which |
 
 Not in the repository (see `.gitignore`): database backups, site data and site config (they hold client data and keys).
 
@@ -45,7 +45,7 @@ bench --site <site> enable-scheduler
 bench --site <site> migrate
 ```
 
-The full, ordered procedure, with sizing, backups and cutover, is `ERP Plan/MSCAST ERP - Production Cutover Runbook.docx` (section 2).
+The full, ordered procedure, with sizing, backups and cutover, is `ERP Plan/Internal/MSCAST ERP - Production Cutover Runbook.docx` (section 2).
 
 **With Docker** (how the POC runs):
 
@@ -75,12 +75,4 @@ The `bench` install path above has none of these limits.
 
 ## Documents
 
-| Document | For |
-|---|---|
-| Strategy and Phased Plan · Research Appendix | Why ERPNext, the options assessed, the roadmap |
-| Requirements Traceability (+ the .xlsx workbook) | Each MSCAST requirement → how it is met → where to see it |
-| Implementation Report | What exists today, in one page |
-| Client Setup Guide · Production Cutover Runbook | Setting it up for real use; moving to production |
-| SOPs and Use Cases · Role Cards · Operating Recommendations | How MSCAST's staff use it day to day |
-| Independent Review | Everything reviewers and testing found, and its status |
-| Data Request Covering Note · Demo Run-sheet | What MSCAST still has to send; the demo walkthrough |
+See `ERP Plan/README.md`: which document is for MSCAST and which is internal.

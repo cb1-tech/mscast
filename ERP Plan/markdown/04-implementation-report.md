@@ -23,7 +23,7 @@ title: "MSCAST ERP — Implementation Report"
 | Image | `mscast/erpnext:v16-app`, ERPNext/Frappe v16 |
 | Build checks | `seed/102_test_harness.py`; how to run it: POC README |
 | Fresh install | `new-mscast-site.sh`; must pass 19 system checks |
-| Documents | In the ERP-MSCAST project and in `ERP Plan\`: docs 01–13 |
+| Documents | In the ERP-MSCAST project and in `ERP Plan\` (`For MSCAST\` and `Internal\`; see `ERP Plan\README.md`) |
 
 ## What was built
 
