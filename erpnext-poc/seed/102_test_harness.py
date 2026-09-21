@@ -946,17 +946,22 @@ def t9_automation():
         "dead: %s" % (", ".join(dead) if dead else "none"))
 
     # Deliverable domains. The point of this check is to catch a live user on a
-    # made-up domain such as @mscast.demo, not to police which real provider
-    # somebody uses - so the mailboxes MSCAST actually gave us are listed here.
-    bounce = frappe.db.sql("""select count(*) from `tabUser` where enabled = 1
-        and unsubscribed = 0
-        and name not like '%%@gmail.com'
-        and name not like '%%@carobar%%'
-        and name not like '%%@yahoo.com'
-        and name not like '%%@hotmail.com'
-        and name not in ('Guest','Administrator')""")[0][0]
+    # made-up domain such as @mscast.demo. It used to allow-list the providers
+    # we happened to use, so MSCAST's own domain (mcast.co.in) failed on the
+    # day they created real users (21 Sep 2026) - mail to it was delivered and
+    # read. It now refuses only domains that cannot receive mail.
+    FAKE_EXACT = ("example.com", "example.org", "example.net", "localhost")
+    FAKE_SUFFIX = (".demo", ".local", ".test", ".invalid", ".example", ".localhost")
+    bad_users = []
+    for u, email in frappe.db.sql("""select name, email from `tabUser` where enabled = 1
+            and unsubscribed = 0 and name not in ('Guest','Administrator')"""):
+        dom = ((email or u).rsplit("@", 1)[-1] if "@" in (email or u) else "").lower()
+        if not dom or dom in FAKE_EXACT or dom.endswith(FAKE_SUFFIX):
+            bad_users.append(email or u)
+    bounce = len(bad_users)
     rec("T9e", "email", "no live user on a non-deliverable domain", bounce == 0,
-        "%d users would bounce" % bounce)
+        ("%d users would bounce: %s" % (bounce, ", ".join(bad_users[:5]))) if bounce
+        else "every enabled user is on a real mail domain")
 
 
     # T9f - do the MSCAST scheduled jobs actually RUN?
