@@ -5,7 +5,7 @@
 
 All company data in this POC is **fictional demo data**. Customer and supplier names end with "(DEMO)". MSCAST's own identity — name, GSTIN, CIN, branding — is real and deliberate, so the demonstration looks familiar to the client.
 
-**Build checks: 31, of which 29 pass, 2 are expected warnings, 0 fail.**
+**Build checks: 34, of which 32 pass, 2 are expected warnings, 0 fail.**
 
 ---
 
@@ -74,7 +74,13 @@ wsl -d Ubuntu -e bash /mnt/d/MSCAST/erpnext-poc/scripts/run-seed.sh 102_test_har
 | `restore-test.sh` | restore a backup into a **separate** site and count what came back |
 | `restore-live.sh` | restore a backup **over** the live site |
 | `verify-site.sh` | count what is in a site |
-| `status.sh` | sites, bench processes, HTTP status, containers |
+| `status.sh` | sites, bench processes, local and public HTTP status, containers, age of the last backup |
+| `new-mscast-site.sh` | **the production install path**: a fresh site with the six apps and MSCAST's configuration, no demo data; refuses to report success unless the 13 system checks pass |
+| `backup-nightly.sh` | backup, copy off the volume onto `D:`, verify, prune (14 newest + monthly for a year). Refuses if the site cannot decrypt its own secrets. Scheduled as Windows task *MSCAST nightly backup*, 02:30 |
+| `restore-key.sh` | put a backup's `encryption_key` back on a site - without it every stored password is unreadable after a restore |
+| `build-base-image.sh` | build the base image (Frappe + erpnext, hrms, india_compliance, india_payroll) from `apps.json` via frappe_docker |
+| `app-versions.sh` | print every app's version in an image |
+| `upgrade-test.sh` | restore a backup into a **separate** stack on :8090 running a candidate image, `bench migrate`, run all checks, tear down. Mail muted, scheduler off |
 | `build-mscast-image.sh` | rebuild `mscast/erpnext:v16-app` with the current app baked in — **the real way to ship a code change** |
 | `push-app.sh` | copy the app into the running containers and restart them, for fast iteration only. The image is the source of truth; a container recreation discards anything pushed this way |
 | `pull-fixtures.sh` | copy exported fixtures out of the container into the app |
@@ -239,6 +245,8 @@ Two consequences:
 
   **Use the right mechanism for each.** A fresh MSCAST system: create the site, install the six apps, let the fixtures configure it. *This* system with its data: restore a backup — tested the same day, restored into a separate site and passed all 31 checks identically, and put the live demo back in under three minutes when the rebuild broke it.
 
+- **The permission matrix now ships in the app** (`mscast_erp.controls.permissions`, run on every install and migrate). Before 21 September it lived in seed 183, so a real install never got it, and 183 itself was wrong: inserting one custom permission row replaces *all* of a doctype's standard rows, and on five doctypes every other role lost access - the managing director, named as kick-off approver, could not open a kick-off. Checks `T6k` (whoever can approve can open) and `T6l` (no role silently dropped) now guard it.
+- **Restores carry the encryption key.** A restore on 21 September brought the data back under a different key; mail stopped and nothing said so. `restore-key.sh`, and check `T9g`.
 - **Backups are now tested, not asserted.** `backup-out.sh` copies a set out of the Docker volume onto `D:` — which matters, because `reset-poc.sh` runs `docker compose down -v` and the backups live *in* that volume. `restore-test.sh` then restores into a separate site and the harness is run against it. Two defects in the restore path were found only by doing it: the db root password is in `compose.yaml` as `MYSQL_ROOT_PASSWORD`, not in `common_site_config.json`, and `--no-mariadb-socket` is deprecated in favour of `--mariadb-user-host-login-scope`
 
 Six accounting and scope assumptions are still awaiting MSCAST and the CA. They are listed in the implementation report and written into the narration of the affected vouchers, so whoever reviews the books meets the assumption where it matters.
@@ -259,7 +267,7 @@ Six accounting and scope assumptions are still awaiting MSCAST and the CA. They 
 12. **Commissioning report and spares handover** — print both
 13. **MSME 45-Day Dues** and **Daily Management Summary**
 14. **Schedule III balance sheet and P&L**, then **Project Closure Report**
-15. **Run the harness** — 31 checks, 29 pass, 2 expected warnings
+15. **Run the harness** — 34 checks, 32 pass, 2 expected warnings
 
 ## 12. Files
 

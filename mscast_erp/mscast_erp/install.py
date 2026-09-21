@@ -60,6 +60,10 @@ def configure():
     # cache the fixtures that hang off them still see the old, empty metadata.
     frappe.clear_cache()
     sync_our_fixtures()
+    # After the fixtures, because fixtures are re-imported on every migrate and
+    # would otherwise overwrite the permission matrix and the workflow guards.
+    from mscast_erp.controls.permissions import enforce
+    enforce()
     hide_stock_workspaces()
     set_landing_page()
     frappe.db.commit()

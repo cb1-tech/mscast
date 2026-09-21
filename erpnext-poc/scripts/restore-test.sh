@@ -47,6 +47,14 @@ docker exec "$C" bash -c "cd $BENCH && bench --site $SITE --force restore \
   --db-root-password '$ROOTPW'" 2>&1 | tail -8
 
 echo
+bash /mnt/d/MSCAST/erpnext-poc/scripts/restore-key.sh "$DIR" "$SITE"
+# A restored copy carries the live mail account and an enabled scheduler, so
+# left alone it sends the morning report and the digest to real people. Mute it.
+docker exec "$C" bash -c "cd $BENCH && bench --site $SITE set-config mute_emails 1 \
+  && bench --site $SITE disable-scheduler" >/dev/null
+echo "  mail muted, scheduler disabled on the test copy"
+
+echo
 echo "=== 3/3  count what actually came back ==="
 docker exec "$C" bash -c "cd $BENCH/sites && ../env/bin/python -c \"
 import frappe

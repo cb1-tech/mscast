@@ -514,16 +514,23 @@ def t6_controls():
     # `MSCAST Statutory Auditor` held write, create and DELETE on MSCAST
     # Exception - the ability to erase the output of the overnight sweep. This is
     # the claim an auditor is most likely to test in person.
+    #
+    # It asks for the EFFECTIVE rights - what Frappe actually applies. Once a
+    # doctype has any Custom DocPerm rows, its standard DocPerm rows are ignored,
+    # so reading both tables reports rights nobody holds. The first version did,
+    # and failed a fresh install whose auditor was correctly read-only.
+    AUD = ("Auditor", "MSCAST Statutory Auditor")
     writable = []
-    for role in ("Auditor", "MSCAST Statutory Auditor"):
-        if not frappe.db.exists("Role", role):
+    candidates = set()
+    for tbl in ("Custom DocPerm", "DocPerm"):
+        candidates.update(frappe.get_all(tbl, filters={"role": ["in", AUD]}, pluck="parent"))
+    for dt in sorted(candidates):
+        if not frappe.db.exists("DocType", dt):
             continue
-        for tbl in ("Custom DocPerm", "DocPerm"):
-            for r in frappe.get_all(tbl, filters={"role": role},
-                                    fields=["parent", "write", "create", "delete",
-                                            "submit", "cancel", "amend"]):
-                if r.write or r.create or r.delete or r.submit or r.cancel or r.amend:
-                    writable.append("%s on %s" % (role, r.parent))
+        for r in frappe.get_meta(dt).permissions:     # effective rows only
+            if r.role in AUD and (r.write or r.create or r.delete or r.submit
+                                  or r.cancel or r.amend):
+                writable.append("%s on %s" % (r.role, dt))
     rec("T6h", "controls", "the auditor login cannot change anything", not writable,
         " :: ".join(sorted(set(writable))[:6]) if writable
         else "both auditor roles are read-only everywhere")
@@ -584,6 +591,50 @@ def t6_controls():
     rec("T6j", "controls", "a guarded workflow state is guarded on every route in",
         not holes, " :: ".join(holes[:4]) if holes
         else "every guarded state is guarded consistently")
+
+    # T6k - whoever can approve a document can open it.
+    #
+    # T6d checked that the approval ROLE was right; nothing checked that the
+    # people holding it could open the document. On 21 Sep 2026 the managing
+    # director - named as the kick-off approver - could not open a single
+    # kick-off, because a permission change had dropped every standard role from
+    # the doctype. Asked per real user, the way the business experiences it.
+    frappe.clear_cache()
+    locked = []
+    users = frappe.get_all("User", filters={"enabled": 1, "user_type": "System User",
+                                            "name": ["!=", "Administrator"]}, pluck="name")
+    for w in frappe.get_all("Workflow", filters={"is_active": 1},
+                            fields=["name", "document_type"]):
+        approvers = {t.allowed for t in frappe.get_doc("Workflow", w.name).transitions}
+        for u in users:
+            if not approvers & set(frappe.get_roles(u)):
+                continue
+            if not frappe.has_permission(w.document_type, "write", user=u):
+                locked.append("%s cannot open %s" % (
+                    frappe.db.get_value("User", u, "full_name") or u, w.document_type))
+    rec("T6k", "controls", "everyone who can approve a document can open it",
+        not locked, " :: ".join(locked[:4]) + (" (+%d more)" % (len(locked) - 4)
+                                               if len(locked) > 4 else "")
+        if locked else "checked every active workflow against every user")
+
+    # T6l - no role silently loses access.
+    #
+    # A single Custom DocPerm row replaces ALL of a doctype's standard ones. So a
+    # change meant to ADD one role can REMOVE every other - which is what caused
+    # T6k's failure. The matrix may narrow a role's rights; it never removes a
+    # role outright, so any standard role missing from a customised doctype is a
+    # bug of exactly that kind.
+    dropped = []
+    for dt in sorted(set(frappe.get_all("Custom DocPerm", pluck="parent"))):
+        std = set(frappe.get_all("DocPerm", filters={"parent": dt}, pluck="role"))
+        cus = set(frappe.get_all("Custom DocPerm", filters={"parent": dt}, pluck="role"))
+        gone = std - cus
+        if gone:
+            dropped.append("%s lost %s" % (dt, ", ".join(sorted(gone))))
+    rec("T6l", "controls", "no role silently lost access to a customised doctype",
+        not dropped, " :: ".join(dropped[:3]) if dropped
+        else "%d customised doctypes, every standard role still present"
+             % len(set(frappe.get_all("Custom DocPerm", pluck="parent"))))
 
 
 # ---------------------------------------------------------------- T7 data
@@ -736,6 +787,28 @@ def t9_automation():
 
 
 # ---------------------------------------------------------------- T10 hr
+def t9g_secrets():
+    # T9g - every stored secret can actually be decrypted.
+    #
+    # T9a asked whether the mail password was SET. After a restore on 21 Sep 2026
+    # it was set, and unreadable: the database came back but the site kept a
+    # different encryption_key, so the password could not be decrypted and the
+    # digest failed. "Present" and "usable" are different claims; this checks the
+    # second one, for every encrypted value on the site.
+    from frappe.utils.password import get_decrypted_password
+    bad, n = [], 0
+    for r in frappe.db.sql("select doctype, name, fieldname from `__Auth` where encrypted = 1",
+                           as_dict=True):
+        n += 1
+        try:
+            get_decrypted_password(r.doctype, r.name, r.fieldname, raise_exception=True)
+        except Exception:
+            bad.append("%s %s.%s" % (r.doctype, r.name, r.fieldname))
+    rec("T9g", "automation", "every stored secret decrypts with this site's key", not bad,
+        ("cannot decrypt: " + "; ".join(bad) + " - restore the backup's encryption_key")
+        if bad else "%d secret(s), all readable" % n)
+
+
 def t10_hr():
     slips = frappe.db.count("Salary Slip", {"docstatus": 1})
     att = frappe.db.count("Attendance", {"docstatus": 1})
@@ -754,7 +827,7 @@ def t10_hr():
 
 def run():
     for fn in (t1_literals, t2_execute, t3_dates, t4_prints, t5_ledger, t6_controls,
-               t7_data, t8_gst, t9_automation, t10_hr):
+               t7_data, t8_gst, t9_automation, t9g_secrets, t10_hr):
         try:
             fn()
         except Exception as e:

@@ -23,7 +23,10 @@
 # Build with scripts/build-mscast-image.sh - do not run this by hand, because the
 # build context has to be the repo root for the COPY below to resolve.
 
-FROM mscast/erpnext:v16
+# The base is a build argument so an upgrade can be built and tested on a new
+# base without touching the one the live stack runs on.
+ARG BASE=mscast/erpnext:v16
+FROM ${BASE}
 
 USER frappe
 WORKDIR /home/frappe/frappe-bench

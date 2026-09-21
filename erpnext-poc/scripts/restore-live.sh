@@ -31,6 +31,10 @@ docker exec "$C" bash -c "cd $BENCH && bench --site $SITE --force restore \
   --db-root-password '$ROOTPW'" 2>&1 | tail -8
 
 echo
+# Without this every stored secret in the restored data is undecryptable.
+bash /mnt/d/MSCAST/erpnext-poc/scripts/restore-key.sh "$DIR" "$SITE"
+
+echo
 echo "restarting so nothing serves stale state..."
 cd "$HOME/mscast-poc"
 docker compose restart backend queue-short queue-long scheduler websocket >/dev/null

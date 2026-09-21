@@ -14,3 +14,16 @@ printf '  public /login     %s\n' "$(curl -s -o /dev/null -w '%{http_code}' --ma
 echo
 echo "=== containers ==="
 docker ps --format '{{.Names}}\t{{.Status}}' | grep mscast
+
+echo
+echo "=== last backup on D: ==="
+L=/mnt/d/MSCAST/backups/backup.log
+if [ -f "$L" ]; then
+  tail -1 "$L" | sed 's/^/  /'
+  last=$(ls -1 /mnt/d/MSCAST/backups | grep -E '^[0-9]{8}_[0-9]{6}$' | sort | tail -1)
+  age_h=$(( ( $(date +%s) - $(date -d "${last:0:8} ${last:9:2}:${last:11:2} IST" +%s) ) / 3600 ))
+  [ "$age_h" -gt 26 ] && echo "  WARNING: newest set is ${age_h}h old - the nightly job is not running" \
+                      || echo "  newest set ${last} (${age_h}h old)"
+else
+  echo "  no backup log - the nightly job has never run"
+fi

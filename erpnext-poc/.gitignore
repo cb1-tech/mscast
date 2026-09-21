@@ -1,2 +1,6 @@
 reset-run.log
 restore-live.log
+fresh-run.log
+base-build.log
+deploy.log
+fixkey.log

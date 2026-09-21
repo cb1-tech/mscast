@@ -4,7 +4,7 @@ title: "MSCAST ERP — Operating Recommendations"
 
 # MSCAST ERP — Operating Recommendations
 
-**For:** MSCAST Engineering Pvt Ltd · **Version:** 1.1 · **Date:** 21 September 2026
+**For:** MSCAST Engineering Pvt Ltd · **Version:** 1.2 · **Date:** 21 September 2026
 
 ## Why this document exists
 
@@ -177,6 +177,7 @@ Two accounts were found holding far more than their job required: the setup-wiza
 - **Nobody who does day-to-day work should hold `System Manager`.**
 - A fresh install recreates the over-privileged administrator every time. Cutting it back is a deployment step, not a one-off.
 - Review the role list quarterly. Roles accumulate; they are never removed by accident.
+- **Change permissions in the package, not the screens.** The permission matrix lives in the application and is re-applied on every upgrade, so a change made in the screens is reverted - and a change made carelessly can do worse. On 21 September a grant meant to *add* one role to five documents *removed* every other role from them, and the managing director could not open the kick-offs he approves. After any permission change, log in **as the approver** and open the document. That is check `T6k`.
 
 ## C3. "Configured" and "runs" are different claims
 
@@ -189,6 +190,8 @@ Every check asked *"is this configured?"* and all of them passed. None asked *"h
 ## C4. Test the backup, not the backup job
 
 An untested backup is a belief. Restore one before go-live and once a year afterwards, and **write down how long it took** — that number is what MSCAST is actually buying.
+
+**Keep the encryption key with the backups, and protect it like a password.** Stored passwords are encrypted with a key held outside the database. Restore the data without it and the system looks healthy but cannot send email — found by testing a restore on 21 September, which is exactly why a restore is tested. After any restore, check that a test email actually arrives.
 
 Under Rule 3(5) of the Companies (Accounts) Rules the server and its daily backups must both be physically in India, and under s.128(5) the books and the audit trail are kept for eight financial years. Dailies may rotate at thirty days; monthlies may not.
 

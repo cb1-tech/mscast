@@ -625,7 +625,7 @@
     "action": "Verify Customer PO",
     "allow_self_approval": 1,
     "allowed": "Accounts Manager",
-    "condition": null,
+    "condition": "doc.chk_price and doc.chk_scope and doc.chk_payment_terms and doc.chk_tax_gst",
     "doctype": "Workflow Transition",
     "name": "vtgjcbg1rk",
     "next_state": "PO Verified",

@@ -4,7 +4,7 @@ title: "MSCAST ERP — Client Setup Guide"
 
 # MSCAST ERP — Client Setup Guide
 
-**For:** MSCAST Engineering Pvt Ltd · **System:** ERPNext v16 with India Compliance, Frappe HR and India Payroll · **Version:** 2.3 · **Date:** 20 September 2026
+**For:** MSCAST Engineering Pvt Ltd · **System:** ERPNext v16 with India Compliance, Frappe HR and India Payroll · **Version:** 2.4 · **Date:** 21 September 2026
 
 > **What changed in version 2.** Version 1.0 was written before the roles were rebuilt around real people and before the approval authority was settled. Its role table and two of its claims no longer matched the system. Every statement here has been checked against the running configuration. A new Step 12 covers deployment and upgrades, after a live incident in which an app install silently reverted the approval rules. Version 2.1 corrects the size of the administrator-account problem, which was worse than first reported. The differences are listed in the appendix.
 
@@ -289,6 +289,7 @@ Reconcile the opening trial balance against Tally and have the CA sign it off. T
 - Daily automated backups of database and files, **with a copy on a server physically in India** — this is required by Rule 3(5) of the Companies (Accounts) Rules, not a preference.
 - Books of account and vouchers retained for **eight financial years** (section 128(5)); the audit trail likewise.
 - **Test a restore.** A backup nobody has restored is a belief, not a backup. Do it once before go-live and once a year after.
+- **Keep the site's encryption key with the backups, and guard it like a password.** The system encrypts stored passwords with a key that sits outside the database. Restore the data without the key and the system comes back looking healthy but cannot send email. This was found by testing a restore, which is the point of testing one.
 - Confirm the audit trail is enabled and that no one, including the administrator, can disable it.
 
 ## Step 12: Deployment and upgrades

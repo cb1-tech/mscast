@@ -316,3 +316,32 @@ Both were mine, and both are the kind that waste an afternoon silently.
 
 - **A running shell script was edited in place.** `bash` reads a script lazily, by byte offset, as it executes. Editing `reset-poc.sh` during a 25-minute run made `bash` resume at the old offset inside the new text and die with `app: unbound variable`. The runner now copies the script to a snapshot and runs that, so a run cannot be disturbed by an edit.
 - **A guard that could never match.** The check for "did the app install?" compared `bench list-apps` output with an exact-match grep, but that command prints `frappe  16.34.0  UNVERSIONED`. The guard failed on a **successful** install and aborted a good run. It now compares the first column only, in one helper used by every check.
+
+## The fresh install was tested, and found a defect on the live system
+
+A script that builds a fresh MSCAST system - new site, six apps, no demo data - was written and run on 21 September. Its first run failed three of the checks that measure the system itself: the auditor could write, several roles could not raise their own documents, and the kick-off checklist bypass was back. All three had been "fixed" the day before, **in a setup script that a real install never runs**. Worse, the kick-off bypass was still in the app's own workflow fixture, and fixtures are re-imported on every `bench migrate` - so the first upgrade of the live site would have silently brought it back.
+
+Moving that configuration into the app exposed something worse about how it had been done. **A single custom permission row replaces all of a doctype's standard ones.** The setup script granted roles by inserting one row each, and on five doctypes every other role lost access. Checked with the real logins, not inferred:
+
+- **Mustaque Chandankeri**, named as the kick-off approver, **could not open a single Project Kick-off.**
+- **Aiqaz Chandankeri could not open a Purchase Order**, the approval the business had given the directors.
+- Anita Deshpande, also a named approver, could not open a kick-off.
+- No director could open a Transmittal.
+
+No check had asked. `T6d` asserts that the approving *role* is right; `T6i` that the granted roles got in. Nothing asked whether the person holding the approval could open the document, or whether a role had silently lost access. Two checks now do - **`T6k`**, asked per real user, and **`T6l`** - and both were run against the live system *before* the fix and failed, so they are known to work.
+
+The permission matrix now lives in the app (`mscast_erp.controls.permissions`) and is written as a whole set rather than row by row. It adds a rule the old script never had: **whoever a workflow names as an approver can open, edit and - where their step does so - submit what they approve**, derived from the live workflows so a new one is covered automatically. It runs on every install and migrate, after the fixtures, and a second run reports "no change". Live system: 32 PASS, 2 WARN, 0 FAIL of 34.
+
+## A restore brought the data back under the wrong key
+
+The morning after the reset test, one email had failed with *"Encryption key is invalid."* Frappe encrypts stored secrets with a key held in `site_config.json`, **outside the database**. `bench restore` brings back the database and keeps the target site's key; after the reset that was a freshly generated one. The mail password was stored, present, and unreadable. The restore test had passed because `T9a` asked whether the password was *set*, not whether it could be *used*.
+
+Fixed: the original key is back on the live site and the failed digest has been re-sent; both restore scripts now restore the key from the backup; **`T9g`** checks that every stored secret actually decrypts; and the nightly backup refuses to bless a set if the site cannot read its own secrets. One set taken during the mismatch is quarantined, not deleted, with a note saying why.
+
+## Demonstration parties
+
+Eight customers, not one, lacked the "(DEMO)" suffix - the earlier check only listed customers with invoices. Several are one letter from real steel firms. All renamed; ledgers and documents followed.
+
+## The pattern, a fourth time
+
+Every item in this section was found by running the thing - installing, restoring, logging in as the person - and not one by reading configuration. Three of the fixes were to *checks* that had passed while asking an easier question than the one that mattered: whether a role was configured rather than whether a person could act, whether a password was set rather than readable, whether a permission row existed rather than whether Frappe applied it.

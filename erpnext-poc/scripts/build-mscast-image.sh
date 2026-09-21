@@ -20,7 +20,10 @@ if [ ! -f "$REPO/mscast_erp/pyproject.toml" ]; then
 fi
 
 cd "$REPO"
+BASE=${BASE:-mscast/erpnext:v16}
+echo "  base    : $BASE"
 docker build \
+  --build-arg BASE="$BASE" \
   -t "$TAG" \
   -f erpnext-poc/Containerfile.mscast \
   . 2>&1 | tail -30
