@@ -231,6 +231,4 @@ The build checks assert these on every deployment; a failure stops the release. 
 **Current result:** 42 checks.
 
 - **DEV:** 40 PASS, 2 WARN, 0 FAIL. The warnings (`T6e`, `T6g`) are director self-approval positions awaiting MSCAST's answers to Q20 and Q21 — not defects.
-- **Live POC:** 38 PASS, 3 WARN, 1 FAIL — its true state, left as is:
-  - `T10c` fails: demo biometric punches were deleted by MSCAST's trial admin.
-  - `T6f` warns: Aiqaz was given `System Manager`.
+- **Live POC:** the same, 40 PASS, 2 WARN, 0 FAIL. MSCAST's own administrators (Aiqaz and Arham Chandankeri) are listed in site config `mscast_admins`, so `T6f` accepts them and still warns about anyone else.

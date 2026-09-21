@@ -70,6 +70,7 @@ These were found by using the system the way MSCAST's staff would: logging in as
 | The home page always showed zero pending BRMs and zero open claims | Fixed |
 | A BRM could be marked "Certified" without ticking quantity, rate, inspection and delivery | Not allowed any more: all four must be ticked |
 | Printed documents showed login emails instead of people's names | Prints show full names |
+| Stores got "No permission for Stock Settings" when opening a stock transfer, and could not open the Free Issue at Vendor report; Accounts could not open Retention and Certificates | Each role can now open the reports its role card lists, and the settings its screens need |
 
 # 3. Still open
 

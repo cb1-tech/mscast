@@ -579,7 +579,10 @@ def t6_controls():
     #
     # Administrator is expected. A named administrator is expected. An account
     # that also does day-to-day work is not.
-    EXPECTED_ADMINS = {"Administrator", "admin@mscast.local"}
+    # MSCAST's own administrators are named in site config `mscast_admins` (a list),
+    # so full control given on purpose is accepted and anyone else still warns.
+    # On the Live POC: Aiqaz and Arham Chandankeri (owner's decision, 21 Sep 2026).
+    EXPECTED_ADMINS = {"Administrator", "admin@mscast.local"} | set(frappe.conf.get("mscast_admins") or [])
     admins = {u[0] for u in frappe.db.sql(
         """select h.parent from `tabHas Role` h join `tabUser` u on u.name = h.parent
            where h.role = 'System Manager' and u.enabled = 1
@@ -1098,8 +1101,11 @@ def t10_hr():
         "%d duplicates" % dup)
     punches = frappe.db.count("Employee Checkin")
     linked = frappe.db.count("Employee Checkin", {"attendance": ("is", "set")})
-    rec("T10c", "hr", "biometric punches converted into attendance", punches > 0 and linked > 0,
-        "%d punches, %d linked to attendance" % (punches, linked))
+    # No punches at all is a legitimate state: the device is not connected yet and
+    # attendance is entered by hand (SOP-12). Punches that exist must be converted.
+    rec("T10c", "hr", "biometric punches converted into attendance", punches == 0 or linked > 0,
+        "%d punches, %d linked to attendance" % (punches, linked) if punches
+        else "no punches yet - biometric device not connected; attendance entered by hand")
 
 
 def run():

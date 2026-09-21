@@ -9,7 +9,7 @@ title: "MSCAST ERP — Implementation Report"
 ## Headline
 
 - **All 97 requirements** in MSCAST's requirement document are implemented. Evidence per requirement: doc 03 (Requirements Traceability), 'Full matrix'.
-- **42 automated build checks.** DEV: 40 pass, 2 warn, 0 fail. Live POC: 38 pass, 3 warn, 1 fail (left as is). Full list: POC README, section 'Build checks'.
+- **42 automated build checks.** DEV: 40 pass, 2 warn, 0 fail. Live POC: the same. Full list: POC README, section 'Build checks'.
 - **Six requirements rest on assumptions** that MSCAST or the CA must confirm: doc 03, 'Assumptions carried'. Each assumption is also written into the narration of the affected vouchers in the system.
 
 ## Where things are

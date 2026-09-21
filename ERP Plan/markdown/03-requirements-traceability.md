@@ -24,7 +24,7 @@
 
 ## Build checks
 
-- **42 automated build checks.** DEV (21 September 2026): 40 pass, 2 warn (T6e, T6g: open until MSCAST answers Q20 and Q21), 0 fail. Live POC: 38 pass, 3 warn (T6e, T6g, T6f), 1 fail (T10c); left as is.
+- **42 automated build checks.** DEV (21 September 2026): 40 pass, 2 warn (T6e, T6g: open until MSCAST answers Q20 and Q21), 0 fail. Live POC: the same, 40 pass, 2 warn, 0 fail.
 - See the POC README, section 'Build checks'.
 
 ## Full matrix

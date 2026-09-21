@@ -387,7 +387,7 @@ Not on this list: **preparing and certifying a BRM are not separated for the dir
 - `admin@mscast.local` holds `System Manager` and nothing else.
 - No operational account may hold `System Manager`; it bypasses every control (payment block, PO approval, drawing release).
 - A fresh production install recreates the setup-wizard administrator with every manager role. Cutting it back is line 15 of the go-live checklist (doc 05).
-- Build check T6f reports any non-administrator holding `System Manager`. On the Live POC (21 September 2026) it warns: MSCAST's trial admin gave Aiqaz Chandankeri `System Manager`.
+- Build check T6f reports anyone holding `System Manager` who is not a named administrator. MSCAST's own administrators are named in the site setting `mscast_admins` (on the Live POC: Aiqaz and Arham Chandankeri).
 
 ## Where the rules live
 

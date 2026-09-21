@@ -4,7 +4,7 @@
 **Where:** WSL Ubuntu on thinkstation · **Live POC:** https://mscast.carobar.net (local http://localhost:8080) · **DEV:** https://mscastdev.carobar.net (local http://localhost:8081)
 
 - All company data is **fictional demo data**; customer and supplier names end with "(DEMO)". MSCAST's own identity (name, GSTIN, CIN, branding) is real and deliberate.
-- **Build checks: 42.** DEV: 40 PASS, 2 WARN, 0 FAIL. Live POC: 38 PASS, 3 WARN, 1 FAIL. See *Build checks*.
+- **Build checks: 42.** DEV and Live POC: 40 PASS, 2 WARN, 0 FAIL. See *Build checks*.
 
 ---
 
@@ -224,7 +224,7 @@ The eight originals: `Project MIS` · `PO vs PCC Variance` · `Drawing Register`
 42 automated checks in `seed/102_test_harness.py` (the harness). Run with `run-seed.sh 102_test_harness` or `run-harness.sh`; prefix `C=mscast-dev-backend-1` for DEV.
 
 - **DEV (21 September 2026):** 40 PASS, 2 WARN (T6e, T6g), 0 FAIL. Both warnings wait on MSCAST's answers to Q20 and Q21 (doc 03).
-- **Live POC:** 38 PASS, 3 WARN, 1 FAIL. This is the Live POC's true state and is left as is.
+- **Live POC (21 September 2026, after the Stores/Accounts access fix):** 40 PASS, 2 WARN (the same T6e, T6g), 0 FAIL.
 - **Fresh install (`new-mscast-site.sh`):** must pass the 19 system checks.
 
 | Check | Area | What it asserts | DEV | Live POC |
@@ -246,7 +246,7 @@ The eight originals: `Project MIS` · `PO vs PCC Variance` · `Drawing Register`
 | T6c | controls | Controls live in the application package; server scripts only where intended; fails if the retired BRM payment script reappears | PASS | PASS |
 | T6d | controls | Approval authority is where the business put it; 5 transitions asserted | PASS | PASS |
 | T6e | controls | Nobody can both raise and approve the same document. Warns: a director can prepare a PCC or verify a customer PO and approve it alone (Q20) | WARN | WARN |
-| T6f | controls | Only administrators hold System Manager. DEV: 2 holders (`admin@mscast.local`, `Administrator`). Live POC warns: Aiqaz was given System Manager | PASS | WARN |
+| T6f | controls | Only administrators hold System Manager. Administrators = `Administrator`, `admin@mscast.local`, plus site config `mscast_admins` (Live POC: aiqaz@ and arham@mcast.co.in, MSCAST's own admins) | PASS | PASS |
 | T6g | controls | No one person can create a document and then approve it. Warns: a director can create, certify and mark paid a BRM alone (Q21) | WARN | WARN |
 | T6h | controls | The auditor's login cannot change anything (effective rights, not stored rows) | PASS | PASS |
 | T6i | controls | Every role can raise the documents its role card describes | PASS | PASS |
@@ -270,7 +270,7 @@ The eight originals: `Project MIS` · `PO vs PCC Variance` · `Drawing Register`
 | T9i | automation | Links in emails point at the public address, not the container's internal name | PASS | PASS |
 | T10a | hr | Payroll and attendance loaded | PASS | PASS |
 | T10b | hr | No duplicate attendance for an employee on a date | PASS | PASS |
-| T10c | hr | Biometric punches converted. Live POC fails: MSCAST's trial admin deleted the demo punches | PASS | FAIL |
+| T10c | hr | Biometric punches converted into attendance; no punches at all is accepted (device not connected, attendance by hand) | PASS | PASS |
 
 ## Known limitations (not production yet)
 
