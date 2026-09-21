@@ -4,74 +4,84 @@ title: "MSCAST ERP — Independent Review and Verification"
 
 # MSCAST ERP — Independent Review and Verification
 
-**Version 2.0 · 21 September 2026**
+**Version 3.0 · 21 September 2026**
 
-**Purpose:** every finding from the two independent reviews (one across all delivered work, one against the ERPens proposal) and from the follow-up tests, with its current status and who must act. Each finding was re-tested against the running system, not re-read from documents.
+**What this is:** everything two outside reviews found wrong (or possibly wrong) with the POC, plus what our own testing found later. For each item: what was wrong, whether it is fixed, and who has to act next.
 
-- Build checks referenced below (`T…`) are listed in full in the POC README (POC README). Current result: 42 checks; DEV 40 PASS, 2 WARN (T6e, T6g: waiting on Q20/Q21), 0 FAIL. Live POC: 38 PASS, 3 WARN, 1 FAIL (T10c: demo biometric punches deleted by MSCAST's trial admin; T6f warns because Aiqaz holds System Manager). Live is left in that state.
-- Confirmed correct by the reviewers: platform choice and alternatives assessment; Setup Guide dependency order and go-live checklist; legal facts (audit-trail rule from 1 Apr 2023, Rule 3(5) India backups, ₹5 Cr e-invoice threshold, ₹250 Cr Ind AS threshold, SMC definition, 25.168% arithmetic, s.194C thresholds).
-- The engagement is unpaid: the implementer builds this for MSCAST as a family friend and is not competing with ERPens.
+**How to read it:**
 
-# Status of every finding
+- **Status:** *Fixed* · *Not a problem* (the review was mistaken) · *Waiting on MSCAST* · *Waiting on the CA* · *Parked* (the implementer decided to leave it for now) · *Open*.
+- **Ref** is the reviewer's label (A = confirmed by test, B = to be checked, C = big-picture). Other documents quote these labels, e.g. "B6". Items found by our own testing have no label.
+- Every fix is also re-tested automatically every night by the system's 42 built-in checks. The technical list is in the POC README, section "Build checks".
+- The work is unpaid, done for a family friend, and is not in competition with ERPens.
 
-| ID | Finding (one line) | Status | Evidence or fix | Who acts |
-|-------------|------------------------------|----------|-------------------------------------|----------|
-| A1 | Public Administrator login accepted the default password; `allow_consecutive_login_attempts = 10` and `session_expiry = 170:00` (7 days) are loose for a public site | Parked by owner | `admin`, `Administrator`, `admin123` rejected since 20 Sep. The replacement password was typed into a chat transcript and must be rotated again; rotation (and tighter session/login settings) is mandatory before real data or a server | Owner |
-| A2 | Real GSTIN (27AAGCM8444B1ZI) and real directors with invented shareholdings on the public demo | Closed | Shareholders are `Promoter A / B / C`. The GSTIN stays real on the demo; every print carries a DEMONSTRATION watermark (app code, site setting `mscast_demo`; never set in production). Check `T4b` | — |
-| A3 | Demo story contradictory: machine commissioned but never dispatched; `DN-26-00001` has no project | Withdrawn | Not a defect: `DN-26-00002` ships the caster (`CCM-2S-130 x1`) to PROJ-0001 before `COMM-2026-00001`; `DN-26-00001` is a spares sale to Konark Alloys, which has no project | — |
-| A4 | Draft dunning (₹4,80,000) contradicted "nothing overdue" | Closed | No Dunning records exist; no invoice is past due | — |
-| A5 | Retention posted against the wrong party (Konark Alloys) | Closed | `ACC-JV-2026-00007` reversed by `ACC-JV-2026-00020`; retention now `ACC-JV-2026-00021`, ₹4,52,530 against Ambika Steel Rolling Mills (10% of `SINV-26-00005`, ₹45,25,300; `SAL-ORD-2026-00003` has `retention_percent = 10`). Ledger and *Retention and Certificates* report agree. Rule: doc 11, A2 | — |
-| A6 | Report counts inconsistent across documents (15, 25, 26) | Closed | 28 custom reports; every document says 28, asserted by the census script | — |
-| B1 | BRM payment block narrower than the SOPs claim (Journal Entry, advance with no invoice, over-payment, utilities) | Closed | Control is `mscast_erp/controls/brm_payment.py` on `before_submit` of Payment Entry and Journal Entry; old Server Script deleted. Blocks: no certified BRM, advance with no invoice reference, amount above certificate, BRM already *Paid*. Supplier flag *Exempt from BRM certification* for utilities/rent/statutory (0 of 15 suppliers ticked on 21 Sep). Checks `T6a` (six routes, each asserting which rule blocked), `T6c` | MSCAST: list exempt suppliers |
-| B1-PO | PO separation ("one person cannot do both") never tested | Closed | Tested: sending a PO needs `Purchase User`, approving needs `MSCAST Director`; nobody holds both | — |
-| B1-BRM | A director can create, certify and mark paid the same BRM alone (holds `Projects Manager`, `MSCAST Director`, `Accounts Manager`) | Waiting on MSCAST | Check `T6g` warns on every build; question **Q21** (doc 03). The payment block still applies to directors | MSCAST (Q21) |
-| B1-PCC | A director can prepare a PCC or verify a customer PO and then approve it alone | Waiting on MSCAST | Check `T6e` warns; question **Q20** (doc 03) | MSCAST (Q20) |
-| B2 | "MSCAST Director is read-only, so every approval is broken" | Withdrawn | Premise wrong: `MSCAST Director` is the approving role; the read-only role is `Auditor` (the CA). The documents had mis-described it and were corrected | — |
-| B3 | MSME 45-day clock may start from the wrong date (MSMED s.15 acceptance/deemed acceptance; 15 days without written agreement; s.43B(h) micro and small only; s.16 interest disclosed under s.22) | Waiting on CA | Untested; needs MSCAST's supplier terms and the CA's position | CA |
-| B4 | Free issue to fabricators is a stock transfer, not a Subcontracting Order with job-work challan (no ITC-04 data, one-year return rule untracked) | Waiting on CA | Untested; needs MSCAST's practice and the CA's position | CA |
-| B5 | Project WIP method (billing ÷ contract value) is neither AS 7 nor AS 9 + AS 2; ₹450/hr engineering rate and 12% works overhead must be cost rates under AS 2 | Waiting on CA | Untested | CA |
-| B6 | Tax and payroll provisions may assume statutes MSCAST is not under | Waiting on CA | PF is not deducted: removed from payroll on MSCAST's instruction (under 20 staff, no UANs); ESI and the gratuity provision are kept. Open for the CA: confirm there is no continuing EPF coverage under s.1(5), s.115BAA election (Form 10-IC, irrevocable), "Lease Liabilities" head (Ind AS 116; under AS 19 an operating lease is off balance sheet) | CA |
-| B7 | Customer-deducted TDS (2% under s.194C) has no TDS-receivable treatment or 26AS reconciliation | Waiting on CA | Untested; needs confirmation that customers deduct | CA |
-| B8 | −₹24.7 L "stock adjustment" in the P&L | Closed | ₹24,74,400 reposted from `5119 Stock Adjustment` to `1910 Temporary Opening`. Tax provision recomputed: ₹15,32,737 on PBT ₹60,90,022 (25.168%). Trial balance nets to zero | — |
-| B9 | Two sales invoice series in one company | Closed | `ACC-SINV-2026-00001` renamed `SINV-26-00006`; GL followed | — |
-| B10 | TDS on `PINV-26-00003` does not reconcile | Withdrawn | Reviewer's arithmetic wrong: ₹5,16,000 net + 18% GST = ₹6,08,880, less ₹10,320 TDS (2.0000% of net, s.194C, computed excluding GST per CBDT Circular 23/2017) = ₹5,98,560 | — |
-| C1 | Built without MSCAST: every MSCAST form is an inference from the requirement PDF; PCC built as pre-quote whereas S-02 says prepared by Sales from the Sales Order | Waiting on MSCAST | Q2 (PCC), Q3 (Project MIS), Q4 (BRM), Q5 (MDM, DI, Annexure-I) in doc 03; requested in doc 10. Present the POC as "our reading of your requirements — correct us" (doc 12), not "97 of 97 implemented" | MSCAST |
-| C2 | Delivery measured against the declined ERPens proposal; no signed scope or fee | Withdrawn | Unpaid work for a family friend, not competing with ERPens; no fee, invoice, milestone or acceptance criterion exists. Code ownership settled: `github.com/cb1-tech/mscast` (owner-held). The expectation risk is kept under C1 | — |
-| C3 | Operating model needs more people than MSCAST has (Director approves PCC, quotation, kick-off, claims, closure, payroll, payments; under 10 staff) | Open | Risk: shared logins destroy the audit trail. Also: timesheets feed WIP and MIS and decay silently; drawing register duplicates CAD/Drive; retention is a manual JV per invoice; free-issue consumption is manual; several scheduled mails a day | MSCAST (Q20/Q21, owners of monthly jobs) |
-| C4 | No path from POC to production | Closed | Installable app `mscast_erp`, repo `github.com/cb1-tech/mscast` (tag `v0.9.0`), fixtures exported; `new-mscast-site.sh` builds a fresh site (six apps, no demo data) and must pass 19 system checks. Exact system with data: restore a backup (tested; all checks passed; under 3 minutes). Known limitation: `reset-poc.sh` seed scripts do not rebuild the demo data from empty and will not be repaired | — |
-| C5 (commercial) | Commercial half: no support agreement | Withdrawn | No commercial relationship to formalise | — |
-| C5 (delivery) | Delivery half: MSCAST depends on one person, on personal infrastructure (implementer's PC in Japan, `carobar.net` domain, `uattech@carobar.net` mail, tunnel) | Open | Mitigations in place: app, fixtures, 42 build checks, fresh-install and restore paths, documentation. Remaining: MSCAST names who runs the monthly and annual jobs; VPS move parked by owner | MSCAST; Owner (VPS) |
-| C6 | Accounting layer ahead of the CA: WIP/revenue policy, MSME clock, tax regime, PF/ESI/gratuity, works-contract GST, retention posting | Waiting on CA | See B3–B7. If the CA is not engaged first, accounts stay in Tally | CA; MSCAST (CA contact) |
-| F1 | Kick-off could be approved with the PO checklist incomplete (condition on one route only; `KICK-2026-00002` had passed) | Closed | Every route into a guarded state carries the condition; check `T6j`. Fix is in the app's workflow fixture (fixtures re-import on every migrate) | — |
-| F2 | Four roles could not do their job (`Design User` had no permission rows; Stores, Quality, Purchase Executive likewise) | Closed | Permissions match the Role Cards (doc 09); check `T6i` | — |
-| F3 | Auditor roles could write (`Auditor` on two GST documents; `MSCAST Statutory Auditor` could delete MSCAST Exception records) | Closed | Read-only everywhere; check `T6h` | — |
-| F4 | Permissions matrix: one custom permission row replaced all standard rows; on five doctypes named approvers (Mustaque, Aiqaz, Anita, directors on Transmittal) could not open what they approve | Closed | Matrix written as a whole set by `mscast_erp.controls.permissions` on every install and migrate; approvers named in workflows can open, edit and submit what they approve. Checks `T6k` (per real user), `T6l` (no role silently dropped) | — |
-| F5 | Fixtures captured other apps' configuration (663 of 702 custom fields, 344 of 382 property setters, 7 of 10 email templates), which would overwrite their releases on migrate | Closed | Fixtures carry only MSCAST's records (39 / 38 / 3); new customisations must carry module **MSCAST**. Check `T6m` | — |
-| F6 | DEMONSTRATION watermark lost on `bench migrate` (was a setup script) | Closed | Watermark is app code; check `T4b` (both directions) | — |
-| F7 | Fresh install lacked live configuration: `Design User` role, "drawing awaiting customer approval" notification, directors' and statutory auditor's access to the books | Closed | Packaged; oversight rights declared in `mscast_erp/controls/oversight.json`; `completeness-test.sh` compares a fresh install with live | — |
-| F8 | Encryption key: a restore kept the target site's key, so stored secrets (mail password) could not be decrypted | Closed | Both restore scripts restore the key (`restore-key.sh`); check `T9g` (every secret decrypts); nightly backup refuses a set whose secrets do not decrypt. One set from the mismatch is quarantined | — |
-| F9 | `server_script_enabled` is bench-wide and not carried by a restore (all MSCAST server scripts were off on the first DEV build) | Closed | Set by `dev-create.sh`; check `T1c`. `restore-key.sh` no longer aborts on JSON `true` | — |
-| F10 | Links in emails pointed at `http://frontend` | Closed | `host_name` set; check `T9i` | — |
-| F11 | Eight demo customers lacked the "(DEMO)" suffix | Closed | Renamed; ledgers and documents followed | — |
-| F12 | Theme stylesheet returned 404 | Closed | `deploy-app.sh` recreates the web container and fails unless the stylesheet is served | — |
-| F13 | Drawing-register access: Meera could not open the Drawing Register | Closed | Report-role rule now only adds roles, never removes them | — |
-| F14 | Report names containing `/` gave a server error from the desk | Closed | Renamed; check `T2b` runs each report as the users who need it | — |
-| F15 | Six reports failed from the desk: literal `%` in SQL | Closed | Escaped; check `T2` runs reports the way the desk does | — |
-| F16 | Home-page literals: pending-BRM and open-claim counts compared against non-existent status names | Closed | Fixed; check `T1b` checks server-script literals | — |
-| F17 | BRM four-checks guard: a BRM could be Certified with none of qty, rate, inspection, delivery ticked | Closed | Guarded; check `T6n` | — |
-| F18 | Prints showed login emails instead of names for prepared/approved/certified by | Closed | Prints show full names | — |
+# 1. What the reviewers found
 
-# Open items
+| What was wrong | Status | What was done | Who acts next | Ref |
+|------------------------------|------------|----------------------------------|-----------------|-------|
+| The public site accepted the default administrator password, and logins stay valid for 7 days | Parked | Default passwords no longer work. A new password and shorter login settings are due before real data or a server | The implementer, before go-live | A1 |
+| The public demo shows MSCAST's real GST number and real director names | Fixed | Shareholders shown as "Promoter A / B / C". Every printed document carries a large DEMONSTRATION mark | — | A2 |
+| "A machine was commissioned that was never dispatched" | Not a problem | It was dispatched (delivery note DN-26-00002) before commissioning. The other delivery note is a spares sale with no project | — | A3 |
+| A draft payment reminder contradicted "nothing overdue" | Fixed | No reminders exist and no invoice is overdue | — | A4 |
+| Retention money was booked against the wrong customer | Fixed | Wrong entry reversed; retention now booked against Ambika Steel Rolling Mills, whose contract has 10% retention | — | A5 |
+| Different documents gave different counts of reports | Fixed | All documents say 28 custom reports, and a script checks the count | — | A6 |
+| The rule "no supplier payment without a certified BRM" could be bypassed (by journal entry, by advance payment, by paying more than certified) — and it blocked electricity bills too | Fixed | The rule now covers every way of paying. Utilities, rent and statutory payees can be marked exempt | MSCAST: say which suppliers are exempt | B1 |
+| Nobody had tested that a purchase order needs two people | Fixed | Tested: Purchase sends it, a director approves it; nobody can do both | — | B1 |
+| A director can create a BRM, certify it and pay it — all alone | Waiting on MSCAST | Flagged every night as a warning. It is question Q21 | MSCAST: answer Q21 | B1 |
+| A director can prepare a cost sheet (PCC), or check a customer PO, and then approve it alone | Waiting on MSCAST | Flagged every night as a warning. It is question Q20 | MSCAST: answer Q20 | B1 |
+| "The director role is read-only, so every approval is broken" | Not a problem | Directors do approve; only the CA's login is read-only. The documents had described it wrongly and were corrected | — | B2 |
+| The 45-day MSME payment clock may start on the wrong date | Waiting on the CA | Needs MSCAST's supplier terms and the CA's view | CA | B3 |
+| Material sent free to fabricators is recorded as a stock transfer, not as job work under GST | Waiting on the CA | Needs MSCAST's practice and the CA's view | CA | B4 |
+| The method for valuing unfinished project work may not meet accounting standards | Waiting on the CA | The CA must choose the method | CA | B5 |
+| Tax and payroll may assume laws that do not apply to MSCAST | Waiting on the CA | PF is not deducted (removed on MSCAST's instruction: under 20 staff). ESI and gratuity stay. The CA must confirm there is no continuing PF registration, the 25.168% tax option and the lease heading | CA | B6 |
+| Tax deducted by customers (2%) is not tracked | Waiting on the CA | Needs confirmation that customers deduct it | CA | B7 |
+| A ₹24.7 lakh "stock adjustment" wrongly increased profit | Fixed | Opening stock moved to the correct account. Tax recalculated: ₹15,32,737 on profit before tax of ₹60,90,022 | — | B8 |
+| Two numbering series for sales invoices | Fixed | One series now | — | B9 |
+| "Tax deducted on one supplier bill doesn't add up" | Not a problem | The reviewer's arithmetic was wrong; the figures reconcile | — | B10 |
+| Every MSCAST-specific form is our guess from the requirement document, because we have no real samples | Waiting on MSCAST | Samples requested in doc 10 (questions Q2–Q5). Present the POC as "our reading of your requirements" | MSCAST: send real PCC, Project MIS, BRM, MDM, DI and Annexure-I | C1 |
+| Delivery was being measured against the ERPens proposal, with no signed scope or fee | Not a problem | This is unpaid work for a family friend, not a competing bid | — | C2 |
+| The system needs more people to run it than MSCAST has, and shared logins would destroy the audit trail | Open | The role cards (doc 09) spread the work. MSCAST must name who does the monthly jobs | MSCAST | C3 |
+| There was no way to move the POC to a real server | Fixed | Everything is packaged in an installable app. A clean system can be built in one step, and a backup restores in under 3 minutes (tested) | — | C4 |
+| No support agreement | Not a problem | There is no commercial relationship to formalise | — | C5 |
+| MSCAST depends on one person and his home equipment (PC in Japan, his domain, his mail) | Open | Reduced by the app, the nightly backups and checks, the documents and the DEV copy. Moving to a server in India is parked for now | MSCAST: name who runs the system; the implementer: server move later | C5 |
+| The accounting set-up is ahead of the CA's decisions | Waiting on the CA | See B3–B7. Until the CA agrees, the books stay in Tally | CA; MSCAST to give the CA's contact | C6 |
 
-- **MSCAST:** real formats (PCC, Project MIS, BRM, MDM with DI and Annexure-I) — C1; answers to Q20 and Q21; list of BRM-exempt suppliers; owners of the monthly and annual jobs (C3, C5); Tally export; CA name and contact. Requested in doc 10.
-- **CA:** B3, B4, B5, B7; EPF: confirm no continuing coverage under s.1(5) (B6); the s.115BAA election; the Ind AS 116 "Lease Liabilities" head; works-contract GST and retention posting (C6).
-- **Parked by owner:** Administrator password rotation and tighter session/login settings (A1, until real data or a server); VPS move (C5); tunnel fix for live screen refresh (socket.io).
-- **Before go-live:** migration plan, training material, named support contact at MSCAST (C5).
+# 2. What our own testing found later — all fixed
 
-# Lessons that are now rules
+These were found by using the system the way MSCAST's staff would: logging in as each person, trying each step, installing it fresh, restoring backups. Each one now has a nightly check.
 
-- Test a finding against the running system (attempt the action, as the real user) before accepting or rejecting it; a review is a set of hypotheses.
-- Every fixed finding becomes a build check, and a new check must be seen to fail before the fix.
-- All configuration lives in the `mscast_erp` app; nothing is set only in the database. `bench migrate` re-imports fixtures; `completeness-test.sh` shows anything live has that a fresh install lacks.
-- A restore does not carry settings outside the database: `encryption_key` (`restore-key.sh`), `server_script_enabled` (bench-wide), `host_name`.
-- One custom permission row replaces all of a doctype's standard rows; permissions are written only as a whole set by `mscast_erp.controls.permissions`.
+| What was wrong | What was done |
+|--------------------------------------------------------------|--------------------------------------|
+| A project kick-off could be approved even when the customer PO did not match the offer (one route skipped the check) | Every route into "approved" now requires the PO checklist to be complete |
+| Four roles could not do their jobs: the drawing office could not open a drawing; Stores, Quality and the Purchase Executive had similar gaps | Each role can now do exactly what its role card says |
+| The CA's read-only login could change or delete some records | The CA's login is read-only everywhere |
+| Directors could not open some documents they are meant to approve (e.g. Mustaque could not open a kick-off) | Whoever approves a document can always open it |
+| The app would have overwritten other components' settings when installed | The app now carries only MSCAST's own settings |
+| The DEMONSTRATION mark disappeared after an upgrade | The mark is now part of the app and is checked every night |
+| A fresh install was missing the drawing office role, one email alert, and the CA's access to the books | All added to the app; a script compares a fresh install with the running system |
+| After restoring a backup, the saved email password stopped working | The restore now also puts back the key that unlocks saved passwords |
+| After restoring onto another machine, MSCAST's custom rules were silently switched off | The restore now switches them on; a check confirms it |
+| Links in emails did not open (they pointed to an internal address) | Links now use the public address |
+| Eight demo customers were not marked as demo | Each now ends in "(DEMO)" |
+| The MSCAST colours and styling did not load | Fixed, and the deploy script now refuses to finish unless they load |
+| The drawing office could not open the Drawing Register | Fixed |
+| Three reports crashed because of a "/" in their names | Renamed |
+| Six reports failed when opened from the screen | Fixed |
+| The home page always showed zero pending BRMs and zero open claims | Fixed |
+| A BRM could be marked "Certified" without ticking quantity, rate, inspection and delivery | Not allowed any more: all four must be ticked |
+| Printed documents showed login emails instead of people's names | Prints show full names |
+
+# 3. Still open
+
+- **MSCAST:** send real samples (PCC, Project MIS, BRM, MDM with DI and Annexure-I); answer Q20 and Q21; list suppliers exempt from the BRM rule; name who does the monthly jobs; send the Tally export; give the CA's contact. The request is doc 10.
+- **The CA:** B3, B4, B5, B7; B6 (confirm no continuing PF registration; the tax option; the lease heading); C6.
+- **Parked by the implementer:** new administrator password and shorter login settings (until real data or a server); the move to a server in India; the fix that lets screens refresh by themselves over the public link.
+- **Before go-live:** a data migration plan from Tally, training material, and a named person at MSCAST who looks after the system.
+
+# 4. Rules we now follow because of these findings
+
+- A finding is tested on the running system, logged in as the real person, before it is accepted or rejected.
+- Every fix gets a nightly check, and the check must be seen to fail before the fix.
+- Every setting lives in the installable app, never only in the database, so a fresh install is identical.
+- A restore also puts back the three settings that are not in the database backup (the password key, the custom-rules switch, the public address).
+- Permissions are written as a complete set for every role, never one row at a time.

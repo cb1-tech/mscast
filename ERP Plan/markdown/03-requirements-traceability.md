@@ -141,7 +141,7 @@
 | Executive dashboard | KPI number cards and charts on the MSCAST workspace, plus a role-aware home page |
 | Letterhead | MSCAST letterhead with address, CIN, GSTIN, IEC on all custom print formats, with a demonstration watermark |
 | MSCAST forms | **25 doctypes** (8 of them child tables) |
-| Print formats | **16** MSCAST print formats; every one with a sample document is rendered by the build checks |
+| Print formats | **15** MSCAST print formats; every one with a sample document is rendered by the build checks |
 | Custom reports | **28** MSCAST query reports |
 | Controls | BRM payment block (Payment Entry and Journal Entry), four approval workflows plus the drawing release workflow, monthly archival job |
 | Roles | `MSCAST Director` (approving), `Auditor` (read-only, including Version history), `Design User` (the drawing office can issue drawings but not release them) |
