@@ -28,3 +28,12 @@ erpnext-poc/scripts/.*.sh
 # Database dumps. Real data, large, and not the repo's job.
 backups/
 !erpnext-poc/apps.json
+
+# dev-instance seed backup (client data + encryption key)
+backups-dev-seed/
+*site_config_backup.json
+
+# one-off diagnostic probes (underscore prefix = scratch, never shipped)
+erpnext-poc/scripts/_*.sh
+erpnext-poc/seed/_*.py
+erpnext-poc/.sids*.json

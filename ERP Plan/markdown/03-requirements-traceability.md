@@ -1,8 +1,10 @@
 # MSCAST ERP - Requirements Traceability (v1.9)
 
-**Version 1.9 · 21 Sep 2026** · every requirement implemented; verified by a 37-check automated harness.
+**Version 2.0 · 21 Sep 2026** · every requirement implemented; verified by a 42-check automated harness.
 
 Source of requirements: MSCAST `ERP_Requirement_Final.pdf`. Solution: ERPNext v16.35 + India Compliance 16.9.1 + Frappe HR 16.19 + India Payroll 16.0.4 + `mscast_erp` 0.1.0 (release **`v0.9.0`**).
+
+> **What changed in v2.0.** No requirement changed status. Taking the demonstration screenshots meant using the system as its users do, one login at a time, and that found faults every build check had missed. **Three reports returned a server error from the desk** because their names contained `/`, and **six more failed** because a `%` in their SQL was read as a formatting character. The check had run them from a script, not through the page a user opens. **The home page could never count pending BRMs or open claims**: it compared against status names that don't exist. **A BRM could be marked Certified with none of its four checks ticked.** Emailed links pointed at an internal host name. All fixed, each with a check that fails first (T1b, T2 run as the desk does, T2b, T6n, T9i). Building a separate DEV copy then showed that **a restore onto another server leaves every MSCAST server script switched off** while every other check passes; T1c now catches it. The harness is 42 checks.
 
 > **What changed in v1.9.** No requirement changed status. The evidence behind several changed, because a fresh install of the package and an upgrade of a copy of the live system were both tested for the first time. **The directors could not open some of the documents they approve** - the managing director could not open a Project Kick-off, Aiqaz could not open a Purchase Order - because a permission change had dropped every standard role from five document types. **A fresh install lacked the drawing office's role and the auditor's read access to the books.** **An upgrade would have stripped the demonstration watermark** and would have overwritten other applications' configuration, including India Compliance's GST fields. All fixed in the package, and each now has a build check: the harness is 37 checks. Two further checks (T7a, T7b) turned out to have been examining nothing since the documents moved into the package; they now fail if they find nothing to examine.
 >
@@ -36,12 +38,15 @@ Source of requirements: MSCAST `ERP_Requirement_Final.pdf`. Solution: ERPNext v1
 | M-02 | 'Finance Scaling Management' means funding capacity for the order book | MSCAST (Q1) |
 | M-03 | Biometric device pushes punches to the standard checkin endpoint | MSCAST (Q6) |
 
-## Test harness result (20 Sep 2026)
+## Test harness result (21 Sep 2026)
 
 | Check | Area | Result |
 |---|---|---|
 | T1 | reports | 326 SQL literal comparisons validated against the fields' real Select options - 0 mismatched |
-| T2 | reports | 28 custom reports execute - 0 failures |
+| **T1b** | reports | **server-script literals match the fields' real Select options** - the home page's counts |
+| **T1c** | reports | **server scripts are enabled on this bench** - a restore does not carry the switch |
+| T2 | reports | every custom report executes **the way the desk runs it** (with a filters dict) - 0 failures |
+| **T2b** | reports | **report names are safe in a URL, and each report opens for the people who need it**, run as those users |
 | T3 | reports | no report uses the container's UTC date |
 | T4 | prints | 15 custom print formats render - 0 problems |
 | T4b | prints | demonstration site: every print watermarked; any other site: none |
@@ -59,6 +64,7 @@ Source of requirements: MSCAST `ERP_Requirement_Final.pdf`. Solution: ERPNext v1
 | T6h | controls | the auditor's login cannot change anything - effective rights, not stored rows |
 | T6i | controls | every role can raise the documents its role card describes |
 | T6j | controls | a guarded workflow state is guarded on every route into it |
+| **T6n** | controls | **a BRM cannot be certified with its four checks unticked** - attempted as a director, then rolled back |
 | **T6k** | controls | **everyone who can approve a document can open it** - asked per real user |
 | **T6l** | controls | **no role silently lost access** to a customised document type |
 | **T6m** | controls | **the package ships all of MSCAST's configuration and none of anyone else's** |
@@ -70,9 +76,10 @@ Source of requirements: MSCAST `ERP_Requirement_Final.pdf`. Solution: ERPNext v1
 | T9f | automation | every enabled MSCAST scheduled job has actually run |
 | T9g | automation | every stored secret decrypts with this site's key |
 | T9h | automation | the nightly backup ran in the last 26 hours and succeeded |
+| **T9i** | automation | **links in emails point at the public address**, not the container's internal name |
 | T10a-c | hr | payroll and attendance loaded, no duplicates, biometric punches converted |
 
-**35 pass, 2 warn, 0 fail, of 37.**
+**40 pass, 2 warn, 0 fail, of 42** (DEV copy, 21 Sep 2026; the live site was not re-run while users are trying it).
 
 ### The two warnings, and why they are warnings
 
@@ -179,7 +186,7 @@ Both are positions somebody has taken, not defects to chase. Both are stated in 
 | AC-18 | Accounts POV (inventory) | GST on closing inventory | Not a regular GST concept (ITC reversal only on cancellation) | Open question | P0 | – | 'MSCAST GST on Closing Inventory (ITC and ITC-04)' - stock by warehouse with HSN, value, embedded ITC and the treatment note, separating stock at the job worker (ITC-04, one-year rule) from stock on own premises |
 | AC-19 | Accounts POV (sales) | Sales reconciliation incl. with GSTR-1; rate difference; rejections | GSTR-1 (Books vs Filed); credit/debit notes; sales returns | Standard | P4 | S | GST sales invoices with correct CGST/SGST vs IGST - **checked against the place of supply on every invoice, every harness run**; GSTR-1 and GST Sales Register available |
 | AC-20 | Accounts POV (purchase) | Purchase reconciliation with GSTR; rejections | Purchase Reconciliation Tool (GSTR-2A/2B); purchase returns | Standard | P4 | S | PINV with input IGST; Purchase Reconciliation Tool available |
-| AC-21 | Accounts POV (expenses) | Expenses: monthly volume, last-year comparison, ratio to sales | P&L Growth View and Margin View | Standard | P4 | S | 'MSCAST Expense Analysis (vs last year, % of sales)' report |
+| AC-21 | Accounts POV (expenses) | Expenses: monthly volume, last-year comparison, ratio to sales | P&L Growth View and Margin View | Standard | P4 | S | 'MSCAST Expense Analysis (vs last year, share of sales)' report |
 | AC-22 | Accounts POV (expenses) | TDS deduction on expenses | Tax Withholding Categories (194C/194J etc.) | Standard | P4 | S | TDS 194C category (2%) on the fabricator, with TDS deducted on the invoice |
 | AC-23 | Accounts POV (payroll) | Monthly payroll matching all deductions: PF, ESI, PT, TDS | Salary Register + PF/ESI/PT/TDS registers | Standard (+ bug check) | P5 | M | 6 salary slips with PF 12%, ESIC, Professional Tax MH and TDS; india_payroll registers need statutory config. v16 Maharashtra PT women-exemption bug to be checked before go-live |
 | AC-24 | Accounts POV (expenses) | Prior period expenses; fines & penalties under any law | Separate GL accounts + JV tagging | Config | P4 | S | Both accounts created |

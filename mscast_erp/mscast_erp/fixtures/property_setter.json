@@ -530,5 +530,17 @@
   "property_type": "Check",
   "row_name": null,
   "value": "1"
+ },
+ {
+  "default_value": null,
+  "doc_type": "User",
+  "doctype": "Property Setter",
+  "doctype_or_field": "DocType",
+  "field_name": null,
+  "module": "MSCAST",
+  "name": "User-main-show_title_field_in_link",
+  "property": "show_title_field_in_link",
+  "property_type": "Check",
+  "value": "1"
  }
 ]

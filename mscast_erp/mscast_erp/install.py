@@ -69,6 +69,11 @@ def configure():
     demo.apply()
     hide_stock_workspaces()
     set_landing_page()
+    # The stock 'Getting Started / Accounting Onboarding' pop-over sits over
+    # every accounts screen with '0/6 steps completed'. MSCAST is set up by the
+    # package, not by that wizard.
+    if frappe.get_meta("System Settings").has_field("enable_onboarding"):
+        frappe.db.set_single_value("System Settings", "enable_onboarding", 0)
     frappe.db.commit()
     verify_controls()
 

@@ -92,7 +92,13 @@ AUDIT_READONLY = ("Auditor", "MSCAST Statutory Auditor")
 # A workflow state that a condition guards must be guarded on EVERY route in.
 KICKOFF_OK = ("doc.chk_price and doc.chk_scope and doc.chk_payment_terms "
               "and doc.chk_tax_gst")
-GUARDED_STATES = {("MSCAST Project Kick-off", "PO Verified"): KICKOFF_OK}
+# A BRM certifies that quantity, rate, inspection and delivery were checked -
+# that is what releases the money. Until 21 Sep 2026 a director could certify one
+# with all four boxes unticked; the demo screenshot of a certified BRM showed
+# exactly that. Same rule as the kick-off: the checklist gates the state.
+BRM_OK = "doc.qty_check and doc.rate_check and doc.inspection_check and doc.delivery_check"
+GUARDED_STATES = {("MSCAST Project Kick-off", "PO Verified"): KICKOFF_OK,
+                  ("MSCAST BRM Certification", "Certified"): BRM_OK}
 
 
 # Whoever a workflow names as an approver can open, edit and - where their step
@@ -241,10 +247,42 @@ def enforce_workflow_guards():
     return fixed
 
 
+def enforce_report_roles():
+    """A register of a document is open to everyone who can report on that document.
+
+    Add-only, on reports about MSCAST's own documents. The report runner checks
+    two things per USER across all their roles - a role listed on the report, and
+    the 'report' right on its document type - and they need not come from the same
+    role. So a listed role that looks useless on its own may still be what lets a
+    particular user in; removing it can take away access that works. An earlier
+    version of this rule did remove such roles, on 21 Sep 2026, and was reverted
+    the same hour. Adding can only grant.
+
+    Found by the demo screenshot run: the Drawing Register was closed to the
+    drawing office.
+    """
+    changed = []
+    for r in frappe.get_all("Report", filters={"is_standard": "No"}, fields=["name", "ref_doctype"]):
+        if not r.ref_doctype or frappe.db.get_value("DocType", r.ref_doctype, "module") != "MSCAST":
+            continue
+        can = {p.role for p in frappe.get_meta(r.ref_doctype).permissions
+               if p.report and not p.permlevel} - {"All", "Guest", "Desk User"}
+        doc = frappe.get_doc("Report", r.name)
+        add = sorted(can - {x.role for x in doc.roles})
+        if add:
+            for role in add:
+                doc.append("roles", {"role": role})
+            doc.flags.ignore_permissions = True
+            doc.save()
+            changed.append("%s (+%s)" % (r.name, ", ".join(add)))
+    return changed
+
+
 def enforce():
     """Called from install.configure(). Repairs loudly, never quietly."""
     perms = enforce_permissions()
     guards = enforce_workflow_guards()
+    reports = enforce_report_roles()
     frappe.db.commit()
     frappe.clear_cache()
     if perms:
@@ -252,6 +290,10 @@ def enforce():
               % (len(perms), ", ".join(perms)))
     else:
         print("mscast_erp: permission matrix verified, no change")
+    if reports:
+        print("mscast_erp: report access corrected: " + "; ".join(reports))
+    else:
+        print("mscast_erp: report access verified")
     if guards:
         print("mscast_erp: REPAIRED workflow guard(s) - the fixture and the rule "
               "disagree, reconcile before the next deploy:")

@@ -113,7 +113,7 @@ bash $R 156_repair_after_expand 158_notif_roles 159_mail_reachable
 # --- segregation of duties: preparers prepare, the two directors approve ---
 bash $R 161_approval_authority 172_drawing_workflow
 bash $R 127_exception_engine 179_exception_doctype_align 181_admin_cutback 182_no_operational_admins
-bash $R 183_permissions_and_kickoff 184_demo_coherence 185_pf_b8_a5 186_demo_watermark 187_brm_control 188_demo_naming 189_exception_into_app
+bash $R 183_permissions_and_kickoff 184_demo_coherence 185_pf_b8_a5 186_demo_watermark 187_brm_control 188_demo_naming 189_exception_into_app 190_demo_story 191_route_safe_reports 192_report_percent
 bash $R 10_test_reports 102_test_harness
 
 cat <<'NOTE'

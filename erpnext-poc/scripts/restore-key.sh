@@ -23,12 +23,21 @@ echo "  encryption key restored on '$SITE' from $(basename "$CFG") (${KEY:0:6}..
 # MSCAST's own site settings (mscast_demo, mscast_briefing_to, ...) live in the
 # same file and are lost the same way. mscast_demo decides whether prints carry
 # the DEMONSTRATION watermark, so losing it on a restored demo removes the mark.
-python3 - "$CFG" <<'PY2' | while IFS=$'\t' read -r k v; do
+# Written through update_site_config from a JSON file, NOT `bench set-config
+# --parse`: --parse rejects JSON booleans (true/false), so a nested value such as
+# mscast_last_backup {"ok": true} failed and, under set -e, silently aborted any
+# caller (found 21 Sep 2026 building the dev instance).
+T=$(mktemp -d)
+python3 - "$CFG" > "$T/mscast.json" <<'PY2'
 import json, sys
-for k, v in json.load(open(sys.argv[1])).items():
-    if k.startswith("mscast_"):
-        print("%s\t%s" % (k, json.dumps(v)))
+print(json.dumps({k: v for k, v in json.load(open(sys.argv[1])).items() if k.startswith("mscast_")}))
 PY2
-  docker exec "$C" bash -c "cd /home/frappe/frappe-bench && bench --site $SITE set-config --parse $k '$v'" >/dev/null
-  echo "  restored $k"
-done
+docker cp "$T/mscast.json" "$C:/tmp/mscast-cfg.json" >/dev/null
+docker exec "$C" bash -c "cd /home/frappe/frappe-bench/sites && ../env/bin/python -c \"
+import json, frappe
+from frappe.installer import update_site_config
+frappe.init(site='$SITE')
+for k, v in json.load(open('/tmp/mscast-cfg.json')).items():
+    update_site_config(k, v); print('  restored ' + k)
+\"" 2>&1 | grep -vE 'RuntimeWarning|sys.prefix|sys.exec_prefix|frozen site'
+rm -rf "$T"

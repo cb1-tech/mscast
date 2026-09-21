@@ -365,3 +365,20 @@ The last test compared a fresh install with the live site, record by record and 
 The role and the notification are now in the package. The two oversight roles' rights are declared exactly, as data (`oversight.json`), so they read as a specification rather than being inferred from code. `completeness-test.sh` repeats the comparison and names anything that exists only in the database.
 
 This is the same finding as C4, at a finer grain. The rebuild test showed that the *demo data* does not replay; this one showed that some *configuration* did not either. The only way to know what a package reproduces is to install it somewhere empty and compare.
+
+## Using the system as its users do found what the checks could not
+
+Taking the demonstration screenshots meant logging in as each person and opening each screen. It found eight faults, all of which every build check had passed:
+
+- **The theme stylesheet returned 404.** The image had no `assets/mscast_erp` link, and the web container was never recreated on deploy. `deploy-app.sh` now recreates it and fails unless the stylesheet is served.
+- **Meera could not open the Drawing Register.** A report opens only for a user who holds one of the report's roles *and* has report rights on its document type. The rule now only ever *adds* roles, never removes them: an earlier version that dropped roles was wrong and was reverted the same hour.
+- **Three reports gave a server error from the desk**, because their names contained `/`. Renamed; `T2b` checks names and runs each report as the people who need it.
+- **Six reports failed from the desk** because a literal `%` in their SQL was read as a formatting character. The check ran them from a script, where that doesn't happen. Escaped, and `T2` now runs them the way the desk does.
+- **The home page could never count pending BRMs or open claims.** It compared against status names that don't exist. `T1b` now checks server-script literals the way `T1` checks reports.
+- **A BRM could be marked Certified with none of its four checks ticked.** Now guarded. `T6n` attempts it as a director and was seen to fail before the fix and pass after.
+- **Links in emails pointed at `http://frontend`.** `host_name` set; `T9i`.
+- **Prints showed login emails instead of names** for prepared/approved/certified by. They now show the full name.
+
+## A DEV copy, and one more setting that a restore loses
+
+Users are now trying the live POC, so demonstrations, screenshots and development moved to a separate copy at `mscastdev.carobar.net`. It has its own database and workers and runs the same image, and it was added to the tunnel without the live address dropping. Building it from a backup showed that **`server_script_enabled` is a bench-wide setting that a restore does not carry**. Every MSCAST server script was off while all 41 checks passed. `T1c` makes it 42, and it was seen to fail before the fix. The same build found `restore-key.sh` aborting halfway, on a JSON `true`.

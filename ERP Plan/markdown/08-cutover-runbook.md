@@ -4,7 +4,7 @@ title: "MSCAST ERP — Production Cutover Runbook"
 
 # MSCAST ERP — Production Cutover Runbook
 
-**For:** MSCAST Engineering Pvt Ltd · **Target:** self-managed VPS in India · **Version:** 2.3 · **Date:** 21 September 2026
+**For:** MSCAST Engineering Pvt Ltd · **Target:** self-managed VPS in India · **Version:** 2.4 · **Date:** 21 September 2026
 
 This is the sequence from "the POC works on a laptop in Japan" to "MSCAST runs its business on this". It assumes the `mscast_erp` app — the configuration as an installable package — because nothing here works if the system can only be rebuilt by hand.
 
@@ -65,14 +65,21 @@ bench get-app ./mscast_erp
 bench new-site erp.mscast.co.in --install-app erpnext
 bench --site erp.mscast.co.in install-app india_compliance hrms india_payroll
 bench --site erp.mscast.co.in install-app mscast_erp
+bench set-config -g server_script_enabled true   # bench-wide: a restore does NOT carry it
 bench --site erp.mscast.co.in set-config server_script_enabled true
+bench --site erp.mscast.co.in set-config host_name https://erp.mscast.co.in   # else emailed links say http://<container>
 bench --site erp.mscast.co.in enable-scheduler     # new sites start with it OFF
 bench --site erp.mscast.co.in migrate
 ```
 
 **Never set `mscast_demo` on a production site.** It is the switch that stamps DEMONSTRATION on every print; on any other site the app actively removes the mark, and check `T4b` fails if a production print carries it.
 
-The order of the four `install-app` steps is a dependency order, not a preference: `india_payroll` extends `hrms`, and `mscast_erp` carries `india_compliance`'s custom fields. `erpnext-poc/scripts/new-mscast-site.sh` does all of this and then runs the build checks that measure the system itself; it refuses to report success unless all thirteen pass. Tested 21 September on an empty site.
+The order of the four `install-app` steps is a dependency order, not a preference: `india_payroll` extends `hrms`, and `mscast_erp` carries `india_compliance`'s custom fields. `erpnext-poc/scripts/new-mscast-site.sh` does all of this and then runs the build checks that measure the system itself; it refuses to report success unless all nineteen pass. Tested 21 September on an empty site.
+
+Two settings live **outside the database** and are easy to lose, so both have a check:
+
+- **`server_script_enabled`** is also a bench-wide setting (`common_site_config.json`). Restore a backup onto a new server without it and every MSCAST server script (the home page, the BRM rules, the morning batch) is silently off while everything else works. Found building the DEV copy on 21 September; check `T1c`.
+- **`host_name`** makes links in emails point at the public address. Without it they point at the container's internal name and don't open for anyone. Check `T9i`.
 
 **Read the output of the last two commands.** They should end with:
 

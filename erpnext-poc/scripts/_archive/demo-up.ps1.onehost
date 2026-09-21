@@ -12,8 +12,6 @@ $dir = "$env:USERPROFILE\.cloudflared"
 
 Write-Host "1/4 starting the POC stack..."
 wsl -d Ubuntu -e bash /mnt/d/MSCAST/erpnext-poc/scripts/start-poc.sh | Select-Object -Last 2
-Write-Host "    starting the DEV stack (mscastdev)..."
-wsl -d Ubuntu -e bash /mnt/d/MSCAST/erpnext-poc/scripts/start-dev.sh | Select-Object -Last 1
 
 Write-Host "2/4 pinning the WSL VM up..."
 $alive = Get-CimInstance Win32_Process -Filter "Name='wsl.exe'" |
@@ -36,8 +34,6 @@ originRequest:
 ingress:
   - hostname: mscast.carobar.net
     service: http://${ip}:8080
-  - hostname: mscastdev.carobar.net
-    service: http://${ip}:8081
   - service: http_status:404
 "@ | Set-Content "$dir\config.yml" -Encoding ASCII
 
@@ -47,12 +43,10 @@ Start-Process -FilePath $cf -ArgumentList 'tunnel','run','mscast-demo' -WindowSt
 
 Write-Host "4/4 verifying..."
 Start-Sleep -Seconds 20
-foreach ($u in "https://mscast.carobar.net/login","https://mscastdev.carobar.net/login") {
-  try {
-    $r = Invoke-WebRequest $u -UseBasicParsing -TimeoutSec 45
-    Write-Host "    $u -> $($r.StatusCode)  LIVE"
-  } catch {
-    Write-Host "    $u still not answering: $($_.Exception.Message)"
+try {
+    $r = Invoke-WebRequest "https://mscast.carobar.net/login" -UseBasicParsing -TimeoutSec 45
+    Write-Host "    https://mscast.carobar.net -> $($r.StatusCode)  DEMO IS LIVE"
+} catch {
+    Write-Host "    still not answering: $($_.Exception.Message)"
     Write-Host "    check: wsl -d Ubuntu -e bash -c 'docker ps'"
-  }
 }

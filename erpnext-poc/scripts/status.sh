@@ -11,6 +11,7 @@ echo
 echo "=== live site ==="
 printf '  localhost/login   %s\n' "$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 http://localhost:8080/login)"
 printf '  public /login     %s\n' "$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 https://mscast.carobar.net/login)"
+printf '  desk theme css    %s\n' "$(curl -s -o /dev/null -w '%{http_code} %{content_type}' --max-time 10 http://localhost:8080/assets/mscast_erp/css/mscast.css)"
 echo
 echo "=== containers ==="
 docker ps --format '{{.Names}}\t{{.Status}}' | grep mscast

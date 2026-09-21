@@ -90,7 +90,7 @@
     "action": "Certify",
     "allow_self_approval": 1,
     "allowed": "MSCAST Director",
-    "condition": null,
+    "condition": "doc.qty_check and doc.rate_check and doc.inspection_check and doc.delivery_check",
     "doctype": "Workflow Transition",
     "name": "0n76rlrgof",
     "next_state": "Certified",

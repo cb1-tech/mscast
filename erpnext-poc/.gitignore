@@ -6,3 +6,4 @@ deploy.log
 fixkey.log
 evidence/completeness-fresh-install.log
 *.log
+.sids.json

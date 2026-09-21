@@ -221,7 +221,7 @@ order by p.name
 
 
 def reports():
-    made = [qreport("MSCAST MSME 45-Day Dues (s.15 MSMED / s.43B(h))", "Purchase Invoice",
+    made = [qreport("MSCAST MSME 45-Day Dues (MSMED s.15, s.43B(h))", "Purchase Invoice",
                     MSME_SQL, ("System Manager", "Accounts Manager", "Accounts User",
                                "MSCAST Statutory Auditor", "MSCAST Director"), total=True),
             qreport("MSCAST SO - PO - Invoice Tracker", "Sales Order", TRACKER_SQL,
@@ -235,7 +235,7 @@ def reports():
 
 def smoke():
     out = []
-    for r in ["MSCAST MSME 45-Day Dues (s.15 MSMED / s.43B(h))",
+    for r in ["MSCAST MSME 45-Day Dues (MSMED s.15, s.43B(h))",
               "MSCAST SO - PO - Invoice Tracker", "MSCAST Project Closure Report"]:
         try:
             q = frappe.db.get_value("Report", r, "query")

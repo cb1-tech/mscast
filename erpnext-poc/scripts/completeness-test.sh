@@ -13,7 +13,7 @@
 #
 # usage: completeness-test.sh            (drops its scratch site afterwards)
 set -uo pipefail
-S=/mnt/d/MSCAST/erpnext-poc/scripts; C=mscast-poc-backend-1; E=/mnt/d/MSCAST/erpnext-poc/evidence
+S=/mnt/d/MSCAST/erpnext-poc/scripts; C=${C:-mscast-poc-backend-1}; export C; E=/mnt/d/MSCAST/erpnext-poc/evidence
 SITE=completeness
 bash $S/new-mscast-site.sh $SITE > $E/completeness-fresh-install.log 2>&1
 tail -3 $E/completeness-fresh-install.log
@@ -36,5 +36,5 @@ for k in l:
 print("\n  %s" % ("COMPLETE - a fresh install reproduces all live configuration" if not lost
                    else "INCOMPLETE - %d item(s) exist only in the live database" % lost))
 PY
-ROOTPW=$(grep -m1 -E '^\s*MYSQL_ROOT_PASSWORD:' ~/mscast-poc/compose.yaml | sed -E 's/.*:[[:space:]]*//')
+ROOTPW=$(grep -m1 -E '^\s*MYSQL_ROOT_PASSWORD:' ~/${C%-backend-1}/compose.yaml | sed -E 's/.*:[[:space:]]*//')
 docker exec $C bash -c "cd /home/frappe/frappe-bench && bench drop-site $SITE --db-root-password '$ROOTPW' --force --no-backup" >/dev/null 2>&1 && echo "  scratch site dropped"

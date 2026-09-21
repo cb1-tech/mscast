@@ -44,4 +44,13 @@ RUN ./env/bin/pip install --no-cache-dir --editable apps/mscast_erp \
 # this is belt and braces for a fresh site built from this image.
 RUN grep -qx mscast_erp sites/apps.txt || echo mscast_erp >> sites/apps.txt
 
+# Publish the app's static files. Every other app has a link under assets/ made
+# by its own image build; ours was never made, so /assets/mscast_erp/... - the
+# desk theme included - returned 404 and the desk fell back to stock styling.
+# Found 21 Sep 2026 by the demo screenshot run, not by any check.
+RUN ln -sfn /home/frappe/frappe-bench/apps/mscast_erp/mscast_erp/public \
+        /home/frappe/frappe-bench/assets/mscast_erp \
+    && test -f /home/frappe/frappe-bench/assets/mscast_erp/css/mscast.css \
+    && echo "assets published: mscast_erp"
+
 USER frappe

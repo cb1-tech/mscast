@@ -20,7 +20,7 @@ SPACES = [
     ("MSCAST Purchase", "Purchase & vendors", "buying", "blue", 3.0,
      ["Purchase User", "Purchase Manager", "MSCAST Director"],
      [("Buying", [(D, "Material Request"), (D, "Request for Quotation"), (D, "Supplier Quotation"), (D, "Purchase Order"), (D, "Supplier")]),
-      ("Bills & certification", [(D, "MSCAST BRM"), (D, "Purchase Invoice"), (R, "MSCAST BRM Register"), (R, "MSCAST MSME 45-Day Dues (s.15 MSMED / s.43B(h))")]),
+      ("Bills & certification", [(D, "MSCAST BRM"), (D, "Purchase Invoice"), (R, "MSCAST BRM Register"), (R, "MSCAST MSME 45-Day Dues (MSMED s.15, s.43B(h))")]),
       ("Control", [(R, "MSCAST PO vs PCC Variance"), (R, "MSCAST Free Issue at Vendor")])]),
 
     ("MSCAST Stores", "Stores & dispatch", "stock", "blue", 4.0,
@@ -38,7 +38,7 @@ SPACES = [
      ["Accounts User", "Accounts Manager", "MSCAST Director", "MSCAST Statutory Auditor"],
      [("Day to day", [(D, "Payment Entry"), (D, "Journal Entry"), (D, "Sales Invoice"), (D, "Purchase Invoice"), (D, "Bank Guarantee")]),
       ("Statutory", [(R, "MSCAST Balance Sheet (Schedule III)"), (R, "MSCAST Statement of Profit and Loss (Schedule III)"), (R, "MSCAST Schedule III - Ratios"), (R, "MSCAST Notes to Accounts")]),
-      ("Ageing & GST", [(R, "MSCAST Schedule III - Trade Receivable Ageing"), (R, "MSCAST Schedule III - Trade Payable Ageing (MSME / others)"), (R, "MSCAST GST on Closing Inventory (ITC and ITC-04)"), (R, "MSCAST Retention and Certificates")])]),
+      ("Ageing & GST", [(R, "MSCAST Schedule III - Trade Receivable Ageing"), (R, "MSCAST Schedule III - Trade Payable Ageing (MSME and others)"), (R, "MSCAST GST on Closing Inventory (ITC and ITC-04)"), (R, "MSCAST Retention and Certificates")])]),
 
     ("MSCAST People", "People", "users", "blue", 7.0,
      ["HR User", "HR Manager", "MSCAST Director"],
@@ -49,8 +49,8 @@ SPACES = [
     ("MSCAST Director", "Director's desk", "dashboard", "blue", 8.0,
      ["MSCAST Director", "MSCAST Statutory Auditor"],
      [("Every morning", [(R, "MSCAST Daily Management Summary"), (R, "MSCAST SO - PO - Invoice Tracker"), (R, "MSCAST Project MIS")]),
-      ("Money", [(R, "MSCAST Schedule III - Trade Receivable Ageing"), (R, "MSCAST Schedule III - Trade Payable Ageing (MSME / others)"), (R, "MSCAST Retention and Certificates"), (R, "MSCAST Finance Scaling - Funding and Capacity")]),
-      ("Year end", [(R, "MSCAST Balance Sheet (Schedule III)"), (R, "MSCAST Statement of Profit and Loss (Schedule III)"), (R, "MSCAST Schedule III - Ratios"), (R, "MSCAST Expense Analysis (vs last year, % of sales)"), (R, "MSCAST Project Closure Report")])]),
+      ("Money", [(R, "MSCAST Schedule III - Trade Receivable Ageing"), (R, "MSCAST Schedule III - Trade Payable Ageing (MSME and others)"), (R, "MSCAST Retention and Certificates"), (R, "MSCAST Finance Scaling - Funding and Capacity")]),
+      ("Year end", [(R, "MSCAST Balance Sheet (Schedule III)"), (R, "MSCAST Statement of Profit and Loss (Schedule III)"), (R, "MSCAST Schedule III - Ratios"), (R, "MSCAST Expense Analysis (vs last year, share of sales)"), (R, "MSCAST Project Closure Report")])]),
 
     ("MSCAST Setup", "Setup", "setting", "gray", 9.0,
      ["System Manager"],

@@ -2,7 +2,7 @@
 # Copy seed scripts into the ERPNext backend container and run them in order.
 # usage: run-seed.sh 01_company_masters 02_custom_doctypes ...
 set -uo pipefail
-C=mscast-poc-backend-1
+C=${C:-mscast-poc-backend-1}
 SRC=/mnt/d/MSCAST/erpnext-poc/seed
 # The site is overridable so the harness can be pointed at a restored or a
 # scratch site. It defaults to the live one, which is what every existing

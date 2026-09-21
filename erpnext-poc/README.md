@@ -5,7 +5,7 @@
 
 All company data in this POC is **fictional demo data**. Customer and supplier names end with "(DEMO)". MSCAST's own identity — name, GSTIN, CIN, branding — is real and deliberate, so the demonstration looks familiar to the client.
 
-**Build checks: 37, of which 35 pass, 2 are expected warnings, 0 fail.**
+**Build checks: 42, of which 40 pass, 2 are expected warnings, 0 fail** (DEV copy, 21 Sep 2026).
 
 ---
 
@@ -59,7 +59,7 @@ wsl -d Ubuntu -e bash /mnt/d/MSCAST/erpnext-poc/scripts/run-seed.sh 102_test_har
 
 | Script | What it does |
 |---|---|
-| `run-seed.sh 102_test_harness` | the 31 build checks — **run this after any change** |
+| `run-seed.sh 102_test_harness` | the 42 build checks — **run this after any change** (`C=mscast-dev-backend-1` for dev) |
 | `run-harness.sh` | the same thing, with the output filtered to the result lines |
 | `run-seed.sh 127_exception_engine` | run the overnight rule sweep by hand |
 | `run-seed.sh 160_omni_test` | prove the AI briefing end to end |
@@ -75,7 +75,7 @@ wsl -d Ubuntu -e bash /mnt/d/MSCAST/erpnext-poc/scripts/run-seed.sh 102_test_har
 | `restore-live.sh` | restore a backup **over** the live site |
 | `verify-site.sh` | count what is in a site |
 | `status.sh` | sites, bench processes, local and public HTTP status, containers, age of the last backup |
-| `new-mscast-site.sh` | **the production install path**: a fresh site with the six apps and MSCAST's configuration, no demo data; refuses to report success unless the 13 system checks pass |
+| `new-mscast-site.sh` | **the production install path**: a fresh site with the six apps and MSCAST's configuration, no demo data; refuses to report success unless the 19 system checks pass |
 | `nightly.sh` | **what the Windows task runs (02:30 JST)**: `backup-nightly.sh`, then all the build checks, records both outcomes in site config, and emails `mscast_alerts_to` if either failed. `SIMULATE_FAIL=1` sends a test alert. An in-site watchdog (`mscast_erp.controls.watchdog`, 09:00 IST) emails if the nightly job has not run in 26 hours - the case it cannot report on itself |
 | `backup-nightly.sh` | backup, copy off the volume onto `D:`, verify, prune (14 newest + monthly for a year). Refuses if the site cannot decrypt its own secrets. Called by `nightly.sh` |
 | `restore-key.sh` | put a backup's `encryption_key` back on a site - without it every stored password is unreadable after a restore |
@@ -297,3 +297,25 @@ D:\MSCAST\                       git repository, remote github.com/cb1-tech/msca
 Everything in `_archive\` can be deleted without affecting the POC or a rebuild.
 
 **Current documents.** `ERP Plan\` holds the .docx and markdown; the ERP-MSCAST project on claude.ai holds the same content. *Client Setup Guide v2.2* · *SOPs and Use Cases v2.1* · *Role Cards v1.2* · *Production Cutover Runbook* · *Independent Review* · *Requirements Traceability* · *Implementation Report* · *Data Request Covering Note*.
+
+## DEV instance - https://mscastdev.carobar.net  (added 21 Sep 2026)
+
+A second, fully separate copy for testing, screenshots and development, so users can play on the live POC undisturbed.
+
+| | Live POC | DEV |
+|---|---|---|
+| URL | mscast.carobar.net | mscastdev.carobar.net |
+| Compose project | `mscast-poc` (~/mscast-poc) | `mscast-dev` (~/mscast-dev) |
+| Local port | 8080 | 8081 |
+| Database / Redis / volumes | own | own - nothing shared |
+| Image | mscast/erpnext:v16-app | same image |
+| Marker | DEMONSTRATION on prints | + orange "DEV INSTANCE" desk banner, tab title "MSCAST ERP - DEV" |
+| Mail, scheduler | on | on (by decision - dev mails go to the same addresses) |
+| Nightly backup | yes | no - rebuildable from its seed |
+
+- **Seed data:** `D:\MSCAST\backups-dev-seed\20260921_125913` (live at 12:59 IST, 21 Sep - kept outside the pruned backup folder).
+- **Build (first time):** `scripts/dev-create.sh` - compose copy on 8081, restore seed, key + mscast_* settings, `server_script_enabled`, host_name, migrate, DEV marker (seed 193).
+- **Start after reboot:** `demo-up.ps1` starts both stacks and serves both hostnames (`start-dev.sh` for dev alone).
+- **Tunnel:** one tunnel (`mscast-demo`), two ingress rules. `tunnel-add-dev.ps1` added the second host with zero downtime (new connector up before the old one stopped).
+- **Scripts against dev:** prefix with `C=mscast-dev-backend-1`, e.g. `C=mscast-dev-backend-1 bash scripts/run-harness.sh`.
+- **Found while building it:** `server_script_enabled` is bench-wide and is NOT carried by a restore - every MSCAST server script was silently off while all 41 checks passed. New check **T1c** (42 checks now); `restore-key.sh` no longer uses `set-config --parse` (it rejected JSON `true` and aborted callers).

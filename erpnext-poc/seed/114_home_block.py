@@ -221,7 +221,7 @@ SCRIPT = r"""
     var kpis = [
       { l: 'Cash & bank', v: money('Cash and bank balance'), n: '2 accounts', href: route.rep('General Ledger'), report: 'General Ledger' },
       { l: 'Receivables', v: money('Outstanding from customers'), n: String(v('Overdue beyond due date')).replace(/^Rs /, '₹ ') + ' overdue', cls: String(v('Overdue beyond due date')) === 'Rs 0' ? 'good' : 'warn', href: route.rep('MSCAST Schedule III - Trade Receivable Ageing'), report: 'MSCAST Schedule III - Trade Receivable Ageing' },
-      { l: 'Payables', v: money('Outstanding to suppliers'), n: money('MSME dues due within the next 15 days') + ' MSME in 15 days', cls: 'warn', href: route.rep('MSCAST MSME 45-Day Dues (s.15 MSMED / s.43B(h))'), report: 'MSCAST MSME 45-Day Dues (s.15 MSMED / s.43B(h))' },
+      { l: 'Payables', v: money('Outstanding to suppliers'), n: money('MSME dues due within the next 15 days') + ' MSME in 15 days', cls: 'warn', href: route.rep('MSCAST MSME 45-Day Dues (MSMED s.15, s.43B(h))'), report: 'MSCAST MSME 45-Day Dues (MSMED s.15, s.43B(h))' },
       { l: 'Order book', v: money('Orders in hand (booked less billed)'), n: v('Open projects') + ' projects running', href: route.list('Sales Order'), dt: 'Sales Order' },
       { l: 'Billed this month', v: money('Billed this month'), n: 'against milestones', href: route.list('Sales Invoice'), dt: 'Sales Invoice' },
       { l: 'Retention held', v: money('Retention held by customers'), n: 'released on certificate', href: route.rep('MSCAST Retention and Certificates'), report: 'MSCAST Retention and Certificates' }
@@ -266,8 +266,8 @@ SCRIPT = r"""
       'Drawings still in draft with us': { dt: 'MSCAST Drawing', filters: { status: 'Draft' }, t: 'Drawings still in draft with us' },
       'Inspection stages pending': { dt: 'MSCAST Inspection Plan', filters: { result: 'Pending' }, t: 'Inspection stages still to be done' },
       'Inspections rejected or accepted with deviation': { dt: 'MSCAST Inspection Plan', t: 'Inspections rejected or passed with deviation' },
-      'MSME dues due within the next 15 days': { report: 'MSCAST MSME 45-Day Dues (s.15 MSMED / s.43B(h))', t: 'MSME bills reaching the 45-day limit' },
-      'MSME dues beyond 45 days (s.43B(h) risk)': { report: 'MSCAST MSME 45-Day Dues (s.15 MSMED / s.43B(h))', t: 'MSME bills past the 45-day limit' },
+      'MSME dues due within the next 15 days': { report: 'MSCAST MSME 45-Day Dues (MSMED s.15, s.43B(h))', t: 'MSME bills reaching the 45-day limit' },
+      'MSME dues beyond 45 days (s.43B(h) risk)': { report: 'MSCAST MSME 45-Day Dues (MSMED s.15, s.43B(h))', t: 'MSME bills past the 45-day limit' },
       'Falling due in the next 7 days': { report: 'MSCAST Schedule III - Trade Receivable Ageing', t: 'Customer money falling due this week' },
       'Overdue beyond due date': { report: 'MSCAST Schedule III - Trade Receivable Ageing', t: 'Receivables past their due date' },
       'Client claims open': { dt: 'MSCAST Client Claim', t: 'Client claims agreed but not yet billed' },

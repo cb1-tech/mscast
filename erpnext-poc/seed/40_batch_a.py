@@ -424,7 +424,7 @@ order by ifnull(cur.amt,0) desc
 
 
 def expense_analysis_report():
-    name = "MSCAST Expense Analysis (vs last year, % of sales)"
+    name = "MSCAST Expense Analysis (vs last year, share of sales)"
     if frappe.db.exists("Report", name):
         frappe.db.set_value("Report", name, "query", EXPENSE_REPORT_SQL)
         return "updated"

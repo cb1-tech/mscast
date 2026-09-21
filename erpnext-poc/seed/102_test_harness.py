@@ -73,18 +73,111 @@ def t1_literals():
 
 
 # ---------------------------------------------------------------- T2 execution
+def t1b_script_literals():
+    # T1b - T1 for server scripts. Every "field": "literal" in a server script's
+    # filters must be one of that field's real Select options. The home page
+    # counted BRMs 'Pending Certification' (the option is 'Pending') and claims
+    # 'Submitted' (not an option at all), so both counts were always zero - and
+    # T1 only read reports. Found 21 Sep 2026 while reviewing the demo screenshots.
+    pat_call = re.compile(r'"([A-Z][\w ]+)",\s*(?:filters=)?\{([^{}]*)\}')
+    pat_kv = re.compile(r'"(\w+)":\s*("[^"]*"|\[[^\]]*\[[^\]]*\]\]|\[[^\]]*\])')
+    bad, checked = [], 0
+    for sname, src in frappe.get_all("Server Script", filters={"disabled": 0}, fields=["name", "script"], as_list=True):
+        for m in pat_call.finditer(src or ""):
+            dt, body = m.group(1), m.group(2)
+            if not frappe.db.exists("DocType", dt):
+                continue
+            meta = frappe.get_meta(dt)
+            for f, val in pat_kv.findall(body):
+                fld = meta.get_field(f)
+                if not fld or fld.fieldtype != "Select":
+                    continue
+                opts = [o.strip() for o in (fld.options or "").split("\n") if o.strip()]
+                for v in re.findall(r'"([^"]+)"', val):
+                    if v in ("in", "not in", "!=", "="):
+                        continue
+                    checked += 1
+                    if v not in opts:
+                        bad.append("%s: %s.%s = '%s'" % (sname, dt, f, v))
+    rec("T1b", "reports", "server-script literals match the fields' real Select options",
+        not bad and checked > 0, ("; ".join(bad[:4])) if bad else "%d literal comparisons checked, 0 mismatched" % checked)
+
+
+def t1c_server_scripts_on():
+    # T1c - server scripts actually run. server_script_enabled lives in the
+    # bench-wide common_site_config.json, so a restore onto another bench does not
+    # carry it and every MSCAST server script (home page, BRM rules, morning batch)
+    # is silently off while every other check still passes. Found 21 Sep 2026
+    # building the dev instance.
+    from frappe.utils.safe_exec import is_safe_exec_enabled
+    n = frappe.db.count("Server Script", {"disabled": 0})
+    on = bool(is_safe_exec_enabled())
+    rec("T1c", "reports", "server scripts are enabled on this bench",
+        on, "%d enabled MSCAST server scripts; server_script_enabled=%s" % (n, on))
+
+
 def t2_execute():
     fails = []
     for rep in custom_reports():
         if not rep.query:
             continue
         try:
-            frappe.db.sql(rep.query)
+            # With a values dict, as the desk runs it. Without one the driver skips
+            # %-formatting, and six reports that failed for every user passed here
+            # (found 21 Sep 2026).
+            frappe.db.sql(rep.query, {})
         except Exception as e:
             fails.append("%s: %s" % (rep.name[:40], repr(e)[:110]))
     rec("T2", "reports", "every custom report executes", not fails,
         "%d reports, %d failed%s" % (len(custom_reports()), len(fails),
                                      (" :: " + " | ".join(fails)) if fails else ""))
+
+
+def t2b_reports_as_users():
+    # T2b - every report opens for the people meant to use it, through the real
+    # report runner. T2 runs each report's SQL as Administrator, and on 21 Sep
+    # 2026 said "28 reports, 0 failed" while the drawing office could not open
+    # the Drawing Register and the MSME report failed with a 500 for accounts -
+    # its name contained a '/', which the desk's URL splits. Found by logging in
+    # as those people for the demo screenshots.
+    from frappe.desk.query_report import run
+    reps = frappe.get_all("Report", filters={"is_standard": "No"}, fields=["name", "ref_doctype"])
+    problems = ["name unsafe in a URL: %s" % r.name for r in reps if any(c in r.name for c in "/%?#")]
+    for r in reps:
+        if r.ref_doctype and frappe.db.get_value("DocType", r.ref_doctype, "module") == "MSCAST":
+            can = {p.role for p in frappe.get_meta(r.ref_doctype).permissions
+                   if p.report and not p.permlevel} - {"All", "Guest", "Desk User"}
+            have = {x.role for x in frappe.get_doc("Report", r.name).roles}
+            if can - have:
+                problems.append("%s closed to %s" % (r.name[:40], ", ".join(sorted(can - have))))
+    users = frappe.get_all("User", filters={"enabled": 1, "user_type": "System User",
+                                            "name": ["!=", "Administrator"]}, pluck="name")
+    runs = 0
+    for r in reps:
+        roles = {x.role for x in frappe.get_doc("Report", r.name).roles}
+        tried = set()
+        for u in users:
+            key = frozenset(frappe.get_roles(u))
+            if key in tried:
+                continue
+            tried.add(key)
+            frappe.set_user(u)
+            # only people Frappe itself admits: a listed role AND the report right
+            # on the document, possibly from different roles
+            if not (frappe.get_doc("Report", r.name).is_permitted()
+                    and frappe.has_permission(r.ref_doctype, "report")):
+                frappe.set_user("Administrator")
+                continue
+            try:
+                run(r.name, filters={})
+                runs += 1
+            except Exception as e:
+                problems.append("%s as %s: %s" % (r.name[:40], frappe.db.get_value("User", u, "full_name"), str(e)[:70]))
+            finally:
+                frappe.set_user("Administrator")
+    rec("T2b", "reports", "every report opens for the people meant to use it", not problems,
+        (" :: ".join(problems[:4]) + (" (+%d more)" % (len(problems) - 4) if len(problems) > 4 else ""))
+        if problems else "%d reports, %d runs as real users, all opened" % (len(reps), runs))
 
 
 # ---------------------------------------------------------------- T3 dates
@@ -614,6 +707,44 @@ def t6_controls():
         not holes, " :: ".join(holes[:4]) if holes
         else "every guarded state is guarded consistently")
 
+    # T6n - a BRM cannot be certified with its checks unticked. Attempted as the
+    # certifying director, through the real workflow action, and rolled back.
+    from frappe.model.workflow import apply_workflow
+    director = frappe.db.get_value("Has Role", {"role": "MSCAST Director", "parenttype": "User",
+                                               "parent": ["!=", "Administrator"]}, "parent")
+    sup = frappe.db.get_value("Supplier", {}, "name")
+    outcome = "not run"
+    if director and sup:
+        try:
+            b = frappe.get_doc({"doctype": "MSCAST BRM", "supplier": sup, "invoice_type": "Tax Invoice",
+                                "supplier_invoice_no": "HARNESS/T6N", "amount": 1000, "status": "Pending"})
+            b.flags.ignore_permissions = True; b.flags.ignore_mandatory = True
+            b.insert()
+            frappe.set_user(director)
+            try:
+                apply_workflow(frappe.get_doc("MSCAST BRM", b.name), "Certify")
+                outcome = "CERTIFIED with no checks ticked"
+            except Exception as e:
+                outcome = "refused"
+        finally:
+            frappe.set_user("Administrator")
+            frappe.db.rollback()
+    if outcome == "not run":
+        # A fresh install has no director and no supplier to try it with, so check
+        # the rule itself instead: every route into Certified must require all four
+        # ticks. (Found 21 Sep 2026: T6n in the fresh-install list failed as "not run".)
+        need = ("qty_check", "rate_check", "inspection_check", "delivery_check")
+        routes = [(t.state, t.action, t.condition or "")
+                  for w in frappe.get_all("Workflow", {"document_type": "MSCAST BRM", "is_active": 1}, pluck="name")
+                  for t in frappe.get_doc("Workflow", w).transitions if t.next_state == "Certified"]
+        open_ = ["%s --%s-->" % (a, b) for a, b, c in routes if not all(f in c for f in need)]
+        outcome = ("refused" if routes and not open_
+                   else "rule missing on: " + ", ".join(open_) if routes else "no route into Certified")
+        how = "no director or supplier yet - checked the workflow rule on %d route(s): %s" % (len(routes), outcome)
+    else:
+        how = "certify attempted as %s: %s" % (frappe.db.get_value("User", director, "full_name"), outcome)
+    rec("T6n", "controls", "a BRM cannot be certified with its checks unticked", outcome == "refused", how)
+
     # T6k - whoever can approve a document can open it.
     #
     # T6d checked that the approval ROLE was right; nothing checked that the
@@ -901,6 +1032,18 @@ def t9h_safety_net():
         "set %s, %.1fh ago, %s" % (last.get("set"), age, "ok" if last.get("ok") else "FAILED: %s" % last.get("detail")))
 
 
+def t9i_links():
+    # T9i - links the system writes into emails point somewhere a person can reach.
+    # With no host_name set, every link is built as http://frontend - the
+    # container's internal name - so "open this document" in any alert or
+    # notification led nowhere. Found 21 Sep 2026 chasing a console error in the
+    # demo screenshot run.
+    url = frappe.utils.get_url()
+    internal = any(h in url for h in ("//frontend", "//localhost", "//127.0.0.1", "//backend"))
+    rec("T9i", "automation", "emailed links use a public address, not the container's name",
+        not internal, "links are built as %s%s" % (url, " - set host_name in site config" if internal else ""))
+
+
 def t10_hr():
     slips = frappe.db.count("Salary Slip", {"docstatus": 1})
     att = frappe.db.count("Attendance", {"docstatus": 1})
@@ -918,8 +1061,8 @@ def t10_hr():
 
 
 def run():
-    for fn in (t1_literals, t2_execute, t3_dates, t4_prints, t4b_watermark, t5_ledger, t6_controls,
-               t7_data, t8_gst, t9_automation, t9g_secrets, t9h_safety_net, t10_hr):
+    for fn in (t1_literals, t1b_script_literals, t1c_server_scripts_on, t2_execute, t2b_reports_as_users, t3_dates, t4_prints, t4b_watermark, t5_ledger, t6_controls,
+               t7_data, t8_gst, t9_automation, t9g_secrets, t9h_safety_net, t9i_links, t10_hr):
         try:
             fn()
         except Exception as e:

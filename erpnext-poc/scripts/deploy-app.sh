@@ -21,7 +21,9 @@ set -euo pipefail
 REPO=/mnt/d/MSCAST
 STACK=${STACK:-$HOME/mscast-poc}
 TAG=${TAG:-mscast/erpnext:v16-app}
-SERVICES="backend queue-short queue-long scheduler websocket"
+# The frontend (nginx) runs the same image and serves /assets from it, so it
+# must be recreated too - restarting it kept the OLD image and the old assets.
+SERVICES="backend queue-short queue-long scheduler websocket frontend"
 
 echo "=== 1/4  build $TAG ==="
 bash "$REPO/erpnext-poc/scripts/build-mscast-image.sh" "$TAG" | tail -8
@@ -47,6 +49,13 @@ for i in $(seq 1 30); do
       echo "  WARNING: an mscast_erp import error is still in the log" >&2
       exit 1
     fi
+    # The app's own static files must be served, or the desk theme silently
+    # disappears (it did, from 20 to 21 Sep 2026).
+    css=$(curl -s -o /dev/null -w '%{http_code} %{content_type}' http://localhost:8080/assets/mscast_erp/css/mscast.css)
+    case "$css" in
+      "200 text/css"*) echo "  app assets served (mscast.css: $css)";;
+      *) echo "  APP ASSETS NOT SERVED - mscast.css returned: $css" >&2; exit 1;;
+    esac
     echo
     echo "Deployed. Now run the build checks:"
     echo "  bash $REPO/erpnext-poc/scripts/run-harness.sh"

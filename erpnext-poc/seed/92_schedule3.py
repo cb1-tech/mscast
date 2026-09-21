@@ -243,7 +243,7 @@ order by 2, 4
 def ageing():
     a = qreport("MSCAST Schedule III - Trade Receivable Ageing", "Sales Invoice", AGEING_AR,
                 total=True)
-    b = qreport("MSCAST Schedule III - Trade Payable Ageing (MSME / others)", "Purchase Invoice",
+    b = qreport("MSCAST Schedule III - Trade Payable Ageing (MSME and others)", "Purchase Invoice",
                 AGEING_AP, total=True)
     return "%s (%d rows); %s (%d rows)" % (a, len(frappe.db.sql(AGEING_AR)),
                                            b, len(frappe.db.sql(AGEING_AP)))

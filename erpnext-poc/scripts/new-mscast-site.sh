@@ -59,6 +59,14 @@ echo "  server scripts enabled"
 # and nothing says so. Found on the first test run of this script.
 b "bench --site $SITE enable-scheduler" >/dev/null
 echo "  scheduler enabled"
+# The address people reach the site on. Without it every link the system emails
+# is built as http://<container name> and leads nowhere (T9i).
+if [ -n "${HOST_NAME:-}" ]; then
+  b "bench --site $SITE set-config host_name '$HOST_NAME'" >/dev/null
+  echo "  host_name $HOST_NAME"
+else
+  echo "  WARNING: HOST_NAME not given - emailed links will not work until host_name is set"
+fi
 
 echo
 echo "=== 4/5  company, chart of accounts, fiscal year - then migrate ==="
@@ -72,7 +80,7 @@ echo "=== 5/5  prove it: the checks that measure the SYSTEM must all pass ==="
 # The harness also checks demo data (invoices to render, payments to block,
 # payroll loaded). A fresh system has none, so those are reported but not
 # required. These are the ones that say the system itself is right.
-SYSTEM="T1 T2 T3 T4b T6b T6c T6d T6f T6h T6i T6j T6k T6l T6m T7b"
+SYSTEM="T1 T1b T1c T2 T2b T3 T4b T6b T6c T6d T6f T6h T6i T6j T6k T6l T6m T6n T7b"
 OUT=$(bash "$SCRIPTS/run-harness.sh" "$SITE")
 echo "$OUT" | grep -iE "crash|Traceback" | sed "s/^/  /" || true   # no match is the good case
 echo "$OUT" | grep -E '^\[T\] T[0-9]'
