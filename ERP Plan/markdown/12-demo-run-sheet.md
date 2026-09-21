@@ -4,35 +4,35 @@ title: "MSCAST ERP — Demo Run-sheet"
 
 # MSCAST ERP — Demo Run-sheet
 
-**For:** the MSCAST walkthrough · **Version:** 1.0 · **Date:** 21 September 2026
+**For:** the MSCAST walkthrough · **Version:** 1.1 · **Date:** 21 September 2026
 
 **How to pitch it:** *"This is our reading of your requirements. Correct us."* Every screen below ends with a question for MSCAST. Their answers matter more than the demo does.
 
 - **Length:** about 45 minutes, 10 stops. Stop 6 is the one to protect if time runs short.
 - **Each stop gives:** who is logged in, where to click, what to say (two or three points) and what to ask.
-- **The pictures** were taken on the demo system on 21 September 2026. What you see on the day should match them.
+- **The pictures** were taken on DEV on 21 September 2026. What you see on the day should match them.
 
 ## Before the meeting
 
 - **Use the DEV instance: https://mscastdev.carobar.net**
-  - The live POC (mscast.carobar.net) is open for people to try. Its users can change, and some of the demo logins no longer exist there.
-  - Dev is a separate copy with the full demo cast. Nothing done in the meeting touches live.
+  - The Live POC (https://mscast.carobar.net) is being tried by MSCAST staff with their own logins; most demo logins no longer exist there. Nobody changes live without the owner's say-so.
+  - DEV is a separate copy (own database, same image) with the full demo cast. Nothing done in the meeting touches live.
   - An orange **DEV INSTANCE** banner runs along the top of every page. Say once: *"this is our test copy"*, and move on.
-- **One browser window per person** (Chrome profiles or incognito windows). Each login allows only two sessions at a time. A third one logs out the oldest, which is what disrupted the first screenshot run.
+- **One browser window per person** (Chrome profiles or incognito windows). Each login allows only two sessions at a time; a third logs out the oldest.
 - **Log in beforehand** as Mustaque, Meera, Anita and S. Joshi, and keep the four windows open.
 - **Passwords** are shared separately and are not written in this sheet.
 - **Five minutes before:** open the home page as Mustaque. If the cards load, everything is up.
 
 ## The cast
 
-| Person | What they do | Login on dev |
-|---|---|---|
+| Person | What they do | Login on DEV |
+|-------------------------------|-------------------------------|--------------------------------------|
 | Mustaque Chandankeri | Director (approves) | latookaushik@yahoo.com |
 | Aiqaz Chandankeri | Director (backup) | latookaushik@hotmail.com |
 | Anita Deshpande | Accounts Manager | carobar.tradecars@gmail.com |
 | Meera Rane | Design draughtsman | meera.rane@mscast.co.in |
 | S. Joshi | Chartered Accountant (read-only) | autoelectron.jp+ca@gmail.com |
-| Rohit Kulkarni | Prepares cost sheets (named on the PCC) | — not used live |
+| Rohit Kulkarni | Prepares cost sheets (named on the PCC) | not logged in during the demo |
 
 The directors are MSCAST's real directors. Everyone else is a demo face, and only the names change at go-live.
 
@@ -126,7 +126,7 @@ The directors are MSCAST's real directors. Everyone else is a demo face, and onl
 - **Say:**
   - The Billing Routing Memo is MSCAST's own control. Before a supplier bill is paid, someone certifies quantity, rate, inspection and delivery against the PO.
   - All four boxes are ticked, and the memo shows who certified it and when.
-  - **The system will not accept "Certified" with a box left unticked.** We tested that on purpose.
+  - **The system will not accept "Certified" with a box left unticked** (build check T6n).
 - **Now the moment:** switch to **Anita** and open **Payment Entry ACC-PAY-2026-00003** (Ashoka Heavy Fabricators, ₹2,85,600). It is a draft. Click **Submit**.
 
 ![Payment refused: no certified BRM](demo-screens/09-payment-refused.png){width=6.3in}
@@ -204,7 +204,7 @@ The directors are MSCAST's real directors. Everyone else is a demo face, and onl
 # Questions to leave with MSCAST
 
 | # | Question | Why it matters |
-|---|---|---|
+|-----------|-----------------------------------------------------|------------------------------------|
 | 1 | Real formats: **PCC, Project MIS, BRM, MDM with DI and Annexure-I** (photos are fine) | Today the system carries our reading of them, not yours |
 | 2 | **Q20:** a director can prepare a PCC or verify a PO and then approve it alone. Intended? | Segregation of duties |
 | 3 | **Q21:** a director can create, certify and pay a BRM alone. Intended? | That is the step that releases money |
@@ -227,4 +227,4 @@ The directors are MSCAST's real directors. Everyone else is a demo face, and onl
 
 - Write down every correction MSCAST gives, stop by stop. Those corrections are the real output of the meeting.
 - Nothing needs resetting. The payment in Stop 6 stays a draft, and nothing else is changed by the walkthrough.
-- If anything *was* changed on dev, it can be rebuilt from its saved copy in about ten minutes (`dev-create.sh`). Live is never affected.
+- If anything *was* changed on DEV, it can be rebuilt from its saved copy in about ten minutes (`dev-create.sh`). Live is never affected.

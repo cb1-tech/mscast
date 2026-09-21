@@ -1,48 +1,48 @@
 # MSCAST ERP — POC on ERPNext v16 (WSL / Docker)
 
-**Updated:** 20 Sep 2026 · **Release:** `v0.9.0` · **Repository:** `github.com/cb1-tech/mscast`
-**Where:** WSL Ubuntu on thinkstation · **Local:** http://localhost:8080 · **Public:** https://mscast.carobar.net
+**Version:** 3.0 · 21 September 2026 · **Release:** `v0.9.0` · **Repository:** `github.com/cb1-tech/mscast` (owner-held)
+**Where:** WSL Ubuntu on thinkstation · **Live POC:** https://mscast.carobar.net (local http://localhost:8080) · **DEV:** https://mscastdev.carobar.net (local http://localhost:8081)
 
-All company data in this POC is **fictional demo data**. Customer and supplier names end with "(DEMO)". MSCAST's own identity — name, GSTIN, CIN, branding — is real and deliberate, so the demonstration looks familiar to the client.
-
-**Build checks: 42, of which 40 pass, 2 are expected warnings, 0 fail** (DEV copy, 21 Sep 2026).
-
----
-
-## 0. Credentials and access — read this before sharing the link
-
-**No password appears in this file, and none should.** An earlier version of this README printed the Administrator password in its header; anyone who had the document had the system.
-
-- The Administrator password was changed during the POC. It has since been typed into a chat transcript, so it **must be rotated before the system carries real data on a server**. On this laptop it is a POC and does not matter.
-- Every person has their own login: **12 named people, plus `admin@mscast.local`** as the site administrator. The old `@mscast.demo` role-shaped logins were retired when users were rebuilt as named people and are disabled.
-- **The demonstration personas use real mailboxes deliberately.** Aiqaz, Mustaque, Sameer, Anita, Ganesh, Rohit and the CA are wired to addresses that actually receive mail, so the 08:30 summary and the 08:35 briefing can be demonstrated arriving. They are not stray accounts.
-
-### Two role findings, both now fixed and both now checked
-
-- **`admin@mscast.local` had collected 41 roles** — every manager role in the system plus a good deal it had no use for, on an account that had never logged in. It now holds `System Manager` and nothing else. **A fresh install will do this again**: the ERPNext setup wizard creates its own administrator the same way, which is why cutting it back is line 15 of the go-live checklist.
-- **An operational staff account also held `System Manager`**, which bypasses every control in the system. Removed. Administration is now `admin@mscast.local` and the built-in `Administrator`, and that is the whole list.
-
-`T6f` reports both on every build.
+- All company data is **fictional demo data**; customer and supplier names end with "(DEMO)". MSCAST's own identity (name, GSTIN, CIN, branding) is real and deliberate.
+- **Build checks: 42.** DEV: 40 PASS, 2 WARN, 0 FAIL. Live POC: 38 PASS, 3 WARN, 1 FAIL. See *Build checks*.
 
 ---
 
-## 1. What is running
+## Instances and access
+
+| | Live POC | DEV |
+|--------------------|-----------------------------------------------|---------------------------------|
+| URL | https://mscast.carobar.net | https://mscastdev.carobar.net |
+| Used by | MSCAST staff trying it with their own logins | Demos, screenshots, development |
+| Users | Mustaque@mcast.co.in, aiqaz@mcast.co.in, waseemraj@mcast.co.in; demo logins Anita (carobar.tradecars@gmail.com), Sameer (uattech@carobar.net), Rohit (autoelectron.jp@gmail.com) | Full demo cast (below) |
+| Changes | None without the owner's say-so | Free |
+
+- **Live POC:** MSCAST's trial admin deleted most demo personas on 21 Sep 2026 (Meera, Kavita, Vinod, Prashant, Nikhil, the CA login, all `@mscast.demo` accounts).
+- **DEV demo cast:** Mustaque Chandankeri (Director, latookaushik@yahoo.com) · Aiqaz Chandankeri (Director, latookaushik@hotmail.com) · Anita Deshpande (Accounts Manager, carobar.tradecars@gmail.com) · Sameer Lokhande (Purchase Manager, uattech@carobar.net) · Meera Rane (Design, meera.rane@mscast.co.in) · S. Joshi (CA/Auditor, autoelectron.jp+ca@gmail.com) · Rohit Kulkarni (prepares PCCs, autoelectron.jp@gmail.com) · Nikhil Sawant (Purchase Executive) · Kavita Joshi (Accounts Executive) · Prashant More (Stores) · Ganesh Pawar (Quality Manager, autoelectron.jp+site@gmail.com) · Vinod Shelke (records inspections). Directors are MSCAST's real directors; the others are demo faces. Site administrator: `admin@mscast.local`.
+- **Personas with real mailboxes are deliberate**, so the 08:30 and 08:35 mails can be shown arriving.
+- **No password appears in this file, and none may.** Passwords are shared separately.
+- **Administrator password:** must be rotated before real data goes on a server (parked by the owner until then).
+- **Administrators:** `admin@mscast.local` holds `System Manager` only; with the built-in `Administrator`, that is the whole list on DEV. The ERPNext setup wizard gives its administrator every role on each fresh install; cutting it back is a go-live checklist step (doc 08, section 7). On Live POC, Aiqaz was also given `System Manager` (T6f warns).
+
+---
+
+## What is running
 
 | Piece | Detail |
-|---|---|
+|----------------------------|------------------------------------------------------------------------|
 | Stack | compose project `mscast-poc`, 9 containers, from `~/mscast-poc/compose.yaml` |
-| Image | **`mscast/erpnext:v16-app`** (5.13 GB) — the frappe_docker build plus `mscast_erp` baked in, via `erpnext-poc/Containerfile.mscast`. The app **must** be in the image: `apps/` comes from the image and only `sites` and `logs` are volumes |
+| Image | **`mscast/erpnext:v16-app`** (5.13 GB): the frappe_docker build plus `mscast_erp` baked in, via `erpnext-poc/Containerfile.mscast` |
 | Apps | frappe 16.34.0 · erpnext 16.35.0 · **india_compliance 16.9.1** · **hrms 16.19.0** · **india_payroll 16.0.4** · **mscast_erp 0.1.0** |
 | Database | MariaDB 11.8 (ERPNext does not support PostgreSQL) |
 | Site | `frontend`, port 8080 · server scripts **enabled** |
 | Files | scripts and seed data in `D:\MSCAST\erpnext-poc`; the app in `D:\MSCAST\mscast_erp` |
 | Memory | WSL capped at 8 GB; the stack idles at about 1.5–2.5 GB |
 
-**The configuration is an installable app.** `mscast_erp` carries every custom document, report, print format, workflow, control and the desk theme. That is what makes this rebuildable on a server rather than only on this laptop. If something has to be clicked in by hand after an install, that is a defect in the app, not a step in a runbook.
+- **The configuration is an installable app.** `mscast_erp` carries every custom document, report, print format, workflow, control, the permission matrix and the desk theme. Anything that must be clicked in by hand after an install is a defect in the app.
+- **The app must be in the image.** `apps/` comes from the image; only `sites` and `logs` are volumes. An app in one container only gives HTTP 500 on the web and scheduled jobs that never run, while `bench console`/`bench execute` and the build checks still pass. `T9f` checks each job's `last_execution`.
+- **WSL shuts its VM down when idle**, which stops the containers. Keep any WSL terminal open; `demo-up.ps1` does this.
 
-**WSL note:** WSL shuts its VM down when idle and that stops the containers. Keeping any WSL terminal open holds the VM up; `demo-up.ps1` does this for you.
-
-## 2. Day-to-day commands
+## Day-to-day commands
 
 ```powershell
 wsl -d Ubuntu -e bash /mnt/d/MSCAST/erpnext-poc/scripts/start-poc.sh    # start
@@ -51,23 +51,23 @@ wsl -d Ubuntu -e bash /mnt/d/MSCAST/erpnext-poc/scripts/stop-poc.sh     # stop (
 wsl -d Ubuntu -e bash /mnt/d/MSCAST/erpnext-poc/scripts/snapshot.sh <label>   # backup before anything risky
 ```
 
-Re-run any seed step (they are safe to repeat):
+Re-run any seed step (safe to repeat):
 
 ```powershell
 wsl -d Ubuntu -e bash /mnt/d/MSCAST/erpnext-poc/scripts/run-seed.sh 102_test_harness
 ```
 
 | Script | What it does |
-|---|---|
-| `run-seed.sh 102_test_harness` | the 42 build checks — **run this after any change** (`C=mscast-dev-backend-1` for dev) |
-| `run-harness.sh` | the same thing, with the output filtered to the result lines |
+|---------------------------------|-------------------------------------------------------------------|
+| `run-seed.sh 102_test_harness` | the 42 build checks — **run after any change** (`C=mscast-dev-backend-1` for DEV) |
+| `run-harness.sh` | the same, output filtered to the result lines |
 | `run-seed.sh 127_exception_engine` | run the overnight rule sweep by hand |
 | `run-seed.sh 160_omni_test` | prove the AI briefing end to end |
 | `run-seed.sh 177_census` | one authoritative count of everything |
-| `doc-facts.sh` | print what the documents assert — roles, workflows, schedules — straight from the running system |
-| `audit-sod.sh` | the segregation-of-duties audit in full, including create-permission overlaps |
+| `doc-facts.sh` | print what the documents assert (roles, workflows, schedules) straight from the running system |
+| `audit-sod.sh` | full segregation-of-duties audit, including create-permission overlaps |
 | `snapshot.sh <label>` | database + files backup, copied out to `backups\` |
-| `reset-poc.sh` | wipe and rebuild from every seed script (~30 min). **Reproduces the system, not the demo data — see below** |
+| `reset-poc.sh` | wipe and rebuild from every seed script (~30 min). **Reproduces the configuration, not the demo data** (see *Known limitations*) |
 | `reset-poc-run.sh` | run the above unattended, from a snapshot, logging to `reset-run.log` |
 | `deploy-app.sh` | build the image and redeploy after an app code change, then prove `/login` answers |
 | `backup-out.sh` | copy a backup set out of the Docker volume onto `D:` |
@@ -75,54 +75,47 @@ wsl -d Ubuntu -e bash /mnt/d/MSCAST/erpnext-poc/scripts/run-seed.sh 102_test_har
 | `restore-live.sh` | restore a backup **over** the live site |
 | `verify-site.sh` | count what is in a site |
 | `status.sh` | sites, bench processes, local and public HTTP status, containers, age of the last backup |
-| `new-mscast-site.sh` | **the production install path**: a fresh site with the six apps and MSCAST's configuration, no demo data; refuses to report success unless the 19 system checks pass |
-| `nightly.sh` | **what the Windows task runs (02:30 JST)**: `backup-nightly.sh`, then all the build checks, records both outcomes in site config, and emails `mscast_alerts_to` if either failed. `SIMULATE_FAIL=1` sends a test alert. An in-site watchdog (`mscast_erp.controls.watchdog`, 09:00 IST) emails if the nightly job has not run in 26 hours - the case it cannot report on itself |
+| `new-mscast-site.sh` | **the production install path**: fresh site, six apps, MSCAST's configuration, no demo data; reports success only if the 19 system checks pass |
+| `nightly.sh` | **what the Windows task "MSCAST nightly backup" runs (02:30 JST)**: `backup-nightly.sh`, then all build checks; records both outcomes in site config; emails `mscast_alerts_to` (autoelectron.jp@gmail.com) if either failed. `SIMULATE_FAIL=1` sends a test alert. In-site watchdog `mscast_erp.controls.watchdog` (09:00 IST) emails if the nightly job has not run in 26 hours |
 | `backup-nightly.sh` | backup, copy off the volume onto `D:`, verify, prune (14 newest + monthly for a year). Refuses if the site cannot decrypt its own secrets. Called by `nightly.sh` |
-| `restore-key.sh` | put a backup's `encryption_key` back on a site - without it every stored password is unreadable after a restore |
+| `restore-key.sh` | put a backup's `encryption_key` back on a site; without it every stored password is unreadable after a restore |
 | `build-base-image.sh` | build the base image (Frappe + erpnext, hrms, india_compliance, india_payroll) from `apps.json` via frappe_docker |
 | `app-versions.sh` | print every app's version in an image |
-| `completeness-test.sh` | build a fresh site and compare it with live, record by record and permission row by permission row. Anything live has that a fresh install does not is configuration that exists only in the database |
+| `completeness-test.sh` | build a fresh site and compare it with live, record by record and permission row by permission row. Anything live has that a fresh install lacks exists only in the database |
 | `upgrade-test.sh` | restore a backup into a **separate** stack on :8090 running a candidate image, `bench migrate`, run all checks, tear down. Mail muted, scheduler off |
 | `build-mscast-image.sh` | rebuild `mscast/erpnext:v16-app` with the current app baked in — **the real way to ship a code change** |
-| `push-app.sh` | copy the app into the running containers and restart them, for fast iteration only. The image is the source of truth; a container recreation discards anything pushed this way |
+| `push-app.sh` | copy the app into the running containers and restart them; fast iteration only. Container recreation discards anything pushed this way |
 | `pull-fixtures.sh` | copy exported fixtures out of the container into the app |
 | `test-stale-deploy.sh` | reproduce the stale-deploy failure and watch the guard catch it |
 
-**Two traps worth knowing.**
+- **The container's app is a copy, not a mount.** Editing `D:\MSCAST\mscast_erp` changes nothing until the image is rebuilt (or `push-app.sh` runs). Never install from a stale container copy (see *Deploying*).
 
-The container's copy of the app is a *copy*, not a mount. Editing `D:\MSCAST\mscast_erp` changes nothing until the image is rebuilt, or `push-app.sh` runs for a quick iteration. Installing the app from a stale container copy is how the approval rules silently reverted once — see section 9.
-
-And the one that cost a day: **`apps/` comes from the image.** For most of this POC the app was not in the image at all — it had been copied into the backend container by hand — so exactly one container had it. The web workers could not import it, and the site served HTTP 500 on every request while every script and every build check passed, because `bench console` and `bench execute` start a fresh python each time. The scheduler and the queue workers could not import it either, so **four of the five scheduled jobs had never run once**. `T9f` now checks `last_execution` on each of them.
-
-## 3. Exposing the demo to clients in India
-
-**Public URL: https://mscast.carobar.net** — own domain, valid certificate, no VPN and no client software.
+## Public access (Cloudflare tunnel)
 
 | Piece | Detail |
-|---|---|
-| Route | Cloudflare Tunnel `mscast-demo` |
+|---------------------------------------|-------------------------------------------------------------|
+| Route | Cloudflare Tunnel `mscast-demo` (one tunnel, two ingress rules: Live POC and DEV) |
 | DNS | CNAME `mscast.carobar.net` in the Cloudflare zone |
-| Origin | `http://<WSL IP>:8080` — rewritten each time `demo-up.ps1` runs, because the IP changes |
-| Credentials | `%USERPROFILE%\.cloudflared\` — keep these private |
+| Origin | `http://<WSL IP>:8080`, rewritten each time `demo-up.ps1` runs because the IP changes |
+| Credentials | `%USERPROFILE%\.cloudflared\` — keep private |
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File D:\MSCAST\erpnext-poc\scripts\demo-up.ps1
 ```
 
-It starts the stack, pins the WSL VM up, rewrites the tunnel config with the current WSL IP, restarts the tunnel and verifies the public URL. A Startup shortcut brings the demo back after a reboot.
+- `demo-up.ps1` starts both stacks, pins the WSL VM up, rewrites the tunnel config with the current WSL IP, restarts the tunnel and verifies the public URLs. A Startup shortcut brings it back after a reboot.
+- **Take offline:** `Get-Process cloudflared | Stop-Process`. Remove the Startup shortcut to stop it returning; `cloudflared tunnel delete mscast-demo` revokes it permanently.
+- Rejected: Tailscale Funnel (503 at the ingress; every client needs Tailscale); `networkingMode=mirrored` (breaks Docker's embedded DNS).
+- Known issue, parked by the owner: live screen refresh (socket.io) through the tunnel.
 
-**Taking it offline:** `Get-Process cloudflared | Stop-Process`. Remove the Startup shortcut to stop it returning; `cloudflared tunnel delete mscast-demo` revokes it permanently.
-
-*Rejected earlier: Tailscale Funnel (503 at the ingress, and every client would need Tailscale) and `networkingMode=mirrored` (broke Docker's embedded DNS).*
-
-## 4. MSCAST's own forms
+## MSCAST's own forms
 
 25 document types in the MSCAST module, 8 of them child tables.
 
 | Form | Purpose |
-|---|---|
-| **MSCAST PCC** + items | Purchase Cost Calculation: component-wise estimate, revision, approval; the baseline for PO control and MIS |
-| **MSCAST Drawing** + revisions | Drawing register with revision history — **driven by a workflow**, see below |
+|---------------------------------------|-------------------------------------------------------------|
+| **MSCAST PCC** + items | Purchase Cost Calculation: component-wise estimate, revision, approval; baseline for PO control and MIS |
+| **MSCAST Drawing** + revisions | Drawing register with revision history, driven by a workflow |
 | **MSCAST MDF** + items | Material Data File per assembly, released to procurement |
 | **MSCAST BRM** | Billing Routing Memo: quantity, rate, inspection and delivery certified before accounts pay |
 | **MSCAST MDM** + items | Material Dispatch Memo with free-issue (Annexure-I) flag |
@@ -135,146 +128,172 @@ It starts the stack, pins the WSL VM up, rewrites the tunnel config with the cur
 | **MSCAST Spares Handover** + items | Commissioning and 2-year mandatory spares, with part numbers |
 | **MSCAST Client Claim** | Scope variation, idle time, escalation; agreed value and settling invoice |
 | **MSCAST Customer Asset** | Customer-owned tooling held by MSCAST or its sub-contractors |
-| **MSCAST Installed Machine** | The installed base — 14 machines, 2009–2024 |
-| **MSCAST Bid Outcome** | Won and lost bids with reasons — the basis for a win/loss view |
+| **MSCAST Installed Machine** | The installed base: 14 machines, 2009–2024 |
+| **MSCAST Bid Outcome** | Won and lost bids with reasons (basis for a win/loss view) |
 | **MSCAST Exception** | What the overnight checks found. Written by the system, cleared by people |
 | **MSCAST Archival Log** | Monthly archival run record with the 8-year retention note |
 
-### Workflows — five, all active
+### Workflows (five, all active)
 
 | Workflow | On | The control |
-|---|---|---|
+|-------------------------|------------------|---------------------------------------------------------|
 | **MSCAST PCC Approval** | MSCAST PCC | Approve and Send Back are a **director's** |
-| **MSCAST Purchase Order Approval** | Purchase Order | Sent for approval by `Purchase User`, **approved by a director**. Nobody holds both roles |
-| **MSCAST BRM Certification** | MSCAST BRM | Purchase prepares, a **director certifies**, Accounts marks paid |
-| **MSCAST Project Kick-off** | MSCAST Project Kickoff | Accounts verify the customer PO, a **director approves**. Cannot be approved with the checklist unticked |
+| **MSCAST Purchase Order Approval** | Purchase Order | Sent for approval by `Purchase User`, **approved by a director**. A PO cannot be approved unless someone with `Purchase User` sent it. Nobody holds both roles |
+| **MSCAST BRM Certification** | MSCAST BRM | Purchase prepares, a **director certifies**, Accounts marks paid. Cannot be certified unless its four checks (qty, rate, inspection, delivery) are ticked |
+| **MSCAST Project Kick-off** | MSCAST Project Kickoff | Accounts verify the customer PO, a **director approves**. Cannot be approved while the PO checklist is incomplete |
 | **MSCAST Drawing Release** | MSCAST Drawing | *Released for Manufacture* is reachable **only** from *Approved by Customer*, and only by a Projects Manager |
 
-**Read the BRM row with section 9's second warning next to it.** The workflow says three roles. It does not follow that three *people* are involved, because both directors hold roles that can create a BRM as well as the role that certifies one and the role that marks it paid.
+- **Three roles on the BRM workflow do not mean three people.** Both directors hold `Projects Manager` (can create a BRM), `MSCAST Director` (certifies) and `Accounts Manager` (marks paid). See T6g.
 
 ### Other controls
 
-- **BRM payment block** — application code (`mscast_erp.controls.brm_payment`, wired on `before_submit`) refuses a supplier payment unless a certified BRM exists for that bill and covers the amount. It guards **Payment Entry and Journal Entry**, and refuses an advance with no invoice reference. Verified live in the harness on every run, on six routes (`T6a`). Absolute, and applies to everyone. The only exception is a supplier ticked *Exempt from BRM certification* — for electricity, water, rent, telephone and statutory bills, which cannot be certified against a purchase order.
-- **Overnight exception sweep** — 16 rules at 06:00 comparing documents against each other and the calendar. Writes to MSCAST Exception. No model, no network.
-- **AI morning briefing** — 08:35, turns the findings plus the management summary into a few sentences naming what matters most today, emailed to the directors with every item linked. Falls back to a plain list if the model is unreachable, so a missing model never means a missing email.
-- **Post-deploy verification** — after every install and upgrade, six control transitions are checked and repaired, loudly. Section 9.
-- **Monthly archival job** writing an MSCAST Archival Log entry.
+- **BRM payment block** — application code `mscast_erp.controls.brm_payment`, on `before_submit` of **Payment Entry and Journal Entry**. No certified BRM covering the bill and amount → no supplier payment, for everyone including directors; an advance with no invoice reference is refused. Tested on six routes on every run (`T6a`). Only exception: a supplier ticked *Exempt from BRM certification* (electricity, water, rent, telephone, statutory bills).
+- **Overnight exception sweep** — 16 rules at 06:00 IST comparing documents against each other and the calendar; writes to MSCAST Exception. No model, no network.
+- **AI morning briefing** — 08:35 IST; turns the findings plus the management summary into a few sentences on what matters today, every item linked. Live POC recipient: waseemraj@mcast.co.in (owner's decision). Falls back to a plain list if the model is unreachable.
+- **Post-deploy verification** — after every install and upgrade, six control transitions are checked and repaired, with a banner (see *Deploying*).
+- **Monthly archival job** — writes an MSCAST Archival Log entry.
 
 ### Roles
 
-**Correction to earlier versions of this file:** `MSCAST Director` was described as a *read-only* role. It is the opposite — it is the **approving** role, and it is where PCC approval, purchase order approval, BRM certification and kick-off approval now sit.
+- `MSCAST Director` is the **approving** role: PCC approval, purchase order approval, BRM certification, kick-off approval.
+- **Auditor** (held by the external CA) is read-only: read, report, print, export including version history; no write anywhere.
+- Per-role detail: doc 09 (Role Cards).
 
-Read-only belongs to **Auditor**, held by the external CA: read, report, print, export including version history, and no write anywhere.
+## Print formats
 
-Full detail, one page per role, is in *Role Cards*.
+- 15 custom formats on MSCAST letterhead, A4. Every format with a sample document is rendered in the build checks (15 on the current data set, `T4`).
+- `MSCAST PCC Sheet` · `MSCAST MDF Sheet` · `MSCAST Material Dispatch Memo` · `MSCAST Delivery Instruction Print` (Annexure-I) · `MSCAST Billing Routing Memo` · `MSCAST Inspection Report` · `MSCAST Project Certificate Print` · `MSCAST Proforma Invoice` · `MSCAST Project Schedule (Client)` · `MSCAST Project Status Report` · `MSCAST Transmittal Note` · `MSCAST Commissioning Report Print` · `MSCAST Spares Handover Note` · `MSCAST Client Claim Print`
+- The DEMONSTRATION watermark is app code, switched on by `bench --site <site> set-config mscast_demo 1`. Never set it in production; `T4b` fails either way round.
 
-## 5. Print formats
-
-16 custom formats on MSCAST letterhead, A4. Every one that has a sample document is rendered as part of the build checks — 15 on the current data set — so a format broken by a field change is caught before anyone prints it in front of a customer.
-
-`MSCAST PCC Sheet` · `MSCAST MDF Sheet` · `MSCAST Material Dispatch Memo` · `MSCAST Delivery Instruction Print` (Annexure-I) · `MSCAST Billing Routing Memo` · `MSCAST Inspection Report` · `MSCAST Project Certificate Print` · `MSCAST Proforma Invoice` · `MSCAST Project Schedule (Client)` · `MSCAST Project Status Report` · `MSCAST Transmittal Note` · `MSCAST Commissioning Report Print` · `MSCAST Spares Handover Note` · `MSCAST Client Claim Print`
-
-All client-facing formats carry a demonstration watermark. Remove it for production.
-
-## 6. Reports — 28 custom
+## Reports (28 custom)
 
 The eight originals: `Project MIS` · `PO vs PCC Variance` · `Drawing Register` · `Free Issue at Vendor` · `Dispatch Schedule` · `Retention and Certificates` · `BRM Register` · `Inspection Status`
 
 | Report | What it answers |
-|---|---|
+|-------------------------------------|---------------------------------------------------------------|
 | **MSME 45-Day Dues** | Which MSME bills are past 45 days and what is at risk under s.43B(h) |
 | **SO – PO – Invoice Tracker** | Per order: value, billed, collected, PO committed, % delivered, % billed |
-| **Project Closure Report** | Contract vs PCC vs actual, receivable, certificates, open claims — with a verdict |
+| **Project Closure Report** | Contract vs PCC vs actual, receivable, certificates, open claims, with a verdict |
 | **Balance Sheet (Schedule III)** | Ledger balances mapped to the statutory vertical format |
 | **Statement of P&L (Schedule III)** | Revenue through to tax and EPS |
 | **Daily Management Summary** | 20 indicators with an OK / WATCH / ACT column and the reason spelled out |
 | **Expense Analysis** | Growth and margin against last year |
 | **Installed Base** and **Bid Outcomes** | The machines in the field, and why bids were won or lost |
 
-## 7. Accounting depth
+- **Report names must be URL-safe** (no `/`), and a `%` in report SQL is read as a formatting character; `T2`/`T2b` run each report as the desk does, as the users who need it.
+- **Indian dates:** MariaDB runs UTC inside the container while the site runs Asia/Kolkata. Every custom report uses `date(convert_tz(utc_timestamp(),'+00:00','+05:30'))`, never `curdate()`; `T3` fails any report that does not. The MSMED 45-day clock depends on it.
 
-Schedule III statements that balance to the rupee and tie to the ledger; 25 notes to accounts including the MSMED s.22 disclosure, related party, contingent liabilities from live bank guarantees, and the 2021 negative disclosures; the eleven prescribed ratios, guarded so an immaterial denominator shows `n/a` rather than a nonsense percentage; current and deferred tax; project WIP; landed cost, credit and debit notes, TDS 194C, dunning, retention reclassification, gratuity provision, four assets including CWIP and an intangible.
+## Accounting depth
 
-## 8. GST, HR and mail
+- Schedule III statements that balance to the rupee and tie to the ledger.
+- 25 notes to accounts, including the MSMED s.22 disclosure, related party, contingent liabilities from live bank guarantees, and the 2021 negative disclosures.
+- The eleven prescribed ratios, guarded so an immaterial denominator shows `n/a`.
+- Current and deferred tax; project WIP; landed cost, credit and debit notes, TDS 194C, dunning, retention reclassification, gratuity provision; four assets including CWIP and an intangible.
 
-- **GST** — company and all parties carry GSTIN, state and category; every invoiced item has an HSN; intra-state and inter-state invoices both present; MCA audit trail on and non-disableable; four suppliers tagged Micro/Small with Udyam numbers feeding the MSME report. GSTIN check digits and pincode-to-state are validated on entry.
-- **HR** — 6 employees, holiday list, 150 attendance records, leave, expense claim, salary structure and submitted salary slips; Gratuity Rule and provision. **The biometric pull is switched off** — 72 punches and the reconciliation report are real, the automation behind them is not running.
-- **Mail** — live via Purelymail on `uattech@carobar.net`; SPF, DKIM and DMARC all pass at Gmail. The daily summary goes at **08:30** and the AI briefing at **08:35**, both Asia/Kolkata, driven by a cron server script rather than Frappe's midnight job.
+## GST, HR and mail
 
-**Indian dates.** MariaDB runs UTC inside the container while the site runs Asia/Kolkata, so every raw-SQL `curdate()` was comparing against the previous day for 5.5 hours out of 24. All custom reports use `date(convert_tz(utc_timestamp(),'+00:00','+05:30'))`, and the harness fails if any new report does not. Not cosmetic: the MSMED 45-day clock hangs off it.
+- **GST** — company and all parties carry GSTIN, state and category; every invoiced item has an HSN; intra-state and inter-state invoices both present; MCA audit trail on and non-disableable; four suppliers tagged Micro/Small with Udyam numbers feeding the MSME report. GSTIN check digits and pincode-to-state validated on entry.
+- **HR** — 6 employees, holiday list, 150 attendance records, leave, expense claim, salary structure and submitted salary slips; Gratuity Rule and provision. **Biometric pull switched off**: 72 punches and the reconciliation report exist, the automation is not running.
+- **Mail** — Purelymail on `uattech@carobar.net`; SPF, DKIM and DMARC pass at Gmail. Driven by a cron server script (not Frappe's midnight job), Asia/Kolkata:
 
-## 9. Deploying, and the trap in it
+| Time (IST) | Mail | To |
+|----------------------|-----------------------------------|-------------------------------------------|
+| 08:30 | Daily summary, dispatch schedule, project MIS | autoelectron.jp@gmail.com |
+| 08:35 | AI briefing | waseemraj@mcast.co.in (Live POC) |
+| 09:00 | Watchdog, only if the nightly job has not run in 26 h | `mscast_alerts_to` |
 
-**Read this before installing or upgrading anything.**
+- Email links use the public host (`host_name` set per site); `T9i`.
 
-Installing or upgrading the app **re-imports its configuration and overwrites the database**. Proved by experiment: a workflow role changed in the database was reset to the packaged value by a plain `bench migrate`.
+## Deploying
 
-Two consequences:
+**Read before installing or upgrading anything.** Production steps: doc 08 (Production Cutover Runbook).
 
-1. **Deploying from a stale copy reverts business rules** to whatever that copy contained. This happened: an install from a stale container copy moved PCC approval back to System Manager and BRM certification back to Purchase Manager. Everything still worked, all 23 checks still passed, and nothing said a word.
-2. **Anything changed through the ERPNext screens is reverted at the next upgrade.** Business rules live in git.
+- **Installing or upgrading the app re-imports its configuration and overwrites the database** (a plain `bench migrate` resets a workflow role changed in the database).
+- **Deploying from a stale copy reverts business rules** to that copy (PCC approval to System Manager, BRM certification to Purchase Manager, with no check failing — before T6d existed).
+- **Anything changed in the ERPNext screens is reverted at the next upgrade.** Business rules live in git.
+- **Guard:** after every install and migrate, six control transitions are verified and repaired, with a banner and an Error Log entry naming each one. A banner means package and agreed configuration have diverged: reconcile, do not just note it. `test-stale-deploy.sh` reproduces it.
+- **Fixtures carry only MSCAST's records** (39 custom fields / 38 property setters / 3 email templates, measured against `evidence/baseline-without-mscast.json`). `mscast_erp` migrates last, so a foreign fixture would revert its owner's next release. New MSCAST customisations must carry module **MSCAST** or they are not exported. `T6m`.
+- **Permission matrix ships in the app** (`mscast_erp.controls.permissions`, run on every install and migrate). Inserting one custom permission row replaces *all* of a doctype's standard rows, so every row is declared. `T6k`, `T6l`.
+- **Oversight roles' rights** (directors, statutory auditor, Design User) are declared as data in `mscast_erp/controls/oversight.json`; `completeness-test.sh` confirms a fresh install matches live.
+- **Settings outside the database — a restore does not carry them:** `encryption_key` (`restore-key.sh`, `T9g`), `server_script_enabled` (bench-wide, `T1c`), `host_name` (`T9i`).
+- **Restore path:** the db root password is in `compose.yaml` as `MYSQL_ROOT_PASSWORD`, not in `common_site_config.json`; use `--mariadb-user-host-login-scope` (`--no-mariadb-socket` is deprecated).
+- **Backups live in the Docker volume**, and `reset-poc.sh` runs `docker compose down -v`: copy them out first (`backup-out.sh`). `restore-test.sh` restores into a separate site for the build checks to run against.
 
-**The guard.** After every install and migrate, six control transitions are verified and repaired, with a banner and an Error Log entry naming each one. A banner means the package and the agreed configuration have diverged — reconcile them, do not just note it. `test-stale-deploy.sh` reproduces the whole thing.
+## Build checks
 
-### The check that found the silent failure
+42 automated checks in `seed/102_test_harness.py` (the harness). Run with `run-seed.sh 102_test_harness` or `run-harness.sh`; prefix `C=mscast-dev-backend-1` for DEV.
 
-**`T9f` — has each enabled MSCAST scheduled job actually run?** Not "is it configured", not "is the scheduler alive", but does it have a real `last_execution`. Every other check asked the first question and all of them passed while four jobs had never executed. T9f failed the moment it was written, naming the monthly archival job. All five have since been enqueued through the real scheduler path and picked up by a worker.
+- **DEV (21 September 2026):** 40 PASS, 2 WARN (T6e, T6g), 0 FAIL. Both warnings wait on MSCAST's answers to Q20 and Q21 (doc 03).
+- **Live POC:** 38 PASS, 3 WARN, 1 FAIL. This is the Live POC's true state and is left as is.
+- **Fresh install (`new-mscast-site.sh`):** must pass the 19 system checks.
 
-### The two expected warnings
+| Check | Area | What it asserts | DEV | Live POC |
+|-------------|--------------------|-------------------------------------------|------------|------------|
+| T1 | reports | 326 SQL literal comparisons match the fields' real Select options (0 mismatched) | PASS | PASS |
+| T1b | reports | Server-script literals match the fields' real Select options (the home page's counts) | PASS | PASS |
+| T1c | reports | Server scripts are enabled on this bench (a restore does not carry `server_script_enabled`) | PASS | PASS |
+| T2 | reports | Every custom report executes the way the desk runs it (with a filters dict); 0 failures | PASS | PASS |
+| T2b | reports | Report names are safe in a URL, and each report opens for the users who need it, run as those users | PASS | PASS |
+| T3 | reports | No report uses the container's UTC date | PASS | PASS |
+| T4 | prints | 15 custom print formats render; 0 problems | PASS | PASS |
+| T4b | prints | Demonstration site: every print watermarked; any other site: none | PASS | PASS |
+| T5a | ledger | Trial balance nets to zero | PASS | PASS |
+| T5b | ledger | Schedule III balance sheet balances to the rupee | PASS | PASS |
+| T5c | ledger | P&L profit ties to the ledger surplus | PASS | PASS |
+| T5d | ledger | No ledger entry without a cost centre | PASS | PASS |
+| T6a | controls | BRM payment block guards every payment route; six routes attempted on each run and rolled back | PASS | PASS |
+| T6b | controls | 5 workflows active and complete | PASS | PASS |
+| T6c | controls | Controls live in the application package; server scripts only where intended; fails if the retired BRM payment script reappears | PASS | PASS |
+| T6d | controls | Approval authority is where the business put it; 5 transitions asserted | PASS | PASS |
+| T6e | controls | Nobody can both raise and approve the same document. Warns: a director can prepare a PCC or verify a customer PO and approve it alone (Q20) | WARN | WARN |
+| T6f | controls | Only administrators hold System Manager. DEV: 2 holders (`admin@mscast.local`, `Administrator`). Live POC warns: Aiqaz was given System Manager | PASS | WARN |
+| T6g | controls | No one person can create a document and then approve it. Warns: a director can create, certify and mark paid a BRM alone (Q21) | WARN | WARN |
+| T6h | controls | The auditor's login cannot change anything (effective rights, not stored rows) | PASS | PASS |
+| T6i | controls | Every role can raise the documents its role card describes | PASS | PASS |
+| T6j | controls | A guarded workflow state is guarded on every route into it | PASS | PASS |
+| T6k | controls | Everyone who can approve a document can open it (asked per real user) | PASS | PASS |
+| T6l | controls | No role silently lost access to a customised document type | PASS | PASS |
+| T6m | controls | The package ships all of MSCAST's configuration and none of any other app's | PASS | PASS |
+| T6n | controls | A BRM cannot be certified with its four checks (qty, rate, inspection, delivery) unticked; attempted as a director, then rolled back | PASS | PASS |
+| T7a | data | Every MSCAST form has records; fails if it finds no forms to check | PASS | PASS |
+| T7b | data | Every stored Select value is a valid option (45 fields on 25 document types) | PASS | PASS |
+| T7c | data | Every invoiced item carries an HSN code | PASS | PASS |
+| T8 | gst | GST head matches the place of supply on every invoice | PASS | PASS |
+| T9a | email | Outgoing mail account configured | PASS | PASS |
+| T9b | email | Mail actually leaves the system | PASS | PASS |
+| T9c | email | Morning report batch scheduled | PASS | PASS |
+| T9d | email | Every enabled notification has a live recipient | PASS | PASS |
+| T9e | email | No live user on a non-deliverable domain (.demo, .local, example.com …) | PASS | PASS |
+| T9f | automation | Every enabled MSCAST scheduled job has actually run (a real `last_execution`) | PASS | PASS |
+| T9g | automation | Every stored secret decrypts with this site's key (`restore-key.sh` restores the key) | PASS | PASS |
+| T9h | automation | The nightly backup ran in the last 26 hours and succeeded (DEV: reads "not applicable", `mscast_dev_copy`) | PASS | PASS |
+| T9i | automation | Links in emails point at the public address, not the container's internal name | PASS | PASS |
+| T10a | hr | Payroll and attendance loaded | PASS | PASS |
+| T10b | hr | No duplicate attendance for an employee on a date | PASS | PASS |
+| T10c | hr | Biometric punches converted. Live POC fails: MSCAST's trial admin deleted the demo punches | PASS | FAIL |
 
-`T6d` asserts the approval matrix. Two further checks ask whether the separation of duties is real, from two different angles, and **both warn on purpose**. Neither is a defect to chase; both are positions somebody has taken.
+## Known limitations (not production yet)
 
-- **`T6e` — can an ordinary user both raise and approve the same document?** Yes, for the PCC and the kick-off: both directors hold the preparing roles as well as the director role, so either can prepare and approve alone. Accepted for a company this size, and documented in the SOPs.
-- **`T6f` — does anyone outside the administrators hold `System Manager`?** Currently no. It warns if that changes.
-- **`T6g` — can one person *create* a document and then approve it?** Yes, and this is the one worth understanding. `T6e` compares workflow *transition* roles, but creating a document is a permission, not a transition. Both directors hold `Projects Manager`, which can create a BRM; `MSCAST Director`, which certifies one; and `Accounts Manager`, which marks it paid. **A director can therefore take a supplier bill from creation to paid alone.** `T6e` never saw it, because "prepare a BRM" is not a workflow transition at all.
+- Demo data throughout; DEMONSTRATION watermark on client-facing prints.
+- Administrator password to be rotated before real data goes on a server (parked by the owner).
+- Previous-year comparatives blank until Tally opening balances are migrated.
+- Biometric attendance pull switched off.
+- Hosting: VPS in India, HTTPS, daily India-resident backups (Companies (Accounts) Rules r.3(5)). VPS move parked by the owner. See doc 08.
+- The AI briefing points at a model router on this laptop; a server needs a hosted endpoint (three config lines, no code change).
+- **`reset-poc.sh` reproduces the configuration, not the demo dataset.**
+  - It installs all four extra apps in dependency order and aborts if any is missing (the compose `create-site` step installs only `erpnext`).
+  - Seed steps then fail in a cascade: masters created by scripts numbered 150+ are referenced by scripts numbered 25. The seed scripts record how the POC was explored, not a designed build order (hence `*_fix`, `*_fix2`, `*_fix3`).
+  - Every configuration check passes on a rebuilt site (reports, workflows, print formats, roles and permissions, BRM payment control, approval matrix); only data checks fail.
+- **Use the right mechanism:** a fresh MSCAST system = `new-mscast-site.sh` (apps + fixtures, no data); *this* system with its data = restore a backup (`restore-test.sh` / `restore-live.sh`).
+- Six accounting and scope assumptions await MSCAST and the CA; they are listed in doc 04 (Implementation Report) and written into the narration of the affected vouchers.
 
-`T6g` was added on 20 September after three delivered documents were found claiming a separation that does not exist. The documents have been corrected. **The payment block itself is unaffected** — no certified BRM, no payment, for anyone, including a director. It was moved out of a Server Script and into the app on 21 September, after a probe found three routes round it; see `T6a`.
+## Demo walkthrough
 
-## 10. What is not production yet
+Full demo script with talking points: doc 12 (Demo Run-sheet). Short 15-minute route:
 
-- Demo data throughout; the watermark on client-facing prints
-- The Administrator password must be rotated before real data goes on a server
-- Previous-year comparatives are blank until Tally opening balances are migrated
-- Biometric attendance pull switched off
-- Hosting: VPS in India, HTTPS, daily India-resident backups (Companies (Accounts) Rules r.3(5))
-- The AI briefing points at a model router on this laptop; a server needs a hosted endpoint — three config lines, no code change
-- **`reset-poc.sh` was run end to end on 21 September, and it does not reproduce the demo data.** The result was 23 PASS, 3 WARN, 5 FAIL of 31, against 29/2/0 on the live site. Two causes:
+1. Workspace `/app/mscast` (KPIs and charts) → 2. MSCAST Exception (this morning's findings) → 3. MSCAST Project Kickoff for PROJ-0002 (parked in *PO Query Raised*) → 4. Project MIS → 5. PCC-2026-00001 (print it) → 6. PO vs PCC Variance → 7. a Drawing in Draft (release for manufacture is not offered) → 8. Drawing register + Transmittal → 9. Free Issue at Vendor → 10. BRM, then a Payment Entry against an uncertified bill (refused) → 11. MDM → Delivery Instruction (print shows dispatch list and Annexure-I) → 12. Commissioning report and spares handover (print both) → 13. MSME 45-Day Dues and Daily Management Summary → 14. Schedule III balance sheet and P&L, then Project Closure Report → 15. run the build checks (DEV: 42 checks, 40 pass, 2 expected warnings).
 
-  - *Fixed.* The compose `create-site` step installs **only** `erpnext`. The other four apps had been installed by hand and never written down, so 83 seed steps failed on tables that did not exist. `reset-poc.sh` now installs all four in dependency order and aborts if any is missing.
-  - *Not fixed, and a known limitation.* With all six apps present, 76 seed steps still failed in a cascade — masters created by scripts numbered 150+ are referenced by scripts numbered 25. The seed scripts are a record of how this POC was explored, not a designed build order, which is also why a dozen of them are named `*_fix`, `*_fix2`, `*_fix3`.
-
-  **What reproduces and what does not.** Every *configuration* check passed on the rebuilt site — 28 reports, 5 workflows, print formats, roles and permissions, the BRM payment control, the approval matrix (T2, T6b, T6c, T6d, T6h, T6i, T6j, T7b). Every failure was *data*. So the app and its fixtures do reproduce the system; the demonstration dataset does not replay. A production install wants the former and not the latter.
-
-  **Use the right mechanism for each.** A fresh MSCAST system: create the site, install the six apps, let the fixtures configure it. *This* system with its data: restore a backup — tested the same day, restored into a separate site and passed all 31 checks identically, and put the live demo back in under three minutes when the rebuild broke it.
-
-- **The permission matrix now ships in the app** (`mscast_erp.controls.permissions`, run on every install and migrate). Before 21 September it lived in seed 183, so a real install never got it, and 183 itself was wrong: inserting one custom permission row replaces *all* of a doctype's standard rows, and on five doctypes every other role lost access - the managing director, named as kick-off approver, could not open a kick-off. Checks `T6k` (whoever can approve can open) and `T6l` (no role silently dropped) now guard it.
-- **The app ships only MSCAST's configuration.** Its fixtures had captured 663 custom fields, 344 property setters and 7 email templates belonging to India Compliance, ERPNext and HRMS, and since fixtures overwrite live rows on every migrate and `mscast_erp` migrates last, each would have reverted its owner's next release. Measured against a site built without the app (`evidence/baseline-without-mscast.json`); now 39 / 38 / 3. Check `T6m`. New MSCAST customisations must carry module **MSCAST** or they will not be exported.
-- **A fresh install now reproduces all of live's configuration.** Compared record by record and permission row by permission row (`completeness-test.sh`), a fresh install first lacked the drawing office's role (*Design User*), a drawing notification, and the directors' and statutory auditor's access to the books and to MSCAST's own documents - all set on live by setup scripts and never packaged. A fresh production install would have given the CA a login that could not open a ledger. The oversight roles' rights are now declared exactly, as data, in `mscast_erp/controls/oversight.json`.
-- **The demonstration watermark is app code, switched by `bench --site <site> set-config mscast_demo 1`.** As a seed script it was stripped by the first migrate. Never set it in production; check `T4b` fails either way round.
-- **Restores carry the encryption key.** A restore on 21 September brought the data back under a different key; mail stopped and nothing said so. `restore-key.sh`, and check `T9g`.
-- **Backups are now tested, not asserted.** `backup-out.sh` copies a set out of the Docker volume onto `D:` — which matters, because `reset-poc.sh` runs `docker compose down -v` and the backups live *in* that volume. `restore-test.sh` then restores into a separate site and the harness is run against it. Two defects in the restore path were found only by doing it: the db root password is in `compose.yaml` as `MYSQL_ROOT_PASSWORD`, not in `common_site_config.json`, and `--no-mariadb-socket` is deprecated in favour of `--mariadb-user-host-login-scope`
-
-Six accounting and scope assumptions are still awaiting MSCAST and the CA. They are listed in the implementation report and written into the narration of the affected vouchers, so whoever reviews the books meets the assumption where it matters.
-
-## 11. Suggested 15-minute walkthrough
-
-1. **Workspace** `/app/mscast` — KPIs and charts on one screen
-2. **MSCAST Exception** — what the overnight checks found this morning
-3. **MSCAST Project Kickoff** for PROJ-0002 — the checklist, parked in *PO Query Raised*
-4. **Project MIS** — contract vs PCC vs committed vs billed
-5. **PCC-2026-00001** — the cost sheet; print it
-6. **PO vs PCC Variance** — what is committed against the estimate
-7. **A Drawing in Draft** — try to release it for manufacture; the system will not offer it
-8. **Drawing register + Transmittal** — revision history and what was issued, acknowledged
-9. **Free Issue at Vendor** — material lying with the fabricator
-10. **BRM** — then try a Payment Entry against an uncertified bill and watch it refused
-11. **MDM → Delivery Instruction** — print shows the dispatch list and Annexure-I
-12. **Commissioning report and spares handover** — print both
-13. **MSME 45-Day Dues** and **Daily Management Summary**
-14. **Schedule III balance sheet and P&L**, then **Project Closure Report**
-15. **Run the harness** — 37 checks, 35 pass, 2 expected warnings
-
-## 12. Files
+## Files
 
 ```
 D:\MSCAST\                       git repository, remote github.com/cb1-tech/mscast
@@ -294,28 +313,28 @@ D:\MSCAST\                       git repository, remote github.com/cb1-tech/msca
 ~/mscast-poc\                    compose.yaml, apps.json, frappe_docker checkout (inside WSL)
 ```
 
-Everything in `_archive\` can be deleted without affecting the POC or a rebuild.
+- Everything in `_archive\` can be deleted without affecting the POC or a rebuild.
+- **Documents:** `ERP Plan\` holds docs 01–13 as .docx and markdown; the ERP-MSCAST project on claude.ai holds the same content.
 
-**Current documents.** `ERP Plan\` holds the .docx and markdown; the ERP-MSCAST project on claude.ai holds the same content. *Client Setup Guide v2.2* · *SOPs and Use Cases v2.1* · *Role Cards v1.2* · *Production Cutover Runbook* · *Independent Review* · *Requirements Traceability* · *Implementation Report* · *Data Request Covering Note*.
+## DEV instance — https://mscastdev.carobar.net
 
-## DEV instance - https://mscastdev.carobar.net  (added 21 Sep 2026)
-
-A second, fully separate copy for testing, screenshots and development, so users can play on the live POC undisturbed.
+Fully separate copy for demos, screenshots and development, so MSCAST's users work on the Live POC undisturbed.
 
 | | Live POC | DEV |
-|---|---|---|
+|---------------------------|-------------------------------------|-------------------------------------|
 | URL | mscast.carobar.net | mscastdev.carobar.net |
 | Compose project | `mscast-poc` (~/mscast-poc) | `mscast-dev` (~/mscast-dev) |
 | Local port | 8080 | 8081 |
-| Database / Redis / volumes | own | own - nothing shared |
+| Database / Redis / volumes | own | own — nothing shared |
 | Image | mscast/erpnext:v16-app | same image |
 | Marker | DEMONSTRATION on prints | + orange "DEV INSTANCE" desk banner, tab title "MSCAST ERP - DEV" |
-| Mail, scheduler | on | on (by decision - dev mails go to the same addresses), except the backup watchdog: no `mscast_alerts_to`, and `mscast_dev_copy` makes T9h read "not applicable" |
-| Nightly backup | yes | no - rebuildable from its seed |
+| Mail, scheduler | on | on (by decision; DEV mails go to the same addresses) |
+| Backup alerts | on (`mscast_alerts_to`) | off: no `mscast_alerts_to`; `mscast_dev_copy` makes T9h read "not applicable" |
+| Nightly backup | yes | no — rebuildable from its seed |
 
-- **Seed data:** `D:\MSCAST\backups-dev-seed\20260921_125913` (live at 12:59 IST, 21 Sep - kept outside the pruned backup folder).
-- **Build (first time):** `scripts/dev-create.sh` - compose copy on 8081, restore seed, key + mscast_* settings, `server_script_enabled`, host_name, migrate, DEV marker (seed 193).
-- **Start after reboot:** `demo-up.ps1` starts both stacks and serves both hostnames (`start-dev.sh` for dev alone).
-- **Tunnel:** one tunnel (`mscast-demo`), two ingress rules. `tunnel-add-dev.ps1` added the second host with zero downtime (new connector up before the old one stopped).
-- **Scripts against dev:** prefix with `C=mscast-dev-backend-1`, e.g. `C=mscast-dev-backend-1 bash scripts/run-harness.sh`.
-- **Found while building it:** `server_script_enabled` is bench-wide and is NOT carried by a restore - every MSCAST server script was silently off while all 41 checks passed. New check **T1c** (42 checks now); `restore-key.sh` no longer uses `set-config --parse` (it rejected JSON `true` and aborted callers).
+- **Seed data:** `D:\MSCAST\backups-dev-seed\20260921_125913` (Live POC at 12:59 IST, 21 Sep 2026; kept outside the pruned backup folder).
+- **Build (first time):** `scripts/dev-create.sh` — compose copy on 8081, restore seed, key + `mscast_*` settings, `server_script_enabled`, `host_name`, migrate, DEV marker (seed 193).
+- **Start after reboot:** `demo-up.ps1` starts both stacks and serves both hostnames (`start-dev.sh` for DEV alone).
+- **Tunnel:** one tunnel (`mscast-demo`), two ingress rules. `tunnel-add-dev.ps1` adds the second host with zero downtime (new connector up before the old one stops).
+- **Scripts against DEV:** prefix `C=mscast-dev-backend-1`, e.g. `C=mscast-dev-backend-1 bash scripts/run-harness.sh`.
+- `restore-key.sh` sets config without `set-config --parse` (which rejects JSON `true`).
